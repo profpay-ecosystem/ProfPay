@@ -523,7 +523,6 @@ fun WalletAddressScreen(
                                 }
                             goToReceive()
                         }
-
                     },
             ) {
                 Column(

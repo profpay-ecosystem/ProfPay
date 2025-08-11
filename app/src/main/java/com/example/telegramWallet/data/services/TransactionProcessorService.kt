@@ -65,7 +65,11 @@ class TransactionProcessorService @Inject constructor(
 
         val commissionAddressEntity = if (tokenName == TokenName.TRX.tokenName) addressEntity else centralAddr
 
-        validateBalances(sender, commissionAddressEntity, tokenName, commission, tokenEntity, amount)
+        try {
+            validateBalances(sender, commissionAddressEntity, tokenName, commission, tokenEntity, amount)
+        } catch (e: IllegalStateException) {
+            return fail(e.message ?: "Ошибка валидации балансов")
+        }
 
         val amountSending = calculateAmountSending(receiver, tokenName, amount, commission)
 
