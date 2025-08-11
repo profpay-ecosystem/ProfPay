@@ -23,10 +23,10 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class PinLockViewModel @Inject constructor(@ApplicationContext context: Context, private val dataStore: DataStore<Preferences>) : ViewModel() {
+class PinLockViewModel @Inject constructor(@param:ApplicationContext val context: Context, private val dataStore: DataStore<Preferences>) : ViewModel() {
     private val _navigationState = MutableStateFlow<LockState>(LockState.None)
-    private val keystore = KeystoreEncryptionUtils()
     val navigationState: StateFlow<LockState> = _navigationState.asStateFlow()
+    private val keystore = KeystoreEncryptionUtils()
 
     private fun launchIO(block: suspend () -> Unit) = viewModelScope.launch(Dispatchers.IO) {
         block()

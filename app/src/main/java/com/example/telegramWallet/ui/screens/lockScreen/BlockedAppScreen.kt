@@ -25,13 +25,11 @@ import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.BlockingAppState
 import com.example.telegramWallet.bridge.view_model.BlockingAppViewModel
 import com.example.telegramWallet.ui.app.theme.LocalFontSize
-import com.example.telegramWallet.ui.shared.sharedPref
 
 @Composable
 fun BlockedAppScreen(toNavigate: () -> Unit, viewModel: BlockingAppViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    Scaffold(
-    ) {
+    Scaffold {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
