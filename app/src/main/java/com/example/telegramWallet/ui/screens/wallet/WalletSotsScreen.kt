@@ -73,6 +73,7 @@ import java.util.stream.Collectors
 @Composable
 fun WalletSotsScreen(
     goToBack: () -> Unit,
+    goToReceive: () -> Unit,
     goToWalletAddress: () -> Unit,
     goToWalletArchivalSots: () -> Unit,
     viewModel: WalletSotViewModel = hiltViewModel()
@@ -135,6 +136,7 @@ fun WalletSotsScreen(
         ) {
             HexagonsFeature(
                 goToBack = goToBack,
+                goToReceive = goToReceive,
                 addressList = addressWithTokens,
                 size = with(LocalDensity.current) { sheetState.requireOffset().toDp() * 1.1f }
             )

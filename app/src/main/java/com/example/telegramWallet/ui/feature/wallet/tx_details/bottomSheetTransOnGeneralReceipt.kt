@@ -58,7 +58,8 @@ fun bottomSheetTransOnGeneralReceipt(
     addressWithTokens: AddressWithTokens?,
     snackbar: StackedSnakbarHostState,
     tokenName: String,
-    walletId: Long
+    walletId: Long,
+    balance: BigInteger? = null
 ): Pair<Boolean, (Boolean) -> Unit> {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
@@ -95,7 +96,7 @@ fun bottomSheetTransOnGeneralReceipt(
                     fromAddress = address.address,
                     toAddress = generalAddress,
                     privateKey = address.privateKey,
-                    amount = tokenEntity?.balanceWithoutFrozen!!
+                    amount = balance ?: tokenEntity?.balanceWithoutFrozen!!
                 )
             }
             val requiredBandwidth = withContext(Dispatchers.IO) {
@@ -103,7 +104,7 @@ fun bottomSheetTransOnGeneralReceipt(
                     fromAddress = address.address,
                     toAddress = generalAddress,
                     privateKey = address.privateKey,
-                    amount = tokenEntity?.balanceWithoutFrozen!!
+                    amount = balance ?: tokenEntity?.balanceWithoutFrozen!!
                 )
             }
 
@@ -245,7 +246,8 @@ fun bottomSheetTransOnGeneralReceipt(
                                         addressWithTokens = addressWithTokens,
                                         commission = commissionOnTransaction.toSunAmount(),
                                         walletId = walletId,
-                                        tokenEntity = tokenEntity
+                                        tokenEntity = tokenEntity,
+                                        amount = balance ?: tokenEntity?.balanceWithoutFrozen!!
                                     )
                                 }
 

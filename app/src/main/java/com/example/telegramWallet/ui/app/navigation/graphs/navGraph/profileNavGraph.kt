@@ -45,7 +45,8 @@ fun NavGraphBuilder.profileNavGraph(navController: NavController) {
             WalletSotsScreen(
                 goToWalletAddress = { navController.navigate(route = WalletSots.WalletAddress.route) },
                 goToWalletArchivalSots = { navController.navigate(route = WalletSots.WalletArchivalSots.route) },
-                goToBack = { navController.navigateUp() }
+                goToBack = { navController.navigateUp() },
+                goToReceive = { navController.navigate(route = WalletAddress.Receive.route) }
             )
         }
         composable(

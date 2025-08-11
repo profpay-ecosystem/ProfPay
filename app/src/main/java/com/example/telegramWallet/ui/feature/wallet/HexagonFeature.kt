@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import androidx.core.content.edit
 import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.toPath
@@ -50,6 +51,7 @@ import com.example.telegramWallet.ui.app.theme.HexagonColor4
 import com.example.telegramWallet.ui.app.theme.HexagonColor5
 import com.example.telegramWallet.ui.app.theme.HexagonColor6
 import com.example.telegramWallet.ui.app.theme.HexagonColor7
+import com.example.telegramWallet.ui.shared.sharedPref
 import com.example.telegramWallet.ui.widgets.dialog.AlertDialogWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -118,9 +120,11 @@ class HexagonShape(private val rotate: Boolean = false) : Shape {
 @Composable
 fun HexagonsFeature(
     goToBack: () -> Unit,
+    goToReceive: () -> Unit,
     addressList: List<AddressWithTokens>,
     size: Dp,
 ) {
+    val sharedPref = sharedPref()
     var openDialog by remember { mutableStateOf(false) }
 
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
@@ -194,12 +198,14 @@ fun HexagonsFeature(
                         .clip(HexagonShape(clickSots))
                         .border(size / 80, listColors[index], HexagonShape(clickSots))
                         .clickable {
-                            clickSots = !clickSots
-                            clipboardManager.setText(AnnotatedString(addressList[index + 1].addressEntity.address))
-                            CoroutineScope(Dispatchers.IO).launch {
-                                delay(timeMillis = 500L)
-                                clickSots = !clickSots
-                            }
+                            sharedPref
+                                .edit {
+                                    putString(
+                                        "address_for_receive",
+                                        addressList[index + 1].addressEntity.address
+                                    )
+                                }
+                            goToReceive()
                         }
                         .animateContentSize(), contentAlignment = Alignment.Center
                 ) {
@@ -215,7 +221,14 @@ fun HexagonsFeature(
             if(openDialog){
                 AlertDialogWidget(
                     onConfirmation = {
-                        clipboardManager.setText(AnnotatedString(addressList[0].addressEntity.address))
+                        sharedPref
+                            .edit {
+                                putString(
+                                    "address_for_receive",
+                                    addressList[0].addressEntity.address
+                                )
+                            }
+                        goToReceive()
                         openDialog = !openDialog
                     },
                     onDismissRequest = {
@@ -223,10 +236,10 @@ fun HexagonsFeature(
                     },
                     dialogTitle = "Главный адрес",
                     dialogText = "Пополнение главной соты не рекомендуется " +
-                            "вместо этого скопируйте любую доп-соту и пополните ее.\nПосле AML проверки " +
+                            "вместо этого откройте любую доп-соту и пополните ее.\nПосле AML проверки " +
                             "Вы сможете перевести валюту на центральную соту, " +
                             "так Ваш центральный адрес будет чист всегда.",
-                    textConfirmButton = "Всё-равно скопировать",
+                    textConfirmButton = "Всё-равно открыть",
                     textDismissButton = "Закрыть",
                 )
             }

@@ -94,6 +94,10 @@ class WalletAddressViewModel @Inject constructor(
         }
     }
 
+    suspend fun isGeneralAddress(address: String): Boolean {
+        return addressRepo.isGeneralAddress(address)
+    }
+
     fun getTransactionsByAddressAndTokenLD(
         walletId: Long,
         address: String,
@@ -143,13 +147,14 @@ class WalletAddressViewModel @Inject constructor(
         addressWithTokens: AddressWithTokens,
         commission: BigInteger,
         walletId: Long,
-        tokenEntity: TokenWithPendingTransactions?
+        tokenEntity: TokenWithPendingTransactions?,
+        amount: BigInteger
     ): TransferResult {
         val generalAddress = addressRepo.getGeneralAddressByWalletId(walletId)
         return transactionProcessorService.sendTransaction(
             sender = addressWithTokens.addressEntity.address,
             receiver = generalAddress,
-            amount = tokenEntity!!.balanceWithoutFrozen,
+            amount = amount,
             commission = commission,
             tokenEntity = tokenEntity
         )
