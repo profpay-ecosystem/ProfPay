@@ -146,7 +146,6 @@ class AppInitializer @Inject constructor(
                 )
             }
         }
-        sharedPrefs.edit() { putBoolean("session_activity", false) }
 
         syncExchangeRatesAndTrends()
         startPusherService(context)

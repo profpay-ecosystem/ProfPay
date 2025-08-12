@@ -2,6 +2,7 @@ package com.example.telegramWallet.bridge.view_model.pin_lock
 
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -13,8 +14,10 @@ import com.example.telegramWallet.security.SecureDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -24,29 +27,33 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PinLockViewModel @Inject constructor(@param:ApplicationContext val context: Context, private val dataStore: DataStore<Preferences>) : ViewModel() {
-    private val _navigationState = MutableStateFlow<LockState>(LockState.None)
-    val navigationState: StateFlow<LockState> = _navigationState.asStateFlow()
+    private val _navigationEvents = MutableSharedFlow<LockState>(replay = 1)
+    val navigationEvents = _navigationEvents.asSharedFlow()
     private val keystore = KeystoreEncryptionUtils()
+
+    init {
+        AppLockManager.lock()
+    }
 
     private fun launchIO(block: suspend () -> Unit) = viewModelScope.launch(Dispatchers.IO) {
         block()
     }
 
     fun checkPinState() = launchIO {
-        val savedPin = dataStore.data
-            .map { it[SecureDataStore.PIN_CODE_KEY] }
-            .firstOrNull()
+        val savedPin = dataStore.data.map { it[SecureDataStore.PIN_CODE_KEY] }.firstOrNull()
 
-        _navigationState.value = if (AppLockManager.isAppLocked()) {
+        val newState = if (AppLockManager.isAppLocked()) {
             if (savedPin == null) LockState.RequireCreation else LockState.RequireUnlock
         } else {
             LockState.None
         }
+
+        _navigationEvents.emit(newState)
     }
 
     fun unlockSession() {
         AppLockManager.unlock()
-        _navigationState.value = LockState.None
+        viewModelScope.launch { _navigationEvents.emit(LockState.None) }
     }
 
     fun saveNewPin(pin: String) = launchIO {

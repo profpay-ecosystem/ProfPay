@@ -19,7 +19,7 @@ import com.example.telegramWallet.ui.app.navigation.graphs.RootNavigationGraph
 fun MyApp(
     navController: NavHostController,
     networkMonitor: NetworkMonitor,
-    viewModel: BlockingAppViewModel = hiltViewModel()
+    viewModel: BlockingAppViewModel = hiltViewModel(),
 ) {
     val blockAppState by viewModel.state.collectAsStateWithLifecycle()
     when (blockAppState) {
