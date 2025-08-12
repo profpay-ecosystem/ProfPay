@@ -17,9 +17,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +34,7 @@ import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.pin_lock.PinLockViewModel
 import com.example.telegramWallet.ui.feature.lockScreen.InputDots
 import com.example.telegramWallet.ui.feature.lockScreen.NumberBoard
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -40,8 +45,8 @@ fun LockScreen(
     goToBack: () -> Unit = {},
     goingBack: Boolean = false
 ) {
-    val scope = rememberCoroutineScope()
     val inputPinCode = remember { mutableStateListOf<Int>() }
+    var isError by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -83,7 +88,11 @@ fun LockScreen(
 
                 Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
-                InputDots(inputPinCode)
+                InputDots(
+                    inputPinCode,
+                    isError,
+                    onErrorReset = { isError = false }
+                )
 
                 NumberBoard(
                     inputPinCode = inputPinCode,
@@ -113,21 +122,19 @@ fun LockScreen(
 
                 Spacer(modifier = Modifier.weight(0.1f))
 
+                LaunchedEffect(inputPinCode.size) {
+                    if (inputPinCode.size == 4) {
+                        delay(150)
 
-                if (inputPinCode.size == 4) {
-                    val inputPinCodeInt = inputPinCode.joinToString(separator = "").toInt()
-                    viewModel.validatePin(inputPinCodeInt.toString()) { isCorrect ->
-                        if (isCorrect) {
-                            viewModel.unlockSession()
-                            toNavigate()
-                        } else {
-                            scope.launch { // scope = rememberCoroutineScope()
-                                snackbarHostState.showSnackbar(
-                                    message = "Введен неверный пин-код",
-                                    duration = SnackbarDuration.Short
-                                )
+                        val inputPinCodeInt = inputPinCode.joinToString(separator = "").toInt()
+                        viewModel.validatePin(inputPinCodeInt.toString()) { isCorrect ->
+                            if (isCorrect) {
+                                viewModel.unlockSession()
+                                toNavigate()
+                            } else {
+                                isError = true
+                                inputPinCode.clear()
                             }
-                            inputPinCode.clear()
                         }
                     }
                 }

@@ -18,8 +18,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +33,7 @@ import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.pin_lock.PinLockViewModel
 import com.example.telegramWallet.ui.feature.lockScreen.InputDots
 import com.example.telegramWallet.ui.feature.lockScreen.NumberBoard
+import kotlinx.coroutines.delay
 
 @Composable
 fun CreateLockScreen(
@@ -40,6 +44,7 @@ fun CreateLockScreen(
 ) {
     val inputPinCode = remember { mutableStateListOf<Int>() }
     val repeatInputPinCode = remember { mutableStateListOf<Int>() }
+    var isError by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -86,7 +91,11 @@ fun CreateLockScreen(
                 Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
                 if (inputPinCode.size < 4 && repeatInputPinCode.isEmpty()) InputDots(inputPinCode)
-                else if (inputPinCode.size == 4) InputDots(repeatInputPinCode)
+                else if (inputPinCode.size == 4) InputDots(
+                    repeatInputPinCode,
+                    isError,
+                    onErrorReset = { isError = false }
+                )
 
                 NumberBoard(
                     inputPinCode,
@@ -123,23 +132,18 @@ fun CreateLockScreen(
 
                 Spacer(modifier = Modifier.weight(0.1f))
 
-                if (inputPinCode.size == 4 && repeatInputPinCode.size == 4) {
-                    val inputPinCodeInt = inputPinCode.joinToString(separator = "").toInt()
-                    val repeatInputPinCodeInt = inputPinCode.joinToString(separator = "").toInt()
+                LaunchedEffect(inputPinCode.size, repeatInputPinCode.size) {
+                    if (inputPinCode.size == 4 && repeatInputPinCode.size == 4) {
+                        delay(150)
 
-                    if (inputPinCodeInt == repeatInputPinCodeInt) {
-                        viewModel.saveNewPin(repeatInputPinCodeInt.toString())
+                        val inputPinCodeInt = inputPinCode.joinToString(separator = "").toInt()
+                        val repeatInputPinCodeInt = repeatInputPinCode.joinToString(separator = "").toInt()
 
-                        LaunchedEffect(Unit) {
+                        if (inputPinCodeInt == repeatInputPinCodeInt) {
+                            viewModel.saveNewPin(repeatInputPinCodeInt.toString())
                             toNavigate()
-                        }
-                    } else {
-                        LaunchedEffect(Unit) {
-                            snackbarHostState
-                                .showSnackbar(
-                                    message = "Введен неверный пин-код",
-                                    duration = SnackbarDuration.Short
-                                )
+                        } else {
+                            isError = true
                             repeatInputPinCode.clear()
                         }
                     }

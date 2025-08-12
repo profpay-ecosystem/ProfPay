@@ -105,7 +105,6 @@ fun RootNavigationGraph(
         }
     }
 
-    // Мы можем делать такую проверку только после создания дерева навигатора.
     val sharedPref = LocalContext.current.getSharedPreferences(
         ContextCompat.getString(LocalContext.current, R.string.preference_file_key),
         Context.MODE_PRIVATE
