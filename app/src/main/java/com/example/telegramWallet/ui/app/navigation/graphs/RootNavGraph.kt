@@ -111,9 +111,15 @@ fun RootNavigationGraph(
         Context.MODE_PRIVATE
     )
 
-    val pinCode = sharedPref.getString("pin_code", "startInit")
     val isFirstStart = sharedPref.getBoolean("FIRST_STARTED", true)
     val isAcceptedRules = sharedPref.getBoolean("ACCEPTED_RULES", false)
+
+    val targetRoute = when {
+        !isConnected -> Graph.BlockedAppScreen.route
+        isFirstStart -> Graph.WelcomingScreen.createRoute(true)
+        !isAcceptedRules -> Graph.WelcomingScreen.createRoute(false)
+        else -> null
+    }
 
     LaunchedEffect(Unit) {
         pinLockViewModel.navigationEvents.collect { state ->
@@ -133,15 +139,15 @@ fun RootNavigationGraph(
         }
     }
 
-    if (!isConnected) {
-        navController.navigate(route = Graph.BlockedAppScreen.route)
-    } else {
-        if (isFirstStart && !pinCode.equals("startInit")) {
-            navController.navigate(route = Graph.WelcomingScreen.createRoute(true))
-        }
-
-        if (!isFirstStart && !isAcceptedRules) {
-            navController.navigate(route = Graph.WelcomingScreen.createRoute(false))
+    LaunchedEffect(targetRoute) {
+        targetRoute?.let { route ->
+            val currentRoute = navController.currentBackStackEntry?.destination?.route
+            if (currentRoute != route) {
+                navController.navigate(route) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
         }
     }
 }
