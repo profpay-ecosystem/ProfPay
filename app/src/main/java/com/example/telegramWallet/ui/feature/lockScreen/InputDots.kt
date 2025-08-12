@@ -34,10 +34,7 @@ fun InputDots(
     isError: Boolean = false,
     onErrorReset: (() -> Unit)? = null
 ) {
-    // Состояние для тряски
     val offsetX = remember { Animatable(0f) }
-
-    // Запуск тряски при ошибке
     LaunchedEffect(isError) {
         if (isError) {
             offsetX.snapTo(0f)
@@ -84,7 +81,6 @@ private fun PinIndicator(
     filled: Boolean,
     isError: Boolean
 ) {
-    // Анимируем цвет
     val targetBorderColor = when {
         isError -> Color.Red
         else -> MaterialTheme.colorScheme.onPrimary
@@ -92,7 +88,7 @@ private fun PinIndicator(
 
     val animatedBorderColor by animateColorAsState(
         targetValue = targetBorderColor,
-        animationSpec = tween(durationMillis = 400), // плавный возврат
+        animationSpec = tween(durationMillis = 400),
         label = "PinIndicatorColor"
     )
 

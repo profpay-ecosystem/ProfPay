@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -20,7 +19,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.telegramWallet.bridge.view_model.pin_lock.PinLockViewModel
 import com.example.telegramWallet.bridge.view_model.settings.ThemeState
@@ -37,75 +35,71 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
-    lateinit var networkMonitor: NetworkMonitor
-    private var navController: NavHostController? = null
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<Intent>
     @Inject lateinit var appInitializer: AppInitializer
-    lateinit var viewModel: ThemeViewModel
     private val pinLockViewModel: PinLockViewModel by viewModels()
+    private lateinit var networkMonitor: NetworkMonitor
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<Intent>
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Pushy.listen(this)
 
-        val sharedPrefs = this.getSharedPreferences(
+        val sharedPrefs = getSharedPreferences(
             ContextCompat.getString(this, R.string.preference_file_key),
             MODE_PRIVATE
         )
 
-        networkMonitor = NetworkMonitor(context = this, sharedPref = sharedPrefs)
-        networkMonitor.register()
-
+        networkMonitor = NetworkMonitor(this, sharedPrefs).also { it.register() }
         enableEdgeToEdge()
 
-        val lifecycleObserver = AppLifecycleObserver(
-            onAppForegrounded = { pinLockViewModel.checkPinState() },
-            onAppBackgrounded = { AppLockManager.lock() }
+        ProcessLifecycleOwner.get().lifecycle.addObserver(
+            AppLifecycleObserver(
+                onAppForegrounded = { pinLockViewModel.checkPinState() },
+                onAppBackgrounded = { AppLockManager.lock() }
+            )
         )
-
-        ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleObserver)
 
         SentryAndroid.init(this) { options ->
             options.isEnableUserInteractionTracing = true
             options.isEnableUserInteractionBreadcrumbs = true
         }
 
-        lifecycleScope.launch { appInitializer.initialize(sharedPrefs, this@MainActivity) }
+        lifecycleScope.launch {
+            appInitializer.initialize(sharedPrefs, this@MainActivity)
+        }
 
-        // Инициализация ActivityResultLauncher
-        requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
             if (NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-                setContent {
-                    MyAppContent(sharedPrefs, networkMonitor)
-                }
+                launchContent(sharedPrefs)
             }
         }
 
-        setContent {
-            MyAppContent(sharedPrefs, networkMonitor)
-        }
+        launchContent(sharedPrefs)
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
-    @Composable
-    private fun MyAppContent(sharedPrefs: SharedPreferences, networkMonitor: NetworkMonitor) {
-        viewModel = hiltViewModel()
-        navController = rememberNavController()
-        val isDarkTheme: Boolean
+    private fun launchContent(sharedPrefs: SharedPreferences) {
+        setContent {
+            val themeViewModel: ThemeViewModel = hiltViewModel()
+            val state by themeViewModel.state.collectAsStateWithLifecycle()
+            val isSystemDark = isSystemInDarkTheme()
 
-        val state by viewModel.state.collectAsStateWithLifecycle()
-        val isSystemInDarkTheme = isSystemInDarkTheme()
-        when (state) {
-            is ThemeState.Loading -> viewModel.getThemeApp(sharedPrefs)
-            is ThemeState.Success -> {
-                viewModel.getThemeApp(sharedPrefs)
-                isDarkTheme = viewModel.isDarkTheme(
-                    (state as ThemeState.Success).themeStateResult,
-                    isSystemInDarkTheme
-                )
-                WalletNavigationBottomBarTheme(isDarkTheme = isDarkTheme) {
-                    MyApp(navController = navController!!, networkMonitor = networkMonitor)
+            when (val themeState = state) {
+                is ThemeState.Loading -> {
+                    themeViewModel.getThemeApp(sharedPrefs)
+                }
+                is ThemeState.Success -> {
+                    val isDarkTheme = themeViewModel.isDarkTheme(
+                        themeState.themeStateResult,
+                        isSystemDark
+                    )
+                    WalletNavigationBottomBarTheme(isDarkTheme) {
+                        val navController = rememberNavController()
+                        MyApp(navController, networkMonitor)
+                    }
                 }
             }
         }
