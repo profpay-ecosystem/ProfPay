@@ -1,9 +1,5 @@
 package com.example.telegramWallet
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
@@ -19,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -33,7 +28,6 @@ import com.example.telegramWallet.bridge.view_model.settings.ThemeViewModel
 import com.example.telegramWallet.data.services.AppLockManager
 import com.example.telegramWallet.data.services.NetworkMonitor
 import com.example.telegramWallet.ui.app.navigation.MyApp
-import com.example.telegramWallet.ui.app.navigation.graphs.Graph
 import com.example.telegramWallet.ui.app.theme.WalletNavigationBottomBarTheme
 import dagger.hilt.android.AndroidEntryPoint
 import io.sentry.android.core.SentryAndroid
@@ -42,7 +36,7 @@ import me.pushy.sdk.Pushy
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : FragmentActivity(), Application.ActivityLifecycleCallbacks {
+class MainActivity : FragmentActivity() {
     lateinit var networkMonitor: NetworkMonitor
     private var navController: NavHostController? = null
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<Intent>
@@ -63,7 +57,6 @@ class MainActivity : FragmentActivity(), Application.ActivityLifecycleCallbacks 
         networkMonitor = NetworkMonitor(context = this, sharedPref = sharedPrefs)
         networkMonitor.register()
 
-        registerActivityLifecycleCallbacks(this)
         enableEdgeToEdge()
 
         val lifecycleObserver = AppLifecycleObserver(
@@ -117,57 +110,4 @@ class MainActivity : FragmentActivity(), Application.ActivityLifecycleCallbacks 
             }
         }
     }
-
-    // Проверка пин-кода при открытии вкладки приложения, дефолт-значение запускает страницу создания пин-кода
-    // TODO: вырезать, рефакторить
-    @SuppressLint("RestrictedApi")
-    @RequiresApi(Build.VERSION_CODES.R)
-    override fun onActivityResumed(activity: Activity) {
-        if (!NotificationManagerCompat.from(this).areNotificationsEnabled() || navController == null
-            || navController!!.findDestination(Graph.Home.route) == null
-        ) return
-        val sharedPref = activity.getSharedPreferences(
-            ContextCompat.getString(activity, R.string.preference_file_key),
-            MODE_PRIVATE
-        )
-        val pinCode = sharedPref.getString("pin_code", "startInit")
-        val sessionActivity = sharedPref.getBoolean("session_activity", false)
-        val isBlockApp = sharedPref.getBoolean("is_blocked_app", false)
-
-        if (!isBlockApp) {
-            if (pinCode.equals("startInit")) {
-                if (navController?.currentBackStackEntry?.destination?.route != Graph.CreateLockScreen.route ){
-                    navController!!.navigate(route = Graph.CreateLockScreen.route)
-                }
-            } else if (!sessionActivity) {
-                if (navController?.currentBackStackEntry?.destination?.route != Graph.LockScreen.route ){
-                    navController!!.navigate(route = Graph.LockScreen.route)
-                }
-            }
-        }
-    }
-
-    // При сворачивании приложения вызывает страницу блокировки с вводом пин-кода
-    // TODO: вырезать, рефакторить
-    @RequiresApi(Build.VERSION_CODES.R)
-    override fun onActivityPaused(activity: Activity) {
-        if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) return
-
-        val sharedPref = activity.getSharedPreferences(
-            ContextCompat.getString(activity, R.string.preference_file_key),
-            Context.MODE_PRIVATE
-        )
-        sharedPref.edit() { putBoolean("session_activity", false) }
-    }
-
-    override fun onActivityStopped(activity: Activity) {}
-
-    override fun onActivityDestroyed(activity: Activity) {}
-
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-
-    override fun onActivityStarted(activity: Activity) {}
-
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-
 }

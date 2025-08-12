@@ -19,9 +19,11 @@ import androidx.fragment.app.FragmentActivity
 import com.example.telegramWallet.R
 import com.example.telegramWallet.ui.shared.sharedPref
 import androidx.core.content.edit
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.telegramWallet.bridge.view_model.pin_lock.PinLockViewModel
 
 @Composable
-fun FaceIDAuthentication(toNavigate: () -> Unit) {
+fun FaceIDAuthentication(toNavigate: () -> Unit, viewModel: PinLockViewModel = hiltViewModel()) {
     if (sharedPref().getBoolean("useBiomAuth", true)) {
         val context = LocalContext.current
         val fragmentActivity = context as? FragmentActivity ?: return
@@ -48,7 +50,7 @@ fun FaceIDAuthentication(toNavigate: () -> Unit) {
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                         super.onAuthenticationSucceeded(result)
-                        sharedPref.edit() { putBoolean("session_activity", true) }
+                        viewModel.unlockSession()
                         authResult = "Authentication succeeded!"
                         toNavigate()
                     }

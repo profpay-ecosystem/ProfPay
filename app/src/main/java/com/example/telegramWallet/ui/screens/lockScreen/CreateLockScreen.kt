@@ -1,6 +1,5 @@
 package com.example.telegramWallet.ui.screens.lockScreen
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,19 +25,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.telegramWallet.R
-import com.example.telegramWallet.bridge.view_model.GetContextViewModel
-import com.example.telegramWallet.data.utils.hashPasswordWithBCrypt
+import com.example.telegramWallet.bridge.view_model.pin_lock.PinLockViewModel
 import com.example.telegramWallet.ui.feature.lockScreen.InputDots
 import com.example.telegramWallet.ui.feature.lockScreen.NumberBoard
 
 @Composable
 fun CreateLockScreen(
     toNavigate: () -> Unit,
-    viewModel: GetContextViewModel = hiltViewModel(),
+    viewModel: PinLockViewModel = hiltViewModel(),
     goToBack: () -> Unit = {},
     goingBack: Boolean = false
 ) {
@@ -89,7 +85,7 @@ fun CreateLockScreen(
 
                 Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
-                if (inputPinCode.size < 4 && repeatInputPinCode.size == 0) InputDots(inputPinCode)
+                if (inputPinCode.size < 4 && repeatInputPinCode.isEmpty()) InputDots(inputPinCode)
                 else if (inputPinCode.size == 4) InputDots(repeatInputPinCode)
 
                 NumberBoard(
@@ -104,7 +100,7 @@ fun CreateLockScreen(
 
                             "X" -> {
                                 if (inputPinCode.size <= 4 && inputPinCode.isNotEmpty()
-                                    && repeatInputPinCode.size == 0
+                                    && repeatInputPinCode.isEmpty()
                                 ) {
                                     inputPinCode.removeAt(inputPinCode.lastIndex)
                                 } else {
@@ -132,16 +128,7 @@ fun CreateLockScreen(
                     val repeatInputPinCodeInt = inputPinCode.joinToString(separator = "").toInt()
 
                     if (inputPinCodeInt == repeatInputPinCodeInt) {
-                        val sharedPref = viewModel.getAppContext().getSharedPreferences(
-                            ContextCompat.getString(
-                                viewModel.getAppContext(),
-                                R.string.preference_file_key
-                            ),
-                            Context.MODE_PRIVATE
-                        )
-                        val hashPin = hashPasswordWithBCrypt(sharedPref, repeatInputPinCodeInt)
-                        sharedPref.edit() { putString("pin_code", hashPin) }
-                        sharedPref.edit() { putBoolean("session_activity", true) }
+                        viewModel.saveNewPin(repeatInputPinCodeInt.toString())
 
                         LaunchedEffect(Unit) {
                             toNavigate()
