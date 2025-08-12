@@ -2,7 +2,6 @@ package com.example.telegramWallet.bridge.view_model.pin_lock
 
 import android.content.Context
 import android.util.Base64
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -15,10 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -74,7 +70,7 @@ class PinLockViewModel @Inject constructor(@param:ApplicationContext val context
                 val decryptedBytes = keystore.decrypt(Base64.decode(it, Base64.DEFAULT))
                 val decryptedPin = String(decryptedBytes)
                 decryptedPin == entered
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 false
             }
         } ?: false
