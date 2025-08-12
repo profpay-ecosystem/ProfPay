@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.telegramWallet.ui.app.theme.BackgroundIcon
@@ -107,12 +108,18 @@ private fun RowScope.AddItem(
             screen.routes.stream().filter { it == item.route }.findFirst().isPresent
         } == true,
         onClick = {
-            navController.navigate(screen.route) {
-//                popUpTo(navController.graph.findStartDestination().id)
-//  если место назначения уже находится в верхней части стека возврата, оно не будет повторно создано.
-                launchSingleTop = true
-//  состояние места назначения будет восстановлено, если оно уже существует в стеке возврата.
-                restoreState = true
+            val isOnCurrentScreen = screen.routes.any { route ->
+                currentDestination?.hierarchy?.any { it.route == route } == true
+            }
+
+            if (!isOnCurrentScreen) {
+                navController.navigate(screen.route) {
+                    launchSingleTop = true
+                    restoreState = true
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                }
             }
         }
     )
