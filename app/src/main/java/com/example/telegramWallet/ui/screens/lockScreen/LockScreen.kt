@@ -106,6 +106,8 @@ fun LockScreen(
                             }
 
                             else -> {
+                                if (inputPinCode.size == 1) isError = false
+
                                 if (inputPinCode.size < 4)
                                     inputPinCode.add(enterNumber.toInt())
                             }
@@ -121,7 +123,7 @@ fun LockScreen(
 
                 LaunchedEffect(inputPinCode.size) {
                     if (inputPinCode.size == 4) {
-                        delay(150)
+                        delay(250)
 
                         val inputPinCodeInt = inputPinCode.joinToString(separator = "").toInt()
                         viewModel.validatePin(inputPinCodeInt.toString()) { isCorrect ->

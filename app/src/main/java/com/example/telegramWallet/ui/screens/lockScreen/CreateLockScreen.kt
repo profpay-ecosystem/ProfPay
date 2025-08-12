@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -120,6 +119,9 @@ fun CreateLockScreen(
                             }
 
                             else -> {
+                                if (inputPinCode.size == 1 || repeatInputPinCode.size == 1)
+                                    isError = false
+
                                 if (inputPinCode.size < 4)
                                     inputPinCode.add(enterNumber.toInt())
                                 else if (repeatInputPinCode.size < 4) {
@@ -134,7 +136,7 @@ fun CreateLockScreen(
 
                 LaunchedEffect(inputPinCode.size, repeatInputPinCode.size) {
                     if (inputPinCode.size == 4 && repeatInputPinCode.size == 4) {
-                        delay(150)
+                        delay(250)
 
                         val inputPinCodeInt = inputPinCode.joinToString(separator = "").toInt()
                         val repeatInputPinCodeInt = repeatInputPinCode.joinToString(separator = "").toInt()
