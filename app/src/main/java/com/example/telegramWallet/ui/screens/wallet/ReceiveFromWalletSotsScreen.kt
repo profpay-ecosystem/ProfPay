@@ -47,6 +47,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.R
 import com.example.telegramWallet.ui.shared.sharedPref
 import com.example.telegramWallet.utils.generateQRCode
@@ -60,7 +61,7 @@ fun ReceiveFromWalletSotsScreen(
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
 
-    val addressForReceive = sharedPref().getString("address_for_receive", "")
+    val addressForReceive = sharedPref().getString(PrefKeys.ADDRESS_FOR_RECEIVE, "")
     val qrCodeBitmap = generateQRCode(addressForReceive!!)
 
     val stackedSnackbarHostState = rememberStackedSnackbarHostState()

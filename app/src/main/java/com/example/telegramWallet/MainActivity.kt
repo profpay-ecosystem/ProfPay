@@ -2,14 +2,12 @@ package com.example.telegramWallet
 
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.core.app.NotificationManagerCompat
@@ -40,7 +38,6 @@ class MainActivity : FragmentActivity() {
     private lateinit var networkMonitor: NetworkMonitor
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<Intent>
 
-    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Pushy.listen(this)
@@ -80,7 +77,6 @@ class MainActivity : FragmentActivity() {
         launchContent(sharedPrefs)
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun launchContent(sharedPrefs: SharedPreferences) {
         setContent {
             val themeViewModel: ThemeViewModel = hiltViewModel()

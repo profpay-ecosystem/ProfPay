@@ -50,7 +50,7 @@ android {
 //        MAJOR: Внесение изменений, ломающих обратную совместимость.
 //        MINOR: Добавление новых функций без нарушения совместимости.
 //        PATCH: Исправление ошибок и незначительные улучшения без изменения функциональности.
-        versionName = "3.4.15" // MAJOR.MINOR.PATCH
+        versionName = "4.4.15" // MAJOR.MINOR.PATCH
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -279,15 +279,15 @@ dependencies {
 
     implementation("io.github.rizmaulana:compose-stacked-snackbar:1.0.4")
 
-    implementation("me.pushy:sdk:1.0.123")
+    implementation("me.pushy:sdk:1.0.124")
 
-    implementation("io.sentry:sentry-android:8.17.0")
-    implementation("io.sentry:sentry-compose-android:8.17.0")
+    implementation("io.sentry:sentry-android:8.19.1")
+    implementation("io.sentry:sentry-compose-android:8.19.1")
     implementation("androidx.lifecycle:lifecycle-process:2.9.2")
 
     implementation("androidx.datastore:datastore:1.1.7")
     implementation("androidx.datastore:datastore-preferences:1.1.7")
-    implementation("androidx.security:security-crypto:1.1.0-beta01")
+    implementation("androidx.security:security-crypto:1.1.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.dto.TokenName
 import com.example.telegramWallet.bridge.view_model.wallet.walletSot.WalletArchivalSotViewModel
@@ -311,7 +312,7 @@ fun CardArchivalAddress(goToWalletAddress: () -> Unit, addressWithTokens: Addres
         elevation = CardDefaults.cardElevation(10.dp),
         onClick = {
             sharedPref.edit() {
-                putString("address_for_wa", addressWithTokens.addressEntity.address)
+                putString(PrefKeys.ADDRESS_FOR_WALLET_ADDRESS, addressWithTokens.addressEntity.address)
             }
             goToWalletAddress()
         }

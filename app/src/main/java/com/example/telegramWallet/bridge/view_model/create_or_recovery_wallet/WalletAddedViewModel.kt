@@ -5,6 +5,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
+import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.backend.grpc.CryptoAddressGrpcClient
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import com.example.telegramWallet.backend.grpc.UserGrpcClient
@@ -129,8 +130,8 @@ class WalletAddedViewModel @Inject constructor(
                             val encryptedAccessTokenBytes = keystore.encrypt(response.accessToken.toByteArray(Charsets.UTF_8))
                             val encryptedRefreshTokenBytes = keystore.encrypt(response.refreshToken.toByteArray(Charsets.UTF_8))
 
-                            putString("access_token", Base64.encodeToString(encryptedAccessTokenBytes, Base64.NO_WRAP))
-                            putString("refresh_token", Base64.encodeToString(encryptedRefreshTokenBytes, Base64.NO_WRAP))
+                            putString(PrefKeys.JWT_ACCESS_TOKEN, Base64.encodeToString(encryptedAccessTokenBytes, Base64.NO_WRAP))
+                            putString(PrefKeys.JWT_REFRESH_TOKEN, Base64.encodeToString(encryptedRefreshTokenBytes, Base64.NO_WRAP))
                         }
                         true
                     },
@@ -164,8 +165,8 @@ class WalletAddedViewModel @Inject constructor(
                             val encryptedAccessTokenBytes = keystore.encrypt(response.accessToken.toByteArray(Charsets.UTF_8))
                             val encryptedRefreshTokenBytes = keystore.encrypt(response.refreshToken.toByteArray(Charsets.UTF_8))
 
-                            putString("access_token", Base64.encodeToString(encryptedAccessTokenBytes, Base64.NO_WRAP))
-                            putString("refresh_token", Base64.encodeToString(encryptedRefreshTokenBytes, Base64.NO_WRAP))
+                            putString(PrefKeys.JWT_ACCESS_TOKEN, Base64.encodeToString(encryptedAccessTokenBytes, Base64.NO_WRAP))
+                            putString(PrefKeys.JWT_REFRESH_TOKEN, Base64.encodeToString(encryptedRefreshTokenBytes, Base64.NO_WRAP))
                         }
                         true
                     },

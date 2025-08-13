@@ -41,6 +41,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.R
 import com.example.telegramWallet.ui.app.theme.BackgroundDark
 import com.example.telegramWallet.ui.app.theme.BackgroundLight
@@ -54,7 +55,7 @@ fun CreateOrRecoverWalletScreen(
     goToBack: () -> Unit
 ) {
     var title by remember { mutableStateOf("Добавить кошелёк") }
-    val isFirstStart = sharedPref().getBoolean("FIRST_STARTED", true)
+    val isFirstStart = sharedPref().getBoolean(PrefKeys.FIRST_STARTED, true)
     val isGrpcStatus = sharedPref().getBoolean("IS_GRPC_ERROR", false)
 
     if (isFirstStart) {

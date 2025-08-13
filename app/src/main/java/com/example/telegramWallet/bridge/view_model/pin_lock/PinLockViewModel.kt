@@ -78,7 +78,7 @@ class PinLockViewModel @Inject constructor(@param:ApplicationContext val context
             }
         } ?: false
 
-        enteredBytes.fill(0) // очистка введённых данных
+        enteredBytes.fill(0)
 
         withContext(Dispatchers.Main) {
             callback(isCorrect)

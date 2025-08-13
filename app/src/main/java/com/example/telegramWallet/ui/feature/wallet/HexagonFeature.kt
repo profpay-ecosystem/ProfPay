@@ -44,6 +44,7 @@ import androidx.core.content.edit
 import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.toPath
+import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.data.database.models.AddressWithTokens
 import com.example.telegramWallet.ui.app.theme.HexagonColor2
 import com.example.telegramWallet.ui.app.theme.HexagonColor3
@@ -201,7 +202,7 @@ fun HexagonsFeature(
                             sharedPref
                                 .edit {
                                     putString(
-                                        "address_for_receive",
+                                        PrefKeys.ADDRESS_FOR_RECEIVE,
                                         addressList[index + 1].addressEntity.address
                                     )
                                 }
@@ -224,7 +225,7 @@ fun HexagonsFeature(
                         sharedPref
                             .edit {
                                 putString(
-                                    "address_for_receive",
+                                    PrefKeys.ADDRESS_FOR_RECEIVE,
                                     addressList[0].addressEntity.address
                                 )
                             }

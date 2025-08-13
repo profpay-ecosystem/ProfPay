@@ -11,7 +11,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.telegramWallet.ui.app.navigation.graphs.HomeNavGraph
 import com.example.telegramWallet.ui.shared.sharedPref
 
-@RequiresApi(Build.VERSION_CODES.S)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(navController: NavHostController = rememberNavController()) {
