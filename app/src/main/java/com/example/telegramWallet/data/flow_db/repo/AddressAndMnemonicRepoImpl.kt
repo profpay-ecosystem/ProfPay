@@ -1,5 +1,6 @@
 package com.example.telegramWallet.data.flow_db.repo
 
+import android.util.Log
 import com.example.telegramWallet.backend.grpc.CryptoAddressGrpcClient
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import com.example.telegramWallet.data.database.repositories.ProfileRepo
@@ -21,6 +22,7 @@ interface AddressAndMnemonicRepo {
     val addressFromMnemonic: Flow<RecoveryResult>
     suspend fun generateAddressFromMnemonic(mnemonic: String)
     suspend fun recoveryWallet(address: String, mnemonic: String)
+    suspend fun clearAddressFromMnemonic()
 }
 
 class AddressAndMnemonicRepoImpl @Inject constructor(
@@ -53,6 +55,10 @@ class AddressAndMnemonicRepoImpl @Inject constructor(
     // Получение данных восстановленного кошелька по мнемонике(сид-фразе)
     override val addressFromMnemonic: Flow<RecoveryResult> =
         _addressFromMnemonic.asSharedFlow()
+
+    override suspend fun clearAddressFromMnemonic() {
+        _addressFromMnemonic.emit(RecoveryResult.Empty)
+    }
 
     // Триггер на обновление данных восстановленного кошелька по мнемонике(сид-фразе)
     override suspend fun generateAddressFromMnemonic(mnemonic: String) {
@@ -122,5 +128,6 @@ sealed class RecoveryResult {
     data object RepeatingMnemonic : RecoveryResult()
     data object AddressNotFound : RecoveryResult()
     data class Error(val throwable: Throwable) : RecoveryResult()
+    object Empty : RecoveryResult()
 }
 

@@ -68,7 +68,6 @@ fun RecoverWalletScreen(
 ) {
 
     var seedPhrase by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
     val openDialog = remember { mutableStateOf(false) }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -192,6 +191,8 @@ fun RecoverWalletScreen(
                             is RecoveryResult.Success -> {
                                 goToRecoveringWalletAdding()
                             }
+
+                            is RecoveryResult.Empty -> {}
                         }
                     }
                 }

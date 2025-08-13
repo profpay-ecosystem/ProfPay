@@ -83,13 +83,15 @@ fun RecoveringWalletAddingScreen(
                             addressRecoverResult = result.address,
                             goToHome = goToHome,
                             accountWasFound = result.accountWasFound,
-                            userId = result.userId
+                            userId = result.userId,
+                            clearState = { viewModel.clearAddressFromMnemonic() }
                         )
                     }
                     is RecoveryResult.AddressNotFound -> { /* handle */ }
                     is RecoveryResult.Error -> { /* handle */ }
                     is RecoveryResult.InvalidMnemonic -> { /* handle */ }
                     is RecoveryResult.RepeatingMnemonic -> { /* handle */ }
+                    is RecoveryResult.Empty -> { /* handle */ }
                 }
             }
         }
@@ -102,6 +104,7 @@ fun RecoveringWalletAddingWidget(
     accountWasFound: Boolean,
     userId: Long?,
     goToHome: () -> Unit,
+    clearState: () -> Unit,
     viewModel: WalletAddedViewModel = hiltViewModel()
 ) {
     val sharedPref = sharedPref()
@@ -159,15 +162,20 @@ fun RecoveringWalletAddingWidget(
                                     viewModel.insertNewCryptoAddresses(addressesWithKeysForM)
                                 }
                                 sharedPref.edit { putBoolean("FIRST_STARTED", false) }
+                            } else {
+                                viewModel.createCryptoAddresses(addressesWithKeysForM)
+                                viewModel.insertNewCryptoAddresses(addressesWithKeysForM)
                             }
 
                             withContext(Dispatchers.Main) {
+                                clearState()
                                 goToHome()
                             }
                         } catch (e: Exception) {
                             if (!sharedPref.getBoolean("FIRST_STARTED", true)) {
                                 sharedPref.edit { putBoolean("FIRST_STARTED", true) }
                             }
+                            clearState()
                             Sentry.captureException(e)
                         }
                     }
