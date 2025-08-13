@@ -18,7 +18,7 @@ fun HomeScreen(navController: NavHostController = rememberNavController()) {
     Scaffold(
         bottomBar = { HomeBottomNavBar(navController = navController) },
     ) { padding ->
-        sharedPref().edit() { putFloat("bottomPadding", padding.calculateBottomPadding().value) }
+        sharedPref().edit { putFloat("bottomPadding", padding.calculateBottomPadding().value) }
         HomeNavGraph(navController = navController)
     }
 }
