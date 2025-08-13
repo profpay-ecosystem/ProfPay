@@ -115,7 +115,7 @@ fun RootNavigationGraph(
 
     val targetRoute = when {
         !isConnected -> Graph.BlockedAppScreen.route
-        isFirstStart -> Graph.WelcomingScreen.createRoute(true)
+        isFirstStart && !isAcceptedRules -> Graph.WelcomingScreen.createRoute(true)
         !isAcceptedRules -> Graph.WelcomingScreen.createRoute(false)
         else -> null
     }
