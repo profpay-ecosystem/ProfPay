@@ -43,17 +43,17 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.smart_contract.GetSmartContractViewModel
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.example.telegramWallet.ui.app.theme.LocalFontSize
-import com.example.telegramWallet.ui.new_feature.smartList.bottomSheets.bottomSheetReissueContract
+import com.example.telegramWallet.ui.feature.smartList.bottomSheets.bottomSheetReissueContract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
-import androidx.core.net.toUri
 
 @Composable
 fun SmartHeaderInListFeature(

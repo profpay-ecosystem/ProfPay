@@ -22,9 +22,9 @@ import com.example.telegramWallet.ui.screens.wallet.WalletSystemTRXScreen
 fun NavGraphBuilder.profileNavGraph(navController: NavController) {
     navigation(
         route = Graph.Profile.route,
-        startDestination = BottomBarScreen.Profile.route
+        startDestination = "WALLET"
     ) {
-        composable(BottomBarScreen.Profile.route) {
+        composable("WALLET") {
             WalletInfoScreen(
                 goToSendWalletInfo = { addressId: Long, tokenName: String ->
                     navController.navigate(

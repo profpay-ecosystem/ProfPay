@@ -115,10 +115,14 @@ private fun RowScope.AddItem(
             if (!isOnCurrentScreen) {
                 navController.navigate(screen.route) {
                     launchSingleTop = true
-                    restoreState = true
                     popUpTo(navController.graph.findStartDestination().id) {
                         saveState = true
                     }
+                    restoreState = true
+                }
+            } else {
+                navController.navigate(screen.route){
+                    popUpTo(navController.graph.findStartDestination().id)
                 }
             }
         }

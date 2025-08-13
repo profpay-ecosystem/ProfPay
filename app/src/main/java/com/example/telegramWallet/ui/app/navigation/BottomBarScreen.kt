@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.example.telegramWallet.R
+import com.example.telegramWallet.ui.app.navigation.graphs.Graph
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.SettingsS
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.WalletAddress
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.WalletInfo
@@ -25,7 +26,7 @@ sealed class BottomBarScreen(
     )
 
     data object Profile : BottomBarScreen(
-        route = "WALLET",
+        route = Graph.Profile.route,
         title = "Wallet",
         icon = {
             ImageVector.vectorResource(id = R.drawable.icon_wallet)
@@ -45,7 +46,7 @@ sealed class BottomBarScreen(
     )
 
     data object Settings : BottomBarScreen(
-        route = "SETTINGS",
+        route = Graph.Settings.route,
         title = "Settings",
         icon = {
             ImageVector.vectorResource(id = R.drawable.icon_settings)
