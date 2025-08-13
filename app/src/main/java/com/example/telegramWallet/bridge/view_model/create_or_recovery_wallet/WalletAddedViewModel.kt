@@ -1,6 +1,7 @@
 package com.example.telegramWallet.bridge.view_model.create_or_recovery_wallet
 
 import android.content.SharedPreferences
+import android.util.Base64
 import android.util.Log
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
@@ -16,6 +17,7 @@ import com.example.telegramWallet.data.database.repositories.ProfileRepo
 import com.example.telegramWallet.data.database.repositories.wallet.AddressRepo
 import com.example.telegramWallet.data.database.repositories.wallet.TokenRepo
 import com.example.telegramWallet.data.database.repositories.wallet.WalletProfileRepo
+import com.example.telegramWallet.security.KeystoreEncryptionUtils
 import com.example.telegramWallet.tron.AddressesWithKeysForM
 import com.example.telegramWallet.ui.shared.sharedPref
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +35,7 @@ class WalletAddedViewModel @Inject constructor(
     private val profileRepo: ProfileRepo,
     grpcClientFactory: GrpcClientFactory
 ) : ViewModel() {
+    private val keystore = KeystoreEncryptionUtils()
     private val cryptoAddressGrpcClient: CryptoAddressGrpcClient = grpcClientFactory.getGrpcClient(
         CryptoAddressGrpcClient::class.java,
         "grpc.wallet-services-srv.com",
@@ -123,8 +126,11 @@ class WalletAddedViewModel @Inject constructor(
                             deviceToken = deviceToken
                         ))
                         sharedPref.edit(commit = true) {
-                            putString("access_token", response.accessToken)
-                            putString("refresh_token", response.refreshToken)
+                            val encryptedAccessTokenBytes = keystore.encrypt(response.accessToken.toByteArray(Charsets.UTF_8))
+                            val encryptedRefreshTokenBytes = keystore.encrypt(response.refreshToken.toByteArray(Charsets.UTF_8))
+
+                            putString("access_token", Base64.encodeToString(encryptedAccessTokenBytes, Base64.NO_WRAP))
+                            putString("refresh_token", Base64.encodeToString(encryptedRefreshTokenBytes, Base64.NO_WRAP))
                         }
                         true
                     },
@@ -155,8 +161,11 @@ class WalletAddedViewModel @Inject constructor(
                             deviceToken = deviceToken
                         ))
                         sharedPref.edit(commit = true) {
-                            putString("access_token", response.accessToken)
-                            putString("refresh_token", response.refreshToken)
+                            val encryptedAccessTokenBytes = keystore.encrypt(response.accessToken.toByteArray(Charsets.UTF_8))
+                            val encryptedRefreshTokenBytes = keystore.encrypt(response.refreshToken.toByteArray(Charsets.UTF_8))
+
+                            putString("access_token", Base64.encodeToString(encryptedAccessTokenBytes, Base64.NO_WRAP))
+                            putString("refresh_token", Base64.encodeToString(encryptedRefreshTokenBytes, Base64.NO_WRAP))
                         }
                         true
                     },

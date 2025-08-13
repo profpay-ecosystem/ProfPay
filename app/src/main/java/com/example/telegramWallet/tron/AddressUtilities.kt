@@ -148,7 +148,9 @@ class AddressUtilities {
 
         try {
             repeat(7) { item ->
-                generateAddressData(mnemonicCode, item, item.toByte())
+                addressGenerateFromSeedPhrList.add(
+                    generateAddressData(mnemonicCode, item, item.toByte())
+                )
             }
         } catch (_: Exception) {
             throw Exception("Failed generate, may be uncorrect mnemonic")

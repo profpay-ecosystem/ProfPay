@@ -1,20 +1,15 @@
 package com.example.telegramWallet.bridge.view_model.create_or_recovery_wallet
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.telegramWallet.data.flow_db.repo.AddressAndMnemonicRepo
 import com.example.telegramWallet.data.flow_db.repo.RecoveryResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 @HiltViewModel
 class RecoverWalletViewModel @Inject constructor(
@@ -25,14 +20,6 @@ class RecoverWalletViewModel @Inject constructor(
 
     private val _mutableState = MutableStateFlow<RecoverWalletState>(RecoverWalletState.Loading)
     val state: StateFlow<RecoverWalletState> = _mutableState.asStateFlow()
-
-//    val state: StateFlow<RecoverWalletState> =
-//        addressAndMnemonicRepo.addressFromMnemonic.map {
-//            RecoverWalletState.Success(it)
-//        }.stateIn(
-//            scope = viewModelScope, initialValue = RecoverWalletState.Loading,
-//            started = SharingStarted.WhileSubscribed(5_000)
-//        )
 
     init {
         viewModelScope.launch {
