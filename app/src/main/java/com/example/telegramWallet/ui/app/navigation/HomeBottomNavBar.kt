@@ -108,24 +108,32 @@ private fun RowScope.AddItem(
             screen.routes.stream().filter { it == item.route }.findFirst().isPresent
         } == true,
         onClick = {
-            val isOnCurrentScreen = screen.routes.any { route ->
-                currentDestination?.hierarchy?.any { it.route == route } == true
-            }
-
-            if (!isOnCurrentScreen) {
-                navController.navigate(screen.route) {
-                    launchSingleTop = true
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
+            val isOnThisTab = currentDestination?.hierarchy?.any { it.route == screen.route } == true
+            val isAtRootOfThisTab = currentDestination?.route == screen.routes[0]
+            when {
+                // 1. Уже на корневом экране этой вкладки -> ничего не делаем
+                isAtRootOfThisTab -> Unit
+                // 2. На этой вкладке, но не на root -> возвращаемся на root
+                isOnThisTab -> {
+                    navController.navigate(screen.route) {
+                        popUpTo(screen.route) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
                     }
-                    restoreState = true
                 }
-            } else {
-                navController.navigate(screen.route){
-                    popUpTo(navController.graph.findStartDestination().id)
+                // 3. На другой вкладке -> переключаемся на неё (с restoreState)
+                else -> {
+                    navController.navigate(screen.route) {
+                        launchSingleTop = true
+                        restoreState = true
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                    }
                 }
             }
-        }
+        },
     )
 }
 
