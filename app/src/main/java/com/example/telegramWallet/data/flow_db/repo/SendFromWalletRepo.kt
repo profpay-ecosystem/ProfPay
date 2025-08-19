@@ -1,6 +1,7 @@
 package com.example.telegramWallet.data.flow_db.repo
 
 import android.util.Log
+import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import com.example.telegramWallet.backend.grpc.TransferGrpcClient
 import com.example.telegramWallet.data.database.repositories.ProfileRepo
@@ -36,8 +37,8 @@ class SendFromWalletRepoImpl @Inject constructor(private val profileRepo: Profil
 
     private val transferClient: TransferGrpcClient = grpcClientFactory.getGrpcClient(
         TransferGrpcClient::class.java,
-        "grpc.wallet-services-srv.com",
-        8443
+        AppConstants.Network.GRPC_ENDPOINT,
+        AppConstants.Network.GRPC_PORT
     )
 
     override suspend fun sendTronTransactionRequestGrpc(userId: Long,

@@ -41,7 +41,8 @@ sealed class BottomBarScreen(
             WalletInfo.WalletSystem.route,
             WalletAddress.Send.route,
             WalletInfo.WalletSystemTRX.route,
-            WalletSots.WalletArchivalSots.route
+            WalletSots.WalletArchivalSots.route,
+            WalletInfo.CentralAddressTxHistory.route
         )
     )
 

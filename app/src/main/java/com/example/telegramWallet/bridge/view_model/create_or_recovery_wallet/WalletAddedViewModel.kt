@@ -5,6 +5,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
+import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.backend.grpc.CryptoAddressGrpcClient
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
@@ -39,14 +40,14 @@ class WalletAddedViewModel @Inject constructor(
     private val keystore = KeystoreEncryptionUtils()
     private val cryptoAddressGrpcClient: CryptoAddressGrpcClient = grpcClientFactory.getGrpcClient(
         CryptoAddressGrpcClient::class.java,
-        "grpc.wallet-services-srv.com",
-        8443
+        AppConstants.Network.GRPC_ENDPOINT,
+        AppConstants.Network.GRPC_PORT
     )
 
     private val userGrpcClient: UserGrpcClient = grpcClientFactory.getGrpcClient(
         UserGrpcClient::class.java,
-        "grpc.wallet-services-srv.com",
-        8443
+        AppConstants.Network.GRPC_ENDPOINT,
+        AppConstants.Network.GRPC_PORT
     )
 
     suspend fun insertNewCryptoAddresses(addressesWithKeysForM: AddressesWithKeysForM) {

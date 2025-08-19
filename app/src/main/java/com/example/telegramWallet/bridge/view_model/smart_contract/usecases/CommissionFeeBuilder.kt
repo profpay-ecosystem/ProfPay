@@ -1,5 +1,6 @@
 package com.example.telegramWallet.bridge.view_model.smart_contract.usecases
 
+import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import com.example.telegramWallet.backend.grpc.ProfPayServerGrpcClient
 import com.example.telegramWallet.data.database.repositories.wallet.AddressRepo
@@ -19,8 +20,8 @@ class CommissionFeeBuilder @Inject constructor(
 ) {
     private val profPayServerGrpcClient: ProfPayServerGrpcClient = grpcClientFactory.getGrpcClient(
         ProfPayServerGrpcClient::class.java,
-        "grpc.wallet-services-srv.com",
-        8443
+        AppConstants.Network.GRPC_ENDPOINT,
+        AppConstants.Network.GRPC_PORT
     )
 
     suspend fun build(commission: BigInteger, userId: Long, deal: SmartContractProto.ContractDealListResponse): CommissionFeeBuilderResult {

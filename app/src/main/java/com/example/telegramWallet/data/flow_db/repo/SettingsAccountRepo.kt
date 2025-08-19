@@ -1,5 +1,6 @@
 package com.example.telegramWallet.data.flow_db.repo
 
+import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import com.example.telegramWallet.backend.grpc.UserGrpcClient
 import com.example.telegramWallet.data.database.repositories.ProfileRepo
@@ -24,8 +25,8 @@ class SettingsAccountRepoImpl @Inject constructor(
 
     private val userGrpcClient: UserGrpcClient = grpcClientFactory.getGrpcClient(
         UserGrpcClient::class.java,
-        "grpc.wallet-services-srv.com",
-        8443
+        AppConstants.Network.GRPC_ENDPOINT,
+        AppConstants.Network.GRPC_PORT
     )
 
     override suspend fun getUserTelegramData() {

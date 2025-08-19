@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Base64
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.R
 import com.example.telegramWallet.backend.grpc.AuthGrpcClient
@@ -24,8 +25,8 @@ class SharedPrefsTokenProvider @Inject constructor(
     private val authGrpcClient: AuthGrpcClient by lazy {
         grpcClientFactory.get().getGrpcClient(
             AuthGrpcClient::class.java,
-            "grpc.wallet-services-srv.com",
-            8443
+            AppConstants.Network.GRPC_ENDPOINT,
+            AppConstants.Network.GRPC_PORT
         )
     }
 

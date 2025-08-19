@@ -1,5 +1,6 @@
 package com.example.telegramWallet.data.flow_db.repo
 
+import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.backend.grpc.CryptoAddressGrpcClient
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import javax.inject.Inject
@@ -11,8 +12,8 @@ interface WalletSotRepo {
 class WalletSotRepoImpl @Inject constructor(grpcClientFactory: GrpcClientFactory) : WalletSotRepo {
     private val cryptoAddressGrpcClient: CryptoAddressGrpcClient = grpcClientFactory.getGrpcClient(
         CryptoAddressGrpcClient::class.java,
-        "grpc.wallet-services-srv.com",
-        8443
+        AppConstants.Network.GRPC_ENDPOINT,
+        AppConstants.Network.GRPC_PORT
     )
 
     override suspend fun updateDerivedIndex(appId: String, oldIndex: Long, newIndex: Long, generalAddress: String) {
