@@ -72,7 +72,7 @@ class SendFromWalletViewModel @Inject constructor(
                     addressWithTokens = addressWithTokens,
                     isAddressActivated = isActivated,
                     tokenBalance = balance.toSunAmount(),
-                    warning = if (!isActivated) "Перевод невозможен. Нужно активировать адрес, отправив 20 TRX." else null
+                    warning = it.warning
                 )
             }
         }
@@ -97,7 +97,7 @@ class SendFromWalletViewModel @Inject constructor(
                     isValidRecipientAddress = isValidAddress,
                     isEnoughBalance = isEnough,
                     isButtonEnabled = isValidAddress && isEnough && amount > BigDecimal.ZERO,
-                    warning = if (!isValidAddress && addressTo != "") "Невалидный адрес" else if (!isEnough) "Недостаточно средств" else null
+                    warning = if (!isEnough) "Недостаточно средств" else null
                 )
             }
         }

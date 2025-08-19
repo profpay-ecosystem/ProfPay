@@ -2,7 +2,14 @@ package com.example.telegramWallet.ui.screens.wallet
 
 import StackedSnackbarHost
 import StackedSnakbarHostState
-import android.util.Log
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -323,7 +330,7 @@ fun SendFromWalletInfoScreen(
                             },
                             colors = TextFieldDefaults.colors(
                                 focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                unfocusedTextColor = PubAddressDark,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 disabledIndicatorColor = Color.Transparent,
@@ -545,16 +552,32 @@ fun CardWithAddressForSendFromWallet(
     onAddressChange: (String) -> Unit,
     warningAddress: Boolean,
 ) {
-    val colorContainer = if (warningAddress) {
-        RedColor.copy(alpha = 0.3f)
-    } else {
-        MaterialTheme.colorScheme.primary
-    }
+    val transition = updateTransition(targetState = warningAddress, label = "warningTransition")
+
+    val animatedBorderColor by transition.animateColor(
+        transitionSpec = {
+            spring(
+                dampingRatio = Spring.DampingRatioLowBouncy,
+                stiffness = Spring.StiffnessVeryLow
+            )
+        }, label = "borderColor"
+    ) { if (it) RedColor else Color.Transparent }
+
+    val animatedContainerColor by transition.animateColor(
+        transitionSpec = {
+            spring(
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        }, label = "containerColor"
+    ) { if (it) RedColor.copy(alpha = 0.3f) else MaterialTheme.colorScheme.primary }
+
     Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(vertical = 8.dp),
     )
+
     Card(
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier.padding(vertical = 4.dp),
@@ -562,17 +585,11 @@ fun CardWithAddressForSendFromWallet(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary
         ),
-        border = if (warningAddress) {
-            BorderStroke(2.dp, color = RedColor)
-        } else {
-            null
-        }
+        border = BorderStroke(2.dp, animatedBorderColor)
     ) {
         TextField(
             value = addressSending,
-//                            textStyle = TextStyle(fontSize = 14.sp),
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             placeholder = {
                 Text(
                     text = "Введите адрес",
@@ -583,25 +600,24 @@ fun CardWithAddressForSendFromWallet(
             shape = MaterialTheme.shapes.small.copy(),
             onValueChange = { onAddressChange(it) },
             trailingIcon = {},
-            colors =
-                TextFieldDefaults.colors(
-                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                    unfocusedTextColor = PubAddressDark,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    focusedContainerColor = colorContainer,
-                    unfocusedContainerColor = colorContainer,
-                    cursorColor = MaterialTheme.colorScheme.onBackground,
-                    selectionColors = TextSelectionColors(
-                        handleColor = MaterialTheme.colorScheme.onBackground,
-                        backgroundColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
-                    )
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = PubAddressDark,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                focusedContainerColor = animatedContainerColor,
+                unfocusedContainerColor = animatedContainerColor,
+                cursorColor = MaterialTheme.colorScheme.onBackground,
+                selectionColors = TextSelectionColors(
+                    handleColor = MaterialTheme.colorScheme.onBackground,
+                    backgroundColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
                 )
-
+            )
         )
     }
 }
+
 
 @Composable
 fun ContentBottomSheetTransferConfirmation(
@@ -853,7 +869,7 @@ fun ContentBottomSheetTransferConfirmation(
                         modifier = Modifier
                     )
                     Text(
-                        text = "${decimalFormat.format((createNewAccountFeeInSystemContract.toTokenAmount() + modelTransferFromBS.commission) * trxToUsdtRate)} $",
+                        text = "${decimalFormat.format((createNewAccountFeeInSystemContract.toTokenAmount() + modelTransferFromBS.commission) * trxToUsdtRate + modelTransferFromBS.amount)} $",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                     )
