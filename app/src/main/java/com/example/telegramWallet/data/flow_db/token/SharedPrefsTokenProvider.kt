@@ -40,7 +40,7 @@ class SharedPrefsTokenProvider @Inject constructor(
 
     override fun getRefreshToken(): String =
         prefs.getString(PrefKeys.JWT_REFRESH_TOKEN, null)?.let {
-            Sentry.captureMessage(getRefreshToken())
+            Sentry.captureMessage(it)
             decryptBase64(it)
         } ?: ""
 
