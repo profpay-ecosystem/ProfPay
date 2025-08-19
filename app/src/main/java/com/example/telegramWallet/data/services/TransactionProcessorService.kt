@@ -61,10 +61,11 @@ class TransactionProcessorService @Inject constructor(
         val addressEntity = addressRepo.getAddressEntityByAddress(sender) ?: return fail("Адрес отправителя не найден")
         val centralAddr = centralAddressRepo.getCentralAddress() ?: return fail("Центральный адрес не найден.")
         val userId = profileRepo.getProfileUserId()
+        val isGeneralAddress = addressRepo.isGeneralAddress(sender)
 
         if (commission.toTokenAmount() <= BigDecimal.ZERO) return fail("Комиссия должна быть больше 0")
 
-        val commissionAddressEntity = if (tokenName == TokenName.TRX.tokenName) addressEntity else centralAddr
+        val commissionAddressEntity = if (tokenName == TokenName.TRX.tokenName || isGeneralAddress) addressEntity else centralAddr
 
         try {
             validateBalances(sender, commissionAddressEntity, tokenName, commission, tokenEntity, amount)

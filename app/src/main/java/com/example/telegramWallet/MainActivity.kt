@@ -1,16 +1,12 @@
 package com.example.telegramWallet
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,7 +32,6 @@ class MainActivity : FragmentActivity() {
     @Inject lateinit var appInitializer: AppInitializer
     private val pinLockViewModel: PinLockViewModel by viewModels()
     private lateinit var networkMonitor: NetworkMonitor
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,14 +59,6 @@ class MainActivity : FragmentActivity() {
 
         lifecycleScope.launch {
             appInitializer.initialize(sharedPrefs, this@MainActivity)
-        }
-
-        requestPermissionLauncher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) {
-            if (NotificationManagerCompat.from(this).areNotificationsEnabled()) {
-                launchContent(sharedPrefs)
-            }
         }
 
         launchContent(sharedPrefs)

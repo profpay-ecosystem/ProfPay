@@ -2,14 +2,12 @@ package com.example.telegramWallet.bridge.view_model.wallet.send
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
-import com.example.telegramWallet.backend.grpc.ProfPayServerGrpcClient
 import com.example.telegramWallet.backend.http.models.binance.BinanceSymbolEnum
 import com.example.telegramWallet.bridge.view_model.dto.TokenName
 import com.example.telegramWallet.bridge.view_model.dto.transfer.TransferResult
-import com.example.telegramWallet.data.database.entities.wallet.PendingTransactionEntity
 import com.example.telegramWallet.data.database.models.AddressWithTokens
+import com.example.telegramWallet.data.database.models.TokenWithPendingTransactions
 import com.example.telegramWallet.data.database.repositories.ProfileRepo
 import com.example.telegramWallet.data.database.repositories.wallet.AddressRepo
 import com.example.telegramWallet.data.database.repositories.wallet.ExchangeRatesRepo
@@ -17,14 +15,9 @@ import com.example.telegramWallet.data.database.repositories.wallet.PendingTrans
 import com.example.telegramWallet.data.database.repositories.wallet.TokenRepo
 import com.example.telegramWallet.data.flow_db.repo.EstimateCommissionResult
 import com.example.telegramWallet.data.flow_db.repo.SendFromWalletRepo
-import com.example.telegramWallet.data.utils.toByteString
+import com.example.telegramWallet.data.services.TransactionProcessorService
 import com.example.telegramWallet.data.utils.toSunAmount
 import com.example.telegramWallet.data.utils.toTokenAmount
-import com.example.telegramWallet.exceptions.payments.GrpcClientErrorSendTransactionExcpetion
-import com.example.telegramWallet.exceptions.payments.GrpcServerErrorSendTransactionExcpetion
-import com.example.telegramWallet.tron.EstimateBandwidthData
-import com.example.telegramWallet.tron.EstimateEnergyData
-import com.example.telegramWallet.tron.SignedTransactionData
 import com.example.telegramWallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
@@ -35,10 +28,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.example.protobuf.transfer.TransferProto
-import org.example.protobuf.transfer.TransferProto.TransactionData
-import org.example.protobuf.transfer.TransferProto.TransferNetwork
-import org.example.protobuf.transfer.TransferProto.TransferToken
 import java.math.BigDecimal
 import java.math.BigInteger
 import javax.inject.Inject
@@ -62,8 +51,7 @@ class SendFromWalletViewModel @Inject constructor(
     private val sendFromWalletRepo: SendFromWalletRepo,
     val tron: Tron,
     val exchangeRatesRepo: ExchangeRatesRepo,
-    private val pendingTransactionRepo: PendingTransactionRepo,
-    grpcClientFactory: GrpcClientFactory
+    private val transactionProcessorService: TransactionProcessorService,
 ) : ViewModel() {
     private val _stateCommission =
         MutableStateFlow<EstimateCommissionResult>(EstimateCommissionResult.Empty)
@@ -71,12 +59,6 @@ class SendFromWalletViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(TransferUiState())
     val uiState: StateFlow<TransferUiState> = _uiState.asStateFlow()
-
-    private val profPayServerGrpcClient: ProfPayServerGrpcClient = grpcClientFactory.getGrpcClient(
-        ProfPayServerGrpcClient::class.java,
-        AppConstants.Network.GRPC_ENDPOINT,
-        AppConstants.Network.GRPC_PORT
-    )
 
     fun loadAddressWithTokens(addressId: Long, blockchain: String, tokenName: String) {
         viewModelScope.launch {
@@ -157,182 +139,17 @@ class SendFromWalletViewModel @Inject constructor(
     }
 
     suspend fun transferProcess(
-        addressSenderId: Long, toAddress: String, amount: BigInteger, token: TransferToken,
-        commission: BigInteger
+        senderAddress: String, receiverAddress: String,
+        amount: BigInteger, commission: BigInteger,
+        tokenEntity: TokenWithPendingTransactions
     ): TransferResult {
-        val userId = profileRepo.getProfileUserId()
-
-        val addressSender = addressRepo.getAddressEntityById(addressSenderId)
-            ?: return TransferResult.Failure(IllegalStateException("Адрес отправителя не найден"))
-
-        val balance = tron.addressUtilities.getTrxBalance(addressSender.address).toTokenAmount()
-        val amountToken = amount.toTokenAmount()
-        val commissionToken = commission.toTokenAmount()
-        val createAccountFee = tron.addressUtilities
-            .getCreateNewAccountFeeInSystemContract()
-            .toTokenAmount()
-
-        if (token == TransferToken.TRX) {
-            val netAmount: BigDecimal = if (tron.addressUtilities.isAddressActivated(toAddress)) {
-                balance.subtract(amountToken).subtract(commissionToken)
-            } else {
-                balance.subtract(amountToken).subtract(commissionToken).subtract(createAccountFee)
-            }
-
-            if (netAmount < BigDecimal.ZERO) {
-                return TransferResult.Failure(IllegalStateException("Перевод невозможен, так как суммы недостаточно с учетом комиссии"))
-            }
-        } else {
-            if (balance < commission.toTokenAmount()) {
-                return TransferResult.Failure(IllegalStateException("Недостаточно TRX для комиссии"))
-            }
-        }
-
-        if (commission.toTokenAmount() <= BigDecimal.ZERO) {
-            return TransferResult.Failure(IllegalArgumentException("Комиссия должна быть больше 0"))
-        }
-
-        val trxFeeAddress = profPayServerGrpcClient.getServerParameters().fold(
-            onSuccess = {
-                it.trxFeeAddress
-            },
-            onFailure = {
-                Sentry.captureException(it)
-                throw RuntimeException(it)
-            }
+        return transactionProcessorService.sendTransaction(
+            sender = senderAddress,
+            receiver = receiverAddress,
+            amount = amount,
+            commission = commission,
+            tokenEntity = tokenEntity
         )
-
-        val signedTxnBytesCommission = withContext(Dispatchers.IO) {
-            tron.transactions.getSignedTrxTransaction(
-                fromAddress = addressSender.address,
-                toAddress = trxFeeAddress,
-                privateKey = addressSender.privateKey,
-                amount = commission
-            )
-        }
-
-        val estimateCommissionBandwidth = withContext(Dispatchers.IO) {
-            tron.transactions.estimateBandwidthTrxTransaction(
-                fromAddress = addressSender.address,
-                toAddress = trxFeeAddress,
-                privateKey = addressSender.privateKey,
-                amount = commission
-            )
-        }
-
-        var estimateEnergy = EstimateEnergyData(0, BigInteger.ZERO)
-        var estimateBandwidth = EstimateBandwidthData(300, 0.0)
-        if (token == TransferToken.USDT_TRC20) {
-            estimateEnergy = withContext(Dispatchers.IO) {
-                tron.transactions.estimateEnergy(
-                    fromAddress = addressSender.address,
-                    toAddress = toAddress,
-                    privateKey = addressSender.privateKey,
-                    amount = amount
-                )
-            }
-
-            estimateBandwidth = withContext(Dispatchers.IO) {
-                tron.transactions.estimateBandwidth(
-                    fromAddress = addressSender.address,
-                    toAddress = toAddress,
-                    privateKey = addressSender.privateKey,
-                    amount = amount
-                )
-            }
-        } else if (token == TransferToken.TRX) {
-            estimateBandwidth = withContext(Dispatchers.IO) {
-                tron.transactions.estimateBandwidthTrxTransaction(
-                    fromAddress = addressSender.address,
-                    toAddress = toAddress,
-                    privateKey = addressSender.privateKey,
-                    amount = amount
-                )
-            }
-        }
-
-        val signedTxnBytes: SignedTransactionData = when (token) {
-            TransferToken.USDT_TRC20 -> withContext(Dispatchers.IO) {
-                tron.transactions.getSignedUsdtTransaction(
-                    fromAddress = addressSender.address,
-                    toAddress = toAddress,
-                    privateKey = addressSender.privateKey,
-                    amount = amount
-                )
-            }
-
-            TransferToken.TRX -> withContext(Dispatchers.IO) {
-                tron.transactions.getSignedTrxTransaction(
-                    fromAddress = addressSender.address,
-                    toAddress = toAddress,
-                    privateKey = addressSender.privateKey,
-                    amount = amount
-                )
-            }
-
-            TransferToken.UNRECOGNIZED -> return TransferResult.Failure(IllegalArgumentException("Токен не был определен системой."))
-        }
-
-        if (signedTxnBytes.signedTxn == null) {
-            return TransferResult.Failure(IllegalStateException("Не удалось подписать транзакцию"))
-        }
-
-        val hasEnoughTransactionBandwidth = tron.accounts.hasEnoughBandwidth(
-            addressSender.address,
-            estimateBandwidth.bandwidth
-        )
-        val hasEnoughCommissionBandwidth = tron.accounts.hasEnoughBandwidth(
-            addressSender.address,
-            estimateCommissionBandwidth.bandwidth
-        )
-
-        return withContext(Dispatchers.IO) {
-            try {
-                sendFromWalletRepo.sendTronTransactionRequestGrpc(
-                    userId = userId,
-                    transaction = TransactionData.newBuilder()
-                        .setAddress(addressSender.address)
-                        .setReceiverAddress(toAddress)
-                        .setAmount(amount.toByteString())
-                        .setEstimateEnergy(estimateEnergy.energy)
-                        .setBandwidthRequired(if (hasEnoughTransactionBandwidth) 0 else estimateBandwidth.bandwidth)
-                        .setTxnBytes(signedTxnBytes.signedTxn)
-                        .build(),
-                    commission = TransferProto.TransactionCommissionData.newBuilder()
-                        .setAddress(addressSender.address)
-                        .setBandwidthRequired(if (hasEnoughCommissionBandwidth) 0 else estimateCommissionBandwidth.bandwidth)
-                        .setTxnBytes(signedTxnBytesCommission.signedTxn)
-                        .setAmount(commission.toByteString())
-                        .build(),
-                    network = TransferNetwork.MAIN_NET,
-                    token = token,
-                    txId = "null"
-                )
-
-                val tokenType = if (token == TransferToken.USDT_TRC20) "USDT" else "TRX"
-                val tokenId = tokenRepo.getTokenIdByAddressIdAndTokenName(addressSender.addressId!!, tokenType)
-
-                pendingTransactionRepo.insert(
-                    PendingTransactionEntity(
-                        tokenId = tokenId,
-                        txid = signedTxnBytes.txid,
-                        amount = amount
-                    )
-                )
-                return@withContext TransferResult.Success
-            } catch (e: GrpcServerErrorSendTransactionExcpetion) {
-                return@withContext TransferResult.Failure(e)
-            } catch (e: GrpcClientErrorSendTransactionExcpetion) {
-                return@withContext TransferResult.Failure(e)
-            } catch (e: Exception) {
-                val message = e.message ?: "Unknown client error"
-                val cause = e.cause ?: Throwable("No cause provided")
-                val exception = GrpcClientErrorSendTransactionExcpetion(message, cause)
-
-                Sentry.captureException(exception)
-                return@withContext TransferResult.Failure(e)
-            }
-        }
     }
 
     fun estimateCommissions(

@@ -2,6 +2,7 @@ package com.example.telegramWallet.ui.screens.wallet
 
 import StackedSnackbarHost
 import StackedSnakbarHostState
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +49,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,6 +75,7 @@ import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.dto.TokenName
 import com.example.telegramWallet.bridge.view_model.dto.transfer.TransferResult
 import com.example.telegramWallet.bridge.view_model.wallet.send.SendFromWalletViewModel
+import com.example.telegramWallet.data.database.models.AddressWithTokens
 import com.example.telegramWallet.data.utils.toSunAmount
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.example.telegramWallet.ui.app.theme.BackgroundContainerButtonLight
@@ -110,8 +113,8 @@ fun SendFromWalletInfoScreen(
     val tokenNameModel = TokenName.valueOf(tokenName)
     val currentTokenName = TokenName.entries.find { it.tokenName == tokenName } ?: TokenName.USDT
 
-    var addressSending by remember { mutableStateOf("") }
-    var sumSending by remember { mutableStateOf("") }
+    var addressSending by rememberSaveable { mutableStateOf("") }
+    var sumSending by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.loadAddressWithTokens(addressId, tokenNameModel.blockchainName, currentTokenName.tokenName)
@@ -130,10 +133,10 @@ fun SendFromWalletInfoScreen(
         modelTransferFromBS = ModelTransferFromBS(
             sumSending = sumSending.takeIf { it.isNotBlank() }?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
             tokenName = tokenNameModel,
-            addressSenderId = addressId,
             addressSending = addressSending,
             addressSender = uiState.addressWithTokens?.addressEntity?.address ?: "",
             commissionOnTransaction = uiState.commission,
+            addressWithTokens = uiState.addressWithTokens
         ),
         snackbar = stackedSnackbarHostState
     )
@@ -449,10 +452,9 @@ class ModelTransferFromBS(
     val sumSending: BigDecimal,
     val tokenName: TokenName,
     val addressSending: String,
-    val addressSenderId: Long,
     val addressSender: String,
-    val commissionOnTransaction: BigDecimal
-
+    val commissionOnTransaction: BigDecimal,
+    val addressWithTokens: AddressWithTokens?
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -527,16 +529,32 @@ fun bottomSheetTransferConfirmation(
                         modelTransferFromBS = modelTransferFromBS,
                         confirmTransaction = {
                             viewModel.viewModelScope.launch {
-                                val token: TransferToken =
-                                    if (modelTransferFromBS.tokenName.tokenName == "USDT") {
-                                        TransferToken.USDT_TRC20
-                                    } else TransferToken.TRX
+                                val tokenName = modelTransferFromBS.tokenName.tokenName
+                                val tokenEntity = modelTransferFromBS.addressWithTokens
+                                    ?.tokens
+                                    ?.firstOrNull { it.token.tokenName == tokenName }
+
+                                if (tokenEntity == null) {
+                                    snackbar.showErrorSnackbar(
+                                        title = "Ошибка перевода",
+                                        description = "Не удалось найти токен",
+                                        actionTitle = "Закрыть"
+                                    )
+
+                                    coroutineScope.launch {
+                                        sheetState.hide()
+                                        delay(400)
+                                        setIsOpenSheet(false)
+                                    }
+                                    return@launch
+                                }
+
                                 val result = viewModel.transferProcess(
-                                    addressSenderId = modelTransferFromBS.addressSenderId,
-                                    toAddress = modelTransferFromBS.addressSending,
+                                    senderAddress = modelTransferFromBS.addressSender,
+                                    receiverAddress = modelTransferFromBS.addressSending,
                                     amount = modelTransferFromBS.sumSending.toSunAmount(),
-                                    token = token,
-                                    commission = modelTransferFromBS.commissionOnTransaction.toSunAmount()
+                                    commission = modelTransferFromBS.commissionOnTransaction.toSunAmount(),
+                                    tokenEntity = tokenEntity
                                 )
 
                                 when (result) {
