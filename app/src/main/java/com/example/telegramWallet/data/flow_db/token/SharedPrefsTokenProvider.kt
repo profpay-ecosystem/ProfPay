@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Base64
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import com.example.telegramWallet.AppConstants
+import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.R
 import com.example.telegramWallet.backend.grpc.AuthGrpcClient
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
@@ -23,8 +25,8 @@ class SharedPrefsTokenProvider @Inject constructor(
     private val authGrpcClient: AuthGrpcClient by lazy {
         grpcClientFactory.get().getGrpcClient(
             AuthGrpcClient::class.java,
-            "grpc.wallet-services-srv.com",
-            8443
+            AppConstants.Network.GRPC_ENDPOINT,
+            AppConstants.Network.GRPC_PORT
         )
     }
 
@@ -34,10 +36,10 @@ class SharedPrefsTokenProvider @Inject constructor(
     )
 
     override fun getAccessToken(): String =
-        prefs.getString("access_token", null)?.let { decryptBase64(it) } ?: ""
+        prefs.getString(PrefKeys.JWT_ACCESS_TOKEN, null)?.let { decryptBase64(it) } ?: ""
 
     override fun getRefreshToken(): String =
-        prefs.getString("refresh_token", null)?.let { decryptBase64(it) } ?: ""
+        prefs.getString(PrefKeys.JWT_REFRESH_TOKEN, null)?.let { decryptBase64(it) } ?: ""
 
     override suspend fun refreshTokensIfNeeded() {
         val userId = profileRepo.getProfileUserId()
@@ -87,8 +89,8 @@ class SharedPrefsTokenProvider @Inject constructor(
 
     override fun saveTokens(access: String, refresh: String) {
         prefs.edit(commit = true) {
-            putString("access_token", encryptBase64(access))
-            putString("refresh_token", encryptBase64(refresh))
+            putString(PrefKeys.JWT_ACCESS_TOKEN, encryptBase64(access))
+            putString(PrefKeys.JWT_REFRESH_TOKEN, encryptBase64(refresh))
         }
     }
 

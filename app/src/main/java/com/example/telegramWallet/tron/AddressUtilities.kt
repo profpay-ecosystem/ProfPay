@@ -20,7 +20,6 @@ import org.tron.trident.core.key.KeyPair
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
-import java.util.Arrays
 
 // Сущность с данными нового адреса
 data class AddressGenerateResult(
@@ -148,7 +147,9 @@ class AddressUtilities {
 
         try {
             repeat(7) { item ->
-                generateAddressData(mnemonicCode, item, item.toByte())
+                addressGenerateFromSeedPhrList.add(
+                    generateAddressData(mnemonicCode, item, item.toByte())
+                )
             }
         } catch (_: Exception) {
             throw Exception("Failed generate, may be uncorrect mnemonic")
@@ -331,28 +332,23 @@ class AddressUtilities {
 
     fun isValidTronAddress(address: String): Boolean {
         try {
-            // Проверяем, что адрес соответствует базовому шаблону Tron
             val pattern = "^T[1-9A-HJ-NP-Za-km-z]{33}$".toRegex()
             if (!pattern.matches(address)) {
                 return false
             }
 
-            // Декодируем Base58 строку
             val decoded = Base58.decode(address)
+            val checksum = decoded.copyOfRange(decoded.size - 4, decoded.size)
 
-            // Извлекаем контрольную сумму
-            val checksum = Arrays.copyOfRange(decoded, decoded.size - 4, decoded.size)
-
-            // Делаем дважды SHA-256 хеширование
             val sha256_1 = MessageDigest.getInstance("SHA-256")
                 .digest(decoded.copyOfRange(0, decoded.size - 4))
             val sha256_2 = MessageDigest.getInstance("SHA-256").digest(sha256_1)
 
             // Проверяем контрольную сумму
-            val calculatedChecksum = Arrays.copyOfRange(sha256_2, 0, 4)
+            val calculatedChecksum = sha256_2.copyOfRange(0, 4)
 
             return checksum.contentEquals(calculatedChecksum)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return false
         }
     }

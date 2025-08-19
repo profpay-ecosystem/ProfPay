@@ -12,7 +12,6 @@ import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.profileNavGr
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.settingsNavGraph
 import com.example.telegramWallet.ui.screens.SmartInDevelopment
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun HomeNavGraph(navController: NavHostController) {
     NavHost(

@@ -32,6 +32,7 @@ import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.create_or_recovery_wallet.SeedPhraseConfirmationState
 import com.example.telegramWallet.bridge.view_model.create_or_recovery_wallet.SeedPhraseConfirmationViewModel
@@ -122,8 +123,8 @@ fun CreatedWalletAddingWidget(
             Button(
                 onClick = {
                     viewModel.viewModelScope.launch {
-                        val deviceToken = sharedPref.getString("device_token", null) ?: throw Exception("Device Token not found.")
-                        val isFirstStarted = sharedPref.getBoolean("FIRST_STARTED", true)
+                        val deviceToken = sharedPref.getString(PrefKeys.DEVICE_TOKEN, null) ?: throw Exception("Device Token not found.")
+                        val isFirstStarted = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
                         val addresses = addressGenerateResult.addressesWithKeysForM
 
                         if (isFirstStarted) {
@@ -131,7 +132,7 @@ fun CreatedWalletAddingWidget(
                                 deviceToken = deviceToken,
                                 sharedPref = sharedPref
                             )
-                            sharedPref.edit(commit = true) { putBoolean("FIRST_STARTED", false) }
+                            sharedPref.edit(commit = true) { putBoolean(PrefKeys.FIRST_STARTED, false) }
                         }
 
                         try {
@@ -142,8 +143,8 @@ fun CreatedWalletAddingWidget(
                                 goToHome()
                             }
                         } catch (e: Exception) {
-                            if (!sharedPref.getBoolean("FIRST_STARTED", true)) {
-                                sharedPref.edit() { putBoolean("FIRST_STARTED", true) }
+                            if (!sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)) {
+                                sharedPref.edit() { putBoolean(PrefKeys.FIRST_STARTED, true) }
                             }
                             Sentry.captureException(e)
                             // todo: реализовать

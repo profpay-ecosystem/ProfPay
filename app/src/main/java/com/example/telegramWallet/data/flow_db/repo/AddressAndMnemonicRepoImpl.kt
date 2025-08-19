@@ -1,6 +1,7 @@
 package com.example.telegramWallet.data.flow_db.repo
 
 import android.util.Log
+import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.backend.grpc.CryptoAddressGrpcClient
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import com.example.telegramWallet.data.database.repositories.ProfileRepo
@@ -33,8 +34,8 @@ class AddressAndMnemonicRepoImpl @Inject constructor(
 ) : AddressAndMnemonicRepo {
     private val cryptoAddressGrpcClient: CryptoAddressGrpcClient = grpcClientFactory.getGrpcClient(
         CryptoAddressGrpcClient::class.java,
-        "grpc.wallet-services-srv.com",
-        8443
+        AppConstants.Network.GRPC_ENDPOINT,
+        AppConstants.Network.GRPC_PORT
     )
     private val _addressAndMnemonic = MutableSharedFlow<AddressGenerateResult>(replay = 1)
 

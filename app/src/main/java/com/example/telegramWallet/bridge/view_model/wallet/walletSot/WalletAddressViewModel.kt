@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import com.example.telegramWallet.backend.grpc.ProfPayServerGrpcClient
 import com.example.telegramWallet.bridge.view_model.dto.transfer.TransferResult
@@ -62,8 +63,8 @@ class WalletAddressViewModel @Inject constructor(
 ) : ViewModel() {
     private val profPayServerGrpcClient: ProfPayServerGrpcClient = grpcClientFactory.getGrpcClient(
         ProfPayServerGrpcClient::class.java,
-        "grpc.wallet-services-srv.com",
-        8443
+        AppConstants.Network.GRPC_ENDPOINT,
+        AppConstants.Network.GRPC_PORT
     )
 
     private val _isActivated = MutableStateFlow<Boolean>(false)

@@ -1,6 +1,7 @@
 package com.example.telegramWallet.data.flow_db.repo
 
 import android.util.Log
+import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.backend.grpc.AmlGrpcClient
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import com.example.telegramWallet.backend.grpc.TransferGrpcClient
@@ -42,8 +43,8 @@ class TXDetailsRepoImpl @Inject constructor(
 
     private val amlClient: AmlGrpcClient = grpcClientFactory.getGrpcClient(
         AmlGrpcClient::class.java,
-        "grpc.wallet-services-srv.com",
-        8443
+        AppConstants.Network.GRPC_ENDPOINT,
+        AppConstants.Network.GRPC_PORT
     )
 
     override suspend fun getAmlFromTransactionId(address: String, tx: String, tokenName: String) {

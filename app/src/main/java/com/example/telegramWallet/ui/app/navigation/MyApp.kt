@@ -1,10 +1,6 @@
 package com.example.telegramWallet.ui.app.navigation
 
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -14,7 +10,6 @@ import com.example.telegramWallet.bridge.view_model.BlockingAppViewModel
 import com.example.telegramWallet.data.services.NetworkMonitor
 import com.example.telegramWallet.ui.app.navigation.graphs.RootNavigationGraph
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MyApp(
     navController: NavHostController,

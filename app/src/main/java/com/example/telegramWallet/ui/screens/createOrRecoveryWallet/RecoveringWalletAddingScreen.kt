@@ -33,6 +33,7 @@ import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletState
 import com.example.telegramWallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletViewModel
@@ -143,9 +144,9 @@ fun RecoveringWalletAddingWidget(
                 onClick = {
                     viewModel.viewModelScope.launch(Dispatchers.IO) {
                         val addressesWithKeysForM = addressRecoverResult.addressesWithKeysForM
-                        val deviceToken = sharedPref.getString("device_token", null) ?: throw Exception("Device Token not found.")
+                        val deviceToken = sharedPref.getString(PrefKeys.DEVICE_TOKEN, null) ?: throw Exception("Device Token not found.")
                         if (accountWasFound && userId == null) throw Exception("User ID not found.")
-                        val isFirstStarted = sharedPref.getBoolean("FIRST_STARTED", true)
+                        val isFirstStarted = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
 
                         try {
                             if (isFirstStarted) {
@@ -161,7 +162,7 @@ fun RecoveringWalletAddingWidget(
                                     viewModel.createCryptoAddresses(addressesWithKeysForM)
                                     viewModel.insertNewCryptoAddresses(addressesWithKeysForM)
                                 }
-                                sharedPref.edit { putBoolean("FIRST_STARTED", false) }
+                                sharedPref.edit { putBoolean(PrefKeys.FIRST_STARTED, false) }
                             } else {
                                 viewModel.createCryptoAddresses(addressesWithKeysForM)
                                 viewModel.insertNewCryptoAddresses(addressesWithKeysForM)
@@ -172,8 +173,8 @@ fun RecoveringWalletAddingWidget(
                                 goToHome()
                             }
                         } catch (e: Exception) {
-                            if (!sharedPref.getBoolean("FIRST_STARTED", true)) {
-                                sharedPref.edit { putBoolean("FIRST_STARTED", true) }
+                            if (!sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)) {
+                                sharedPref.edit { putBoolean(PrefKeys.FIRST_STARTED, true) }
                             }
                             clearState()
                             Sentry.captureException(e)

@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.dto.TokenName
 import com.example.telegramWallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
@@ -97,7 +98,7 @@ fun WalletAddressScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val walletId = sharedPref.getLong("wallet_id", 1)
-    val address = sharedPref.getString("address_for_wa", "") ?: ""
+    val address = sharedPref.getString(PrefKeys.ADDRESS_FOR_WALLET_ADDRESS, "") ?: ""
     val tokenName = sharedPref.getString("token_name", TokenName.USDT.tokenName) ?: TokenName.USDT.tokenName
 
     val isActivated by viewModel.isActivated.collectAsState()
@@ -517,7 +518,7 @@ fun WalletAddressScreen(
                             sharedPref
                                 .edit {
                                     putString(
-                                        "address_for_receive",
+                                        PrefKeys.ADDRESS_FOR_RECEIVE,
                                         address
                                     )
                                 }
@@ -545,7 +546,7 @@ fun WalletAddressScreen(
                     onConfirmation = {
                         sharedPref
                             .edit {
-                                putString("address_for_receive", address)
+                                putString(PrefKeys.ADDRESS_FOR_RECEIVE, address)
                             }
                         goToReceive()
                         openDialog = !openDialog
@@ -577,7 +578,7 @@ fun LazyListTransactionsFeature(
     goToSystemTRX: () -> Unit = {},
 ) {
     val sharedPref = sharedPref()
-    val addressWa = sharedPref.getString("address_for_wa", "")
+    val addressWa = sharedPref.getString(PrefKeys.ADDRESS_FOR_WALLET_ADDRESS, "")
     val decimalFormat = DecimalFormat("#.###")
     if (groupedTransaction.isNotEmpty() && groupedTransaction[0].isNotEmpty()) {
         if (groupedTransaction[0][0] != null) {
@@ -706,7 +707,7 @@ fun CardHistoryTransactionsForWAFeature(
     stackedSnackbarHostState: StackedSnakbarHostState,
 ) {
     val sharedPref = sharedPref()
-    val addressWa = sharedPref.getString("address_for_wa", "")
+    val addressWa = sharedPref.getString(PrefKeys.ADDRESS_FOR_WALLET_ADDRESS, "")
 
     val isActivated by viewModel.isActivated.collectAsState()
 

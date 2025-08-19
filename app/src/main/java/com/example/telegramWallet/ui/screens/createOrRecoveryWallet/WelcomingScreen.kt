@@ -62,6 +62,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.welcoming_screen.WelcomingViewModel
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.OnboardingScreen
@@ -269,7 +270,7 @@ fun WelcomingScreen(firstStart: Boolean,
                                     }
 
                                     sharedPref.edit(commit = true) {
-                                        putBoolean("ACCEPTED_RULES", true)
+                                        putBoolean(PrefKeys.ACCEPTED_RULES, true)
                                     }
                                 },
                                 enabled = isChecked,

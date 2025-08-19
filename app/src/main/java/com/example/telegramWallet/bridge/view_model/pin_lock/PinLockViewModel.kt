@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 import javax.inject.Inject
 
 @HiltViewModel
@@ -65,15 +66,19 @@ class PinLockViewModel @Inject constructor(@param:ApplicationContext val context
 
     fun validatePin(entered: String, callback: (Boolean) -> Unit) = launchIO {
         val saved = dataStore.data.map { it[SecureDataStore.PIN_CODE_KEY] }.firstOrNull()
+        val enteredBytes = entered.toByteArray()
         val isCorrect = saved?.let {
             try {
                 val decryptedBytes = keystore.decrypt(Base64.decode(it, Base64.DEFAULT))
-                val decryptedPin = String(decryptedBytes)
-                decryptedPin == entered
+                val match = MessageDigest.isEqual(decryptedBytes, enteredBytes)
+                decryptedBytes.fill(0)
+                match
             } catch (_: Exception) {
                 false
             }
         } ?: false
+
+        enteredBytes.fill(0)
 
         withContext(Dispatchers.Main) {
             callback(isCorrect)

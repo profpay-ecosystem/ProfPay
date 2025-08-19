@@ -14,7 +14,7 @@ class KeystoreEncryptionUtils {
     private val keyAlias = "ProfWalletKey"
     private val androidKeyStore = "AndroidKeyStore"
     private val transformation = "AES/GCM/NoPadding"
-    private val ivSize = 12 // GCM стандарт
+    private val ivSize = 12
 
     init {
         generateKeyIfNeeded()
@@ -49,7 +49,7 @@ class KeystoreEncryptionUtils {
         cipher.init(Cipher.ENCRYPT_MODE, getSecretKey())
         val iv = cipher.iv
         val encryptedData = cipher.doFinal(data)
-        return iv + encryptedData // IV + зашифрованные данные
+        return iv + encryptedData
     }
 
     fun decrypt(encryptedDataWithIv: ByteArray): ByteArray {
