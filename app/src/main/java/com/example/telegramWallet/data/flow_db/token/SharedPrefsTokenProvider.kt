@@ -39,14 +39,15 @@ class SharedPrefsTokenProvider @Inject constructor(
         prefs.getString(PrefKeys.JWT_ACCESS_TOKEN, null)?.let { decryptBase64(it) } ?: ""
 
     override fun getRefreshToken(): String =
-        prefs.getString(PrefKeys.JWT_REFRESH_TOKEN, null)?.let { decryptBase64(it) } ?: ""
+        prefs.getString(PrefKeys.JWT_REFRESH_TOKEN, null)?.let {
+            Sentry.captureMessage(getRefreshToken())
+            decryptBase64(it)
+        } ?: ""
 
     override suspend fun refreshTokensIfNeeded() {
         val userId = profileRepo.getProfileUserId()
         val appId = profileRepo.getProfileAppId()
         val deviceToken = profileRepo.getDeviceToken() ?: return
-
-        Sentry.captureMessage(getRefreshToken())
 
         if (getRefreshToken().isEmpty()) {
             val result = authGrpcClient.issueTokens(
