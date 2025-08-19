@@ -46,6 +46,8 @@ class SharedPrefsTokenProvider @Inject constructor(
         val appId = profileRepo.getProfileAppId()
         val deviceToken = profileRepo.getDeviceToken() ?: return
 
+        Sentry.captureMessage(getRefreshToken())
+
         if (getRefreshToken().isEmpty()) {
             val result = authGrpcClient.issueTokens(
                 appId = appId,
@@ -105,47 +107,11 @@ class SharedPrefsTokenProvider @Inject constructor(
 
     private fun decryptBase64(base64Value: String): String {
         return try {
-            if (base64Value.isBlank()) {
-                Sentry.captureMessage("decryptBase64: пустое значение")
-                return ""
-            }
-
-            // Декодируем base64
-            val encryptedBytes = try {
-                Base64.decode(base64Value, Base64.NO_WRAP)
-            } catch (e: IllegalArgumentException) {
-                Sentry.captureException(Exception("decryptBase64: некорректная base64 строка", e))
-                return ""
-            }
-
-            if (encryptedBytes.isEmpty()) {
-                Sentry.captureMessage("decryptBase64: декодированные данные пустые")
-                return ""
-            }
-
-            // Пытаемся расшифровать
-            val decryptedBytes = try {
-                keystore.decrypt(encryptedBytes)
-            } catch (e: Exception) {
-                Sentry.captureException(Exception("decryptBase64: ошибка при расшифровке", e))
-                return ""
-            }
-
-            if (decryptedBytes.isEmpty()) {
-                Sentry.captureMessage("decryptBase64: результат расшифровки пустой")
-                return ""
-            }
-
-            // Преобразуем в строку
-            val decryptedString = String(decryptedBytes, Charsets.UTF_8)
-
-            if (decryptedString.isBlank()) {
-                Sentry.captureMessage("decryptBase64: результат пустая строка")
-            }
-
-            decryptedString
+            val encryptedBytes = Base64.decode(base64Value, Base64.NO_WRAP)
+            val decryptedBytes = keystore.decrypt(encryptedBytes)
+            String(decryptedBytes, Charsets.UTF_8)
         } catch (e: Exception) {
-            Sentry.captureException(Exception("decryptBase64: критическая ошибка", e))
+            Sentry.captureException(e)
             ""
         }
     }
