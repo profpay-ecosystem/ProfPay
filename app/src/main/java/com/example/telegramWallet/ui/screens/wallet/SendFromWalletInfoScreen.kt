@@ -24,7 +24,6 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -66,7 +65,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -85,14 +83,12 @@ import com.example.telegramWallet.ui.app.theme.GreenColor
 import com.example.telegramWallet.ui.app.theme.ProgressIndicator
 import com.example.telegramWallet.ui.app.theme.PubAddressDark
 import com.example.telegramWallet.ui.app.theme.RedColor
-import com.example.telegramWallet.ui.app.theme.WalletNavigationBottomBarTheme
 import com.example.telegramWallet.ui.shared.sharedPref
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.example.protobuf.transfer.TransferProto.TransferToken
 import rememberStackedSnackbarHostState
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -107,6 +103,7 @@ fun SendFromWalletInfoScreen(
     goToBack: () -> Unit,
     goToSystemTRX: () -> Unit
 ) {
+    val stackedSnackbarHostState = rememberStackedSnackbarHostState()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -126,6 +123,17 @@ fun SendFromWalletInfoScreen(
         )
     }
 
+    LaunchedEffect(uiState.isAddressActivated) {
+        if (!uiState.isAddressActivated) {
+            stackedSnackbarHostState.showErrorSnackbar(
+                title = "Перевод валюты невозможен",
+                description = "Для активации необходимо перейти в «Системный TRX»",
+                actionTitle = "Перейти",
+                action = { goToSystemTRX() }
+            )
+        }
+    }
+
     LaunchedEffect(addressSending, sumSending) {
         viewModel.updateInputs(addressSending, sumSending, currentTokenName)
     }
@@ -134,15 +142,14 @@ fun SendFromWalletInfoScreen(
         viewModel.onCommissionResult(viewModel.stateCommission.value)
     }
 
-    val stackedSnackbarHostState = rememberStackedSnackbarHostState()
     val (_, setIsOpenTransferProcessingSheet) = bottomSheetTransferConfirmation(
         modelTransferFromBS = ModelTransferFromBS(
-            sumSending = sumSending.takeIf { it.isNotBlank() }?.toBigDecimalOrNull()
+            amount = sumSending.takeIf { it.isNotBlank() }?.toBigDecimalOrNull()
                 ?: BigDecimal.ZERO,
             tokenName = tokenNameModel,
-            addressSending = addressSending,
+            addressReceiver = addressSending,
             addressSender = uiState.addressWithTokens?.addressEntity?.address ?: "",
-            commissionOnTransaction = uiState.commission,
+            commission = uiState.commission,
             addressWithTokens = uiState.addressWithTokens
         ),
         snackbar = stackedSnackbarHostState
@@ -232,7 +239,7 @@ fun SendFromWalletInfoScreen(
                         title = "Адрес получения",
                         addressSending = addressSending,
                         onAddressChange = { addressSending = it },
-                        warningAddress = true // Todo
+                        warningAddress = !uiState.isValidRecipientAddress && addressSending != ""
                     )
                     Row(
                         modifier = Modifier
@@ -388,12 +395,12 @@ fun SendFromWalletInfoScreen(
     }
 }
 
-class ModelTransferFromBS(
-    val sumSending: BigDecimal,
+data class ModelTransferFromBS(
+    val amount: BigDecimal,
     val tokenName: TokenName,
-    val addressSending: String,
+    val addressReceiver: String,
     val addressSender: String,
-    val commissionOnTransaction: BigDecimal,
+    val commission: BigDecimal,
     val addressWithTokens: AddressWithTokens?
 )
 
@@ -491,9 +498,9 @@ fun bottomSheetTransferConfirmation(
 
                                 val result = viewModel.transferProcess(
                                     senderAddress = modelTransferFromBS.addressSender,
-                                    receiverAddress = modelTransferFromBS.addressSending,
-                                    amount = modelTransferFromBS.sumSending.toSunAmount(),
-                                    commission = modelTransferFromBS.commissionOnTransaction.toSunAmount(),
+                                    receiverAddress = modelTransferFromBS.addressReceiver,
+                                    amount = modelTransferFromBS.amount.toSunAmount(),
+                                    commission = modelTransferFromBS.commission.toSunAmount(),
                                     tokenEntity = tokenEntity
                                 )
 
@@ -617,7 +624,7 @@ fun ContentBottomSheetTransferConfirmation(
 
     LaunchedEffect(Unit) {
         val isAddressActivated = withContext(Dispatchers.IO) {
-            viewModel.tron.addressUtilities.isAddressActivated(modelTransferFromBS.addressSending)
+            viewModel.tron.addressUtilities.isAddressActivated(modelTransferFromBS.addressReceiver)
         }
         if (!isAddressActivated) {
             setCreateNewAccountFeeInSystemContract(
@@ -643,20 +650,20 @@ fun ContentBottomSheetTransferConfirmation(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "-${modelTransferFromBS.sumSending} ${tokenNameModel.shortName}",
+                text = "-${modelTransferFromBS.amount} ${tokenNameModel.shortName}",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             if (tokenNameModel.shortName == "TRX") {
                 Text(
-                    text = "≈ ${decimalFormat.format(modelTransferFromBS.sumSending * trxToUsdtRate)} $",
+                    text = "≈ ${decimalFormat.format(modelTransferFromBS.amount * trxToUsdtRate)} $",
                     style = MaterialTheme.typography.bodyMedium,
                     color = PubAddressDark
                 )
             } else {
                 Text(
-                    text = "≈ ${decimalFormat.format(modelTransferFromBS.sumSending)} $",
+                    text = "≈ ${decimalFormat.format(modelTransferFromBS.amount)} $",
                     style = MaterialTheme.typography.bodyMedium,
                     color = PubAddressDark
                 )
@@ -745,8 +752,8 @@ fun ContentBottomSheetTransferConfirmation(
                         modifier = Modifier
                     )
                     Text(
-                        text = "${modelTransferFromBS.addressSending.take(7)}...${
-                            modelTransferFromBS.addressSending.takeLast(
+                        text = "${modelTransferFromBS.addressReceiver.take(7)}...${
+                            modelTransferFromBS.addressReceiver.takeLast(
                                 7
                             )
                         }",
@@ -786,12 +793,12 @@ fun ContentBottomSheetTransferConfirmation(
                     )
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
-                            text = "${modelTransferFromBS.commissionOnTransaction} TRX",
+                            text = "${modelTransferFromBS.commission} TRX",
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "≈ ${decimalFormat.format(modelTransferFromBS.commissionOnTransaction * trxToUsdtRate)} $",
+                            text = "≈ ${decimalFormat.format(modelTransferFromBS.commission * trxToUsdtRate)} $",
                             style = MaterialTheme.typography.bodyMedium,
                             color = PubAddressDark
                         )
@@ -846,7 +853,7 @@ fun ContentBottomSheetTransferConfirmation(
                         modifier = Modifier
                     )
                     Text(
-                        text = "${decimalFormat.format((createNewAccountFeeInSystemContract.toTokenAmount() + modelTransferFromBS.commissionOnTransaction) * trxToUsdtRate)} $",
+                        text = "${decimalFormat.format((createNewAccountFeeInSystemContract.toTokenAmount() + modelTransferFromBS.commission) * trxToUsdtRate)} $",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                     )
