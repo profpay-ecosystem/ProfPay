@@ -48,6 +48,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,6 +65,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -81,6 +83,7 @@ import com.example.telegramWallet.ui.app.theme.GreenColor
 import com.example.telegramWallet.ui.app.theme.ProgressIndicator
 import com.example.telegramWallet.ui.app.theme.PubAddressDark
 import com.example.telegramWallet.ui.app.theme.RedColor
+import com.example.telegramWallet.ui.app.theme.WalletNavigationBottomBarTheme
 import com.example.telegramWallet.ui.shared.sharedPref
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -110,11 +113,15 @@ fun SendFromWalletInfoScreen(
     val tokenNameModel = TokenName.valueOf(tokenName)
     val currentTokenName = TokenName.entries.find { it.tokenName == tokenName } ?: TokenName.USDT
 
-    var addressSending by remember { mutableStateOf("") }
-    var sumSending by remember { mutableStateOf("") }
+    var addressSending by rememberSaveable { mutableStateOf("") }
+    var sumSending by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
-        viewModel.loadAddressWithTokens(addressId, tokenNameModel.blockchainName, currentTokenName.tokenName)
+        viewModel.loadAddressWithTokens(
+            addressId,
+            tokenNameModel.blockchainName,
+            currentTokenName.tokenName
+        )
     }
 
     LaunchedEffect(addressSending, sumSending) {
@@ -128,7 +135,8 @@ fun SendFromWalletInfoScreen(
     val stackedSnackbarHostState = rememberStackedSnackbarHostState()
     val (_, setIsOpenTransferProcessingSheet) = bottomSheetTransferConfirmation(
         modelTransferFromBS = ModelTransferFromBS(
-            sumSending = sumSending.takeIf { it.isNotBlank() }?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            sumSending = sumSending.takeIf { it.isNotBlank() }?.toBigDecimalOrNull()
+                ?: BigDecimal.ZERO,
             tokenName = tokenNameModel,
             addressSenderId = addressId,
             addressSending = addressSending,
@@ -150,12 +158,13 @@ fun SendFromWalletInfoScreen(
             )
         },
     ) { padding ->
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .clickable {
-                keyboardController?.hide()
-                focusManager.clearFocus()
-            }) {}
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }) {}
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -217,51 +226,12 @@ fun SendFromWalletInfoScreen(
                         .padding(bottom = bottomPadding.dp)
                         .padding(vertical = 8.dp, horizontal = 16.dp),
                 ) {
-                    Text(
-                        text = "Адрес получения",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(vertical = 8.dp),
+                    CardWithAddressForSendFromWallet(
+                        title = "Адрес получения",
+                        addressSending = addressSending,
+                        onAddressChange = { addressSending = it },
+                        warningAddress = true // Todo
                     )
-                    Card(
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        elevation = CardDefaults.cardElevation(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        TextField(
-                            value = addressSending,
-//                            textStyle = TextStyle(fontSize = 14.sp),
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            placeholder = {
-                                Text(
-                                    text = "Введите адрес",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = PubAddressDark
-                                )
-                            },
-                            shape = MaterialTheme.shapes.small.copy(),
-                            onValueChange = { addressSending = it },
-                            trailingIcon = {},
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                unfocusedTextColor = PubAddressDark,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                cursorColor = MaterialTheme.colorScheme.onBackground,
-                                selectionColors = TextSelectionColors(
-                                    handleColor = MaterialTheme.colorScheme.onBackground,
-                                    backgroundColor = Color.Transparent
-                                )
-                            )
-                        )
-                    }
-
                     Row(
                         modifier = Modifier
                             .padding(
@@ -275,7 +245,7 @@ fun SendFromWalletInfoScreen(
                             modifier = Modifier.padding(bottom = 8.dp),
                             text = "Сумма",
                             style = MaterialTheme.typography.titleMedium,
-                            )
+                        )
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text(
                                 modifier = Modifier.padding(end = 4.dp),
@@ -327,7 +297,8 @@ fun SendFromWalletInfoScreen(
                                         modifier = Modifier.padding(end = 8.dp),
                                         elevation = CardDefaults.cardElevation(7.dp),
                                         onClick = {
-                                            sumSending = uiState.tokenBalance.toTokenAmount().toString()
+                                            sumSending =
+                                                uiState.tokenBalance.toTokenAmount().toString()
                                         }
                                     ) {
                                         Text(
@@ -363,49 +334,16 @@ fun SendFromWalletInfoScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Card(
-                                modifier = Modifier
-                                    .padding(top = 8.dp, bottom = 16.dp)
-                                    .fillMaxWidth(),
-                                shape = RoundedCornerShape(12.dp),
-                                border = BorderStroke(1.dp, RedColor)
-
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
                             ) {
                                 Text(
-                                    modifier = Modifier
-                                        .padding(8.dp),
+                                    modifier = Modifier,
                                     text = uiState.warning!!,
                                     color = RedColor
                                 )
-                                if (!uiState.isAddressActivated) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.End
-                                    ) {
-                                        Row(
-                                            modifier = Modifier
-                                                .padding(4.dp)
-                                                .clip(RoundedCornerShape(30.dp))
-                                                .clickable { goToSystemTRX() },
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(
-                                                modifier = Modifier.padding(start = 8.dp),
-                                                text = "Перейти",
-                                                style = MaterialTheme.typography.bodyLarge,
-                                                color = RedColor
-                                            )
-                                            Icon(
-                                                modifier = Modifier.size(18.dp),
-                                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                                contentDescription = "Back",
-                                                tint = RedColor
-                                            )
-                                        }
-                                    }
-                                }
                             }
                         }
                     }
@@ -418,7 +356,10 @@ fun SendFromWalletInfoScreen(
                     ) {
                         Button(
                             onClick = {
-                                if (viewModel.tron.addressUtilities.isValidTronAddress(addressSending)) {
+                                if (viewModel.tron.addressUtilities.isValidTronAddress(
+                                        addressSending
+                                    )
+                                ) {
                                     setIsOpenTransferProcessingSheet(true)
                                 }
                             },
@@ -571,6 +512,71 @@ fun bottomSheetTransferConfirmation(
         }
     }
     return isOpenSheet to { setIsOpenSheet(it) }
+}
+
+@Composable
+fun CardWithAddressForSendFromWallet(
+    title: String,
+    addressSending: String,
+    onAddressChange: (String) -> Unit,
+    warningAddress: Boolean,
+) {
+    val colorContainer = if (warningAddress) {
+        RedColor.copy(alpha = 0.3f)
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(vertical = 8.dp),
+    )
+    Card(
+        shape = RoundedCornerShape(10.dp),
+        modifier = Modifier.padding(vertical = 4.dp),
+        elevation = CardDefaults.cardElevation(10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
+        border = if (warningAddress) {
+            BorderStroke(2.dp, color = RedColor)
+        } else {
+            null
+        }
+    ) {
+        TextField(
+            value = addressSending,
+//                            textStyle = TextStyle(fontSize = 14.sp),
+            modifier = Modifier
+                .fillMaxWidth(),
+            placeholder = {
+                Text(
+                    text = "Введите адрес",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = PubAddressDark
+                )
+            },
+            shape = MaterialTheme.shapes.small.copy(),
+            onValueChange = { onAddressChange(it) },
+            trailingIcon = {},
+            colors =
+                TextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = PubAddressDark,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    focusedContainerColor = colorContainer,
+                    unfocusedContainerColor = colorContainer,
+                    cursorColor = MaterialTheme.colorScheme.onBackground,
+                    selectionColors = TextSelectionColors(
+                        handleColor = MaterialTheme.colorScheme.onBackground,
+                        backgroundColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+                    )
+                )
+
+        )
+    }
 }
 
 @Composable
