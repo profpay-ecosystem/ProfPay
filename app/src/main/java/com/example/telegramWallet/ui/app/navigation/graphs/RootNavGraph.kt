@@ -32,6 +32,11 @@ fun RootNavigationGraph(
     networkMonitor: NetworkMonitor,
     pinLockViewModel: PinLockViewModel = hiltViewModel()
 ) {
+    val sharedPref = LocalContext.current.getSharedPreferences(
+        ContextCompat.getString(LocalContext.current, R.string.preference_file_key),
+        Context.MODE_PRIVATE
+    )
+    val isFirstStart = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
     val isConnected by networkMonitor.networkAvailable.collectAsState()
 
     NavHost(
@@ -101,12 +106,6 @@ fun RootNavigationGraph(
         }
     }
 
-    val sharedPref = LocalContext.current.getSharedPreferences(
-        ContextCompat.getString(LocalContext.current, R.string.preference_file_key),
-        Context.MODE_PRIVATE
-    )
-
-    val isFirstStart = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
     val isAcceptedRules = sharedPref.getBoolean(PrefKeys.ACCEPTED_RULES, false)
 
     val targetRoute = when {

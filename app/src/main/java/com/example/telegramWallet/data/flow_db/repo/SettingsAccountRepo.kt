@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import org.example.protobuf.user.UserProto.UserTelegramDataResponse
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 interface SettingsAccountRepo {
     val telegramAccount: Flow<UserTelegramDataResponse>
@@ -39,10 +40,13 @@ class SettingsAccountRepoImpl @Inject constructor(
                 )
                 _telegramAccount.emit(it)
             },
-            onFailure = {
-                // TODO: Создать кастом
-                Sentry.captureException(it)
-                throw RuntimeException(it)
+            onFailure = { throwable ->
+                if (throwable is CancellationException) {
+                    throw throwable
+                } else {
+                    Sentry.captureException(throwable)
+                    throw RuntimeException(throwable)
+                }
             }
         )
     }

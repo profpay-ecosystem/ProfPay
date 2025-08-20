@@ -2,7 +2,14 @@ package com.example.telegramWallet.ui.screens.wallet
 
 import StackedSnackbarHost
 import StackedSnakbarHostState
-import android.util.Log
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +31,6 @@ import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -66,7 +72,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -85,14 +90,12 @@ import com.example.telegramWallet.ui.app.theme.GreenColor
 import com.example.telegramWallet.ui.app.theme.ProgressIndicator
 import com.example.telegramWallet.ui.app.theme.PubAddressDark
 import com.example.telegramWallet.ui.app.theme.RedColor
-import com.example.telegramWallet.ui.app.theme.WalletNavigationBottomBarTheme
 import com.example.telegramWallet.ui.shared.sharedPref
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.example.protobuf.transfer.TransferProto.TransferToken
 import rememberStackedSnackbarHostState
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -107,6 +110,7 @@ fun SendFromWalletInfoScreen(
     goToBack: () -> Unit,
     goToSystemTRX: () -> Unit
 ) {
+    val stackedSnackbarHostState = rememberStackedSnackbarHostState()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -126,6 +130,17 @@ fun SendFromWalletInfoScreen(
         )
     }
 
+    LaunchedEffect(uiState.isAddressActivated) {
+        if (!uiState.isAddressActivated) {
+            stackedSnackbarHostState.showErrorSnackbar(
+                title = "Перевод валюты невозможен",
+                description = "Для активации необходимо перейти в «Системный TRX»",
+                actionTitle = "Перейти",
+                action = { goToSystemTRX() }
+            )
+        }
+    }
+
     LaunchedEffect(addressSending, sumSending) {
         viewModel.updateInputs(addressSending, sumSending, currentTokenName)
     }
@@ -134,15 +149,14 @@ fun SendFromWalletInfoScreen(
         viewModel.onCommissionResult(viewModel.stateCommission.value)
     }
 
-    val stackedSnackbarHostState = rememberStackedSnackbarHostState()
     val (_, setIsOpenTransferProcessingSheet) = bottomSheetTransferConfirmation(
         modelTransferFromBS = ModelTransferFromBS(
-            sumSending = sumSending.takeIf { it.isNotBlank() }?.toBigDecimalOrNull()
+            amount = sumSending.takeIf { it.isNotBlank() }?.toBigDecimalOrNull()
                 ?: BigDecimal.ZERO,
             tokenName = tokenNameModel,
-            addressSending = addressSending,
+            addressReceiver = addressSending,
             addressSender = uiState.addressWithTokens?.addressEntity?.address ?: "",
-            commissionOnTransaction = uiState.commission,
+            commission = uiState.commission,
             addressWithTokens = uiState.addressWithTokens
         ),
         snackbar = stackedSnackbarHostState
@@ -232,7 +246,7 @@ fun SendFromWalletInfoScreen(
                         title = "Адрес получения",
                         addressSending = addressSending,
                         onAddressChange = { addressSending = it },
-                        warningAddress = true // Todo
+                        warningAddress = !uiState.isValidRecipientAddress && addressSending != ""
                     )
                     Row(
                         modifier = Modifier
@@ -316,7 +330,7 @@ fun SendFromWalletInfoScreen(
                             },
                             colors = TextFieldDefaults.colors(
                                 focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                unfocusedTextColor = PubAddressDark,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 disabledIndicatorColor = Color.Transparent,
@@ -388,12 +402,12 @@ fun SendFromWalletInfoScreen(
     }
 }
 
-class ModelTransferFromBS(
-    val sumSending: BigDecimal,
+data class ModelTransferFromBS(
+    val amount: BigDecimal,
     val tokenName: TokenName,
-    val addressSending: String,
+    val addressReceiver: String,
     val addressSender: String,
-    val commissionOnTransaction: BigDecimal,
+    val commission: BigDecimal,
     val addressWithTokens: AddressWithTokens?
 )
 
@@ -491,9 +505,9 @@ fun bottomSheetTransferConfirmation(
 
                                 val result = viewModel.transferProcess(
                                     senderAddress = modelTransferFromBS.addressSender,
-                                    receiverAddress = modelTransferFromBS.addressSending,
-                                    amount = modelTransferFromBS.sumSending.toSunAmount(),
-                                    commission = modelTransferFromBS.commissionOnTransaction.toSunAmount(),
+                                    receiverAddress = modelTransferFromBS.addressReceiver,
+                                    amount = modelTransferFromBS.amount.toSunAmount(),
+                                    commission = modelTransferFromBS.commission.toSunAmount(),
                                     tokenEntity = tokenEntity
                                 )
 
@@ -538,16 +552,32 @@ fun CardWithAddressForSendFromWallet(
     onAddressChange: (String) -> Unit,
     warningAddress: Boolean,
 ) {
-    val colorContainer = if (warningAddress) {
-        RedColor.copy(alpha = 0.3f)
-    } else {
-        MaterialTheme.colorScheme.primary
-    }
+    val transition = updateTransition(targetState = warningAddress, label = "warningTransition")
+
+    val animatedBorderColor by transition.animateColor(
+        transitionSpec = {
+            spring(
+                dampingRatio = Spring.DampingRatioLowBouncy,
+                stiffness = Spring.StiffnessVeryLow
+            )
+        }, label = "borderColor"
+    ) { if (it) RedColor else Color.Transparent }
+
+    val animatedContainerColor by transition.animateColor(
+        transitionSpec = {
+            spring(
+                dampingRatio = Spring.DampingRatioNoBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        }, label = "containerColor"
+    ) { if (it) RedColor.copy(alpha = 0.3f) else MaterialTheme.colorScheme.primary }
+
     Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(vertical = 8.dp),
     )
+
     Card(
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier.padding(vertical = 4.dp),
@@ -555,17 +585,11 @@ fun CardWithAddressForSendFromWallet(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary
         ),
-        border = if (warningAddress) {
-            BorderStroke(2.dp, color = RedColor)
-        } else {
-            null
-        }
+        border = BorderStroke(2.dp, animatedBorderColor)
     ) {
         TextField(
             value = addressSending,
-//                            textStyle = TextStyle(fontSize = 14.sp),
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             placeholder = {
                 Text(
                     text = "Введите адрес",
@@ -576,25 +600,24 @@ fun CardWithAddressForSendFromWallet(
             shape = MaterialTheme.shapes.small.copy(),
             onValueChange = { onAddressChange(it) },
             trailingIcon = {},
-            colors =
-                TextFieldDefaults.colors(
-                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                    unfocusedTextColor = PubAddressDark,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    focusedContainerColor = colorContainer,
-                    unfocusedContainerColor = colorContainer,
-                    cursorColor = MaterialTheme.colorScheme.onBackground,
-                    selectionColors = TextSelectionColors(
-                        handleColor = MaterialTheme.colorScheme.onBackground,
-                        backgroundColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
-                    )
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = PubAddressDark,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                focusedContainerColor = animatedContainerColor,
+                unfocusedContainerColor = animatedContainerColor,
+                cursorColor = MaterialTheme.colorScheme.onBackground,
+                selectionColors = TextSelectionColors(
+                    handleColor = MaterialTheme.colorScheme.onBackground,
+                    backgroundColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
                 )
-
+            )
         )
     }
 }
+
 
 @Composable
 fun ContentBottomSheetTransferConfirmation(
@@ -617,7 +640,7 @@ fun ContentBottomSheetTransferConfirmation(
 
     LaunchedEffect(Unit) {
         val isAddressActivated = withContext(Dispatchers.IO) {
-            viewModel.tron.addressUtilities.isAddressActivated(modelTransferFromBS.addressSending)
+            viewModel.tron.addressUtilities.isAddressActivated(modelTransferFromBS.addressReceiver)
         }
         if (!isAddressActivated) {
             setCreateNewAccountFeeInSystemContract(
@@ -643,20 +666,20 @@ fun ContentBottomSheetTransferConfirmation(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "-${modelTransferFromBS.sumSending} ${tokenNameModel.shortName}",
+                text = "-${modelTransferFromBS.amount} ${tokenNameModel.shortName}",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             if (tokenNameModel.shortName == "TRX") {
                 Text(
-                    text = "≈ ${decimalFormat.format(modelTransferFromBS.sumSending * trxToUsdtRate)} $",
+                    text = "≈ ${decimalFormat.format(modelTransferFromBS.amount * trxToUsdtRate)} $",
                     style = MaterialTheme.typography.bodyMedium,
                     color = PubAddressDark
                 )
             } else {
                 Text(
-                    text = "≈ ${decimalFormat.format(modelTransferFromBS.sumSending)} $",
+                    text = "≈ ${decimalFormat.format(modelTransferFromBS.amount)} $",
                     style = MaterialTheme.typography.bodyMedium,
                     color = PubAddressDark
                 )
@@ -745,8 +768,8 @@ fun ContentBottomSheetTransferConfirmation(
                         modifier = Modifier
                     )
                     Text(
-                        text = "${modelTransferFromBS.addressSending.take(7)}...${
-                            modelTransferFromBS.addressSending.takeLast(
+                        text = "${modelTransferFromBS.addressReceiver.take(7)}...${
+                            modelTransferFromBS.addressReceiver.takeLast(
                                 7
                             )
                         }",
@@ -786,12 +809,12 @@ fun ContentBottomSheetTransferConfirmation(
                     )
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
-                            text = "${modelTransferFromBS.commissionOnTransaction} TRX",
+                            text = "${modelTransferFromBS.commission} TRX",
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "≈ ${decimalFormat.format(modelTransferFromBS.commissionOnTransaction * trxToUsdtRate)} $",
+                            text = "≈ ${decimalFormat.format(modelTransferFromBS.commission * trxToUsdtRate)} $",
                             style = MaterialTheme.typography.bodyMedium,
                             color = PubAddressDark
                         )
@@ -846,7 +869,7 @@ fun ContentBottomSheetTransferConfirmation(
                         modifier = Modifier
                     )
                     Text(
-                        text = "${decimalFormat.format((createNewAccountFeeInSystemContract.toTokenAmount() + modelTransferFromBS.commissionOnTransaction) * trxToUsdtRate)} $",
+                        text = "${decimalFormat.format((createNewAccountFeeInSystemContract.toTokenAmount() + modelTransferFromBS.commission) * trxToUsdtRate + modelTransferFromBS.amount)} $",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                     )
