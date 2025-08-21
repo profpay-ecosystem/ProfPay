@@ -32,6 +32,9 @@ interface WalletProfileDao {
 
     @Query("SELECT entropy FROM wallet_profile WHERE id = :id")
     suspend fun getWalletEncryptedEntropy(id: Long): ByteArray?
+
+    @Query("SELECT EXISTS(SELECT 1 FROM wallet_profile LIMIT 1)")
+    suspend fun hasAnyWalletProfile(): Boolean
 }
 
 data class WalletProfileModel(

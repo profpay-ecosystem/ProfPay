@@ -1,4 +1,4 @@
-package com.example.telegramWallet.ui.app.navigation
+package com.example.telegramWallet.ui.app.navigation.bottom_bar
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement

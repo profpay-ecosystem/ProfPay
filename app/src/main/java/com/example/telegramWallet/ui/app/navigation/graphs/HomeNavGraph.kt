@@ -1,15 +1,17 @@
 package com.example.telegramWallet.ui.app.navigation.graphs
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.telegramWallet.ui.app.navigation.BottomBarScreen
+import com.example.telegramWallet.ui.app.navigation.bottom_bar.BottomBarScreen
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.coRAddressFromWalletSystemNG
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.profileNavGraph
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.settingsNavGraph
+import com.example.telegramWallet.ui.components.animation.enterTransition
+import com.example.telegramWallet.ui.components.animation.exitTransition
+import com.example.telegramWallet.ui.components.animation.popEnterTransition
+import com.example.telegramWallet.ui.components.animation.popExitTransition
 import com.example.telegramWallet.ui.screens.SmartInDevelopment
 
 @Composable
@@ -17,7 +19,11 @@ fun HomeNavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
         route = Graph.Home.route,
-        startDestination = Graph.Profile.route
+        startDestination = Graph.Profile.route,
+        enterTransition = enterTransition,
+        exitTransition = exitTransition,
+        popEnterTransition = popEnterTransition,
+        popExitTransition = popExitTransition,
     ) {
 
         composable(route = BottomBarScreen.SmartContractList.route) {

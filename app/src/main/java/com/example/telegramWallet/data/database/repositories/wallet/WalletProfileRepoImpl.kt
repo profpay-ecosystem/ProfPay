@@ -22,6 +22,7 @@ interface WalletProfileRepo {
     suspend fun updateNameById(id: Long, newName: String)
     suspend fun deleteWalletProfile(id: Long)
     suspend fun getWalletDecryptedEntropy(id: Long): ByteArray?
+    suspend fun hasAnyWalletProfile(): Boolean
 }
 
 @Singleton
@@ -72,5 +73,9 @@ class WalletProfileRepoImpl @Inject constructor(private val walletProfileDao: Wa
 
             return@withContext keystore.decrypt(encryptedEntropy)
         }
+    }
+
+    override suspend fun hasAnyWalletProfile(): Boolean {
+        return walletProfileDao.hasAnyWalletProfile()
     }
 }
