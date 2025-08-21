@@ -1,11 +1,16 @@
 package com.example.telegramWallet.ui.app.theme
 
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
@@ -35,37 +40,28 @@ private val LightColorPalette = lightColorScheme(
 
 @Composable
 fun WalletNavigationBottomBarTheme(
+    activity: ComponentActivity,
     isDarkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
-    val systemUiController = rememberSystemUiController()
-
-    fun colors(isDarkTheme: Boolean): ColorScheme {
-        return if (isDarkTheme) {
-            systemUiController.setSystemBarsColor(
-                color = Color.Transparent,
-                darkIcons = false
-            )
-            systemUiController.setNavigationBarColor(
-                color = BackgroundDark,
-                darkIcons = false
-            )
-            DarkColorPalette
-        } else {
-            systemUiController.setSystemBarsColor(
-                color = Color.Transparent,
-                darkIcons = true
-            )
-            systemUiController.setNavigationBarColor(
-                color = BackgroundLight,
-                darkIcons = true
-            )
-            LightColorPalette
-        }
+    DisposableEffect(isDarkTheme) {
+        activity.enableEdgeToEdge(
+            statusBarStyle = if (isDarkTheme) {
+                SystemBarStyle.dark(Color.Transparent.toArgb())
+            } else {
+                SystemBarStyle.light(Color.Transparent.toArgb(), Color.Transparent.toArgb())
+            },
+            navigationBarStyle = if (isDarkTheme) {
+                SystemBarStyle.dark(BackgroundDark.toArgb())
+            } else {
+                SystemBarStyle.light(BackgroundLight.toArgb(), BackgroundLight.toArgb())
+            }
+        )
+        onDispose { }
     }
 
     MaterialTheme(
-        colorScheme = colors(isDarkTheme),
+        colorScheme = if (isDarkTheme) DarkColorPalette else LightColorPalette,
         typography = rememberTypography("Manrope"),
         shapes = Shapes,
         content = content

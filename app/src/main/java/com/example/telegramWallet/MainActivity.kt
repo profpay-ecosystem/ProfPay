@@ -62,7 +62,7 @@ class MainActivity : FragmentActivity() {
         }
 
         launchContent(sharedPrefs)
-    }
+    } //
 
     private fun launchContent(sharedPrefs: SharedPreferences) {
         setContent {
@@ -79,7 +79,7 @@ class MainActivity : FragmentActivity() {
                         themeState.themeStateResult,
                         isSystemDark
                     )
-                    WalletNavigationBottomBarTheme(isDarkTheme) {
+                    WalletNavigationBottomBarTheme(activity = this, isDarkTheme = isDarkTheme) {
                         val navController = rememberNavController()
                         MyApp(navController, networkMonitor)
                     }
