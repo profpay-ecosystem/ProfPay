@@ -90,14 +90,7 @@ fun RootNavigationGraph(
         composable(route = Graph.LockScreen.route) {
             LockScreen(
                 viewModel = pinLockViewModel,
-                toNavigate = {
-                    val previousBackStackEntry = navController.previousBackStackEntry?.destination?.route
-                    if (previousBackStackEntry == Graph.Splash.route) {
-                        navController.navigate(route = targetRoute) {
-                            launchSingleTop = true
-                        }
-                    }
-                }
+                toNavigate = {}
             )
             BackHandler {}
         }
