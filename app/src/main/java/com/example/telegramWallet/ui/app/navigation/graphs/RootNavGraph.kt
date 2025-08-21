@@ -33,7 +33,7 @@ fun RootNavigationGraph(
 ) {
     val isConnected by networkMonitor.networkAvailable.collectAsState()
 
-    val sharedPref = sharedPref()
+    val sharedPref = sharedPref() //
 
     val isFirstStart = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
     val isAcceptedRules = sharedPref.getBoolean(PrefKeys.ACCEPTED_RULES, false)

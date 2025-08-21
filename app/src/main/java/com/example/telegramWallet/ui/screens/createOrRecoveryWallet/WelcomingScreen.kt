@@ -63,7 +63,7 @@ fun WelcomingScreen(toNavigate: (String) -> Unit,
                     toNavigateUp: () -> Unit,
                     viewModel: WelcomingViewModel = hiltViewModel()
 ) {
-    val sharedPref = sharedPref()
+    val sharedPref = sharedPref() //
     val isFirstStart = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
 
     val text = "СОГЛАШЕНИЕ ДЛЯ ПОЛЬЗОВАТЕЛЕЙ " +

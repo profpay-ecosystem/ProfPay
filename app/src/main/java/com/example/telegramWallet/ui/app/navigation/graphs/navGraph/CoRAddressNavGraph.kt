@@ -14,7 +14,7 @@ import com.example.telegramWallet.ui.screens.createOrRecoveryWallet.RecoveringWa
 import com.example.telegramWallet.ui.screens.createOrRecoveryWallet.SeedPhraseConfirmationScreen
 
 fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
-    navigation(
+    navigation( //
         route = Graph.FirstStart.route,
         startDestination = OnboardingScreen.CreateOrRecoverWalletFS.route
     ) {
