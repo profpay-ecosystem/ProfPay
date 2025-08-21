@@ -37,4 +37,7 @@ class WalletSystemViewModel @Inject constructor(
     suspend fun deleteWalletProfile(walletId: Long){
         walletProfileRepo.deleteWalletProfile(walletId)
     }
+    suspend fun hasAnyWalletProfile(): Boolean {
+       return walletProfileRepo.hasAnyWalletProfile()
+    }
 }

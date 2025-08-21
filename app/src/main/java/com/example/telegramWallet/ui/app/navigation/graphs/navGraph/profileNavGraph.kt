@@ -6,7 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.example.telegramWallet.ui.app.navigation.BottomBarScreen
+import com.example.telegramWallet.ui.app.navigation.bottom_bar.BottomBarScreen
 import com.example.telegramWallet.ui.app.navigation.graphs.Graph
 import com.example.telegramWallet.ui.screens.wallet.CentralAddressTxHistoryScreen
 import com.example.telegramWallet.ui.screens.wallet.ReceiveFromWalletSotsScreen

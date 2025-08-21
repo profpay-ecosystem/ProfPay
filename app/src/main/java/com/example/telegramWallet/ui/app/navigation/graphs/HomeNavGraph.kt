@@ -1,12 +1,10 @@
 package com.example.telegramWallet.ui.app.navigation.graphs
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.telegramWallet.ui.app.navigation.BottomBarScreen
+import com.example.telegramWallet.ui.app.navigation.bottom_bar.BottomBarScreen
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.coRAddressFromWalletSystemNG
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.profileNavGraph
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.settingsNavGraph

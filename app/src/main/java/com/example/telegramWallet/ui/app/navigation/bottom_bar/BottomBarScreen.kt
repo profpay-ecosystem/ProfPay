@@ -1,4 +1,4 @@
-package com.example.telegramWallet.ui.app.navigation
+package com.example.telegramWallet.ui.app.navigation.bottom_bar
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -20,7 +20,7 @@ sealed class BottomBarScreen(
         route = "SMART",
         title = "Smart",
         icon = {
-            ImageVector.vectorResource(id = R.drawable.icon_smart)
+            ImageVector.Companion.vectorResource(id = R.drawable.icon_smart)
         },
         routes = listOf("SMART")
     )
@@ -29,7 +29,7 @@ sealed class BottomBarScreen(
         route = Graph.Profile.route,
         title = "Wallet",
         icon = {
-            ImageVector.vectorResource(id = R.drawable.icon_wallet)
+            ImageVector.Companion.vectorResource(id = R.drawable.icon_wallet)
         },
         routes = listOf(
             "WALLET",
@@ -50,7 +50,7 @@ sealed class BottomBarScreen(
         route = Graph.Settings.route,
         title = "Settings",
         icon = {
-            ImageVector.vectorResource(id = R.drawable.icon_settings)
+            ImageVector.Companion.vectorResource(id = R.drawable.icon_settings)
         },
         routes = listOf(
             "SETTINGS",
