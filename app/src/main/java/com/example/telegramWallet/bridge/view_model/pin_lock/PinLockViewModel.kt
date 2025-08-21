@@ -2,6 +2,7 @@ package com.example.telegramWallet.bridge.view_model.pin_lock
 
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit

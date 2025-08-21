@@ -1,5 +1,6 @@
 package com.example.telegramWallet.ui.app.navigation.graphs
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,10 +41,9 @@ fun RootNavigationGraph(
 
     var targetRoute by remember { mutableStateOf(Graph.Splash.route) }
 
-
     LaunchedEffect(Unit) {
         pinLockViewModel.navigationEvents.collect { state ->
-                targetRoute = when (state) {
+            targetRoute = when (state) {
                 LockState.RequireCreation -> Graph.CreateLockScreen.route
                 LockState.RequireUnlock -> Graph.LockScreen.route
                 LockState.None -> when {
@@ -53,10 +53,13 @@ fun RootNavigationGraph(
                     else -> Graph.Home.route
                 }
             }
-            if (state != LockState.None){
-                targetRoute.let { route ->
-                    val current = navController.currentBackStackEntry?.destination?.route
-                    if (current != route) {
+            targetRoute.let { route ->
+                val current = navController.currentBackStackEntry?.destination?.route
+                if (current != route) {
+                    val previousBackStackEntry = navController.previousBackStackEntry?.destination?.route
+                    if (state == LockState.None && previousBackStackEntry != Graph.Splash.route) {
+                        navController.navigateUp()
+                    } else {
                         navController.navigate(route) {
                             launchSingleTop = true
                         }
@@ -65,7 +68,6 @@ fun RootNavigationGraph(
             }
         }
     }
-
     NavHost(
         navController = navController,
         route = Graph.Root.route,
@@ -87,12 +89,13 @@ fun RootNavigationGraph(
         }
         composable(route = Graph.LockScreen.route) {
             LockScreen(
+                viewModel = pinLockViewModel,
                 toNavigate = {
                     val previousBackStackEntry = navController.previousBackStackEntry?.destination?.route
-                    if(previousBackStackEntry != Graph.Splash.route || previousBackStackEntry.isEmpty()){
-                        navController.navigateUp()
-                    } else {
-                        navController.navigate(route = targetRoute)
+                    if (previousBackStackEntry == Graph.Splash.route) {
+                        navController.navigate(route = targetRoute) {
+                            launchSingleTop = true
+                        }
                     }
                 }
             )
@@ -110,7 +113,7 @@ fun RootNavigationGraph(
             BackHandler {}
         }
 
-        coRAddressNavGraph(navController)
+        coRAddressNavGraph(navController = navController)
 
         composable(route = Graph.BlockedAppScreen.route) {
             BlockedAppScreen(toNavigate = {
