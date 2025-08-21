@@ -55,14 +55,14 @@ class MainActivity : FragmentActivity() {
         SentryAndroid.init(this) { options ->
             options.isEnableUserInteractionTracing = true
             options.isEnableUserInteractionBreadcrumbs = true
-        } //
+        }
 
         lifecycleScope.launch {
             appInitializer.initialize(sharedPrefs, this@MainActivity)
         }
 
         launchContent(sharedPrefs)
-    } //
+    }
 
     private fun launchContent(sharedPrefs: SharedPreferences) {
         setContent {
