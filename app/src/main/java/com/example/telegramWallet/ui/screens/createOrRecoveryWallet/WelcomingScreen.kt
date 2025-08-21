@@ -59,12 +59,12 @@ import kotlinx.coroutines.launch
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WelcomingScreen(firstStart: Boolean,
-                    toNavigate: (String) -> Unit,
+fun WelcomingScreen(toNavigate: (String) -> Unit,
                     toNavigateUp: () -> Unit,
                     viewModel: WelcomingViewModel = hiltViewModel()
 ) {
-    val sharedPref = sharedPref()
+    val sharedPref = sharedPref() //
+    val isFirstStart = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
 
     val text = "СОГЛАШЕНИЕ ДЛЯ ПОЛЬЗОВАТЕЛЕЙ " +
             "КРИПТОКОШЕЛЬКА \n\n" +
@@ -242,7 +242,7 @@ fun WelcomingScreen(firstStart: Boolean,
                         ) {
                             Button(
                                 onClick = {
-                                    if (firstStart) {
+                                    if (isFirstStart) {
                                         toNavigate(OnboardingScreen.CreateOrRecoverWalletFS.route)
                                     } else {
                                         toNavigateUp()
