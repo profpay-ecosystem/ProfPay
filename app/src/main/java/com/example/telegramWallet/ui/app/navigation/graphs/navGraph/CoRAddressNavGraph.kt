@@ -16,8 +16,7 @@ import com.example.telegramWallet.ui.screens.createOrRecoveryWallet.SeedPhraseCo
 fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.FirstStart.route,
-//        startDestination = Graph.CREATE_OR_RECOVERY_ADDRESS_FS
-        startDestination = Graph.WelcomingScreen.route
+        startDestination = OnboardingScreen.CreateOrRecoverWalletFS.route
     ) {
         composable(route = OnboardingScreen.CreateOrRecoverWalletFS.route) {
             CreateOrRecoverWalletScreen(

@@ -2,6 +2,6 @@
 <resources>
 
     <style name="Theme.MyFirstAndroidApp" parent="android:Theme.Material.Light.NoActionBar" >
-<!--        <item name="android:windowActionBarOverlay">true</item>-->
+        <item name="android:windowIsTranslucent">true</item> <!-- Отключение системного SplashScreen -->
     </style>
 </resources>
