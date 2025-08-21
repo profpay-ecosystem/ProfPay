@@ -59,7 +59,7 @@ class MainActivity : FragmentActivity() {
 
         lifecycleScope.launch {
             appInitializer.initialize(sharedPrefs, this@MainActivity)
-        }
+        } //
 
         launchContent(sharedPrefs)
     }
