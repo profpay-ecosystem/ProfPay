@@ -1,24 +1,24 @@
 package com.example.telegramWallet.ui.app.navigation.graphs
 
-import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.telegramWallet.PrefKeys
-import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.pin_lock.LockState
 import com.example.telegramWallet.bridge.view_model.pin_lock.PinLockViewModel
 import com.example.telegramWallet.data.services.NetworkMonitor
 import com.example.telegramWallet.ui.app.navigation.HomeScreen
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.coRAddressNavGraph
+import com.example.telegramWallet.ui.screens.SplashScreen
 import com.example.telegramWallet.ui.screens.createOrRecoveryWallet.WelcomingScreen
 import com.example.telegramWallet.ui.screens.lockScreen.BlockedAppScreen
 import com.example.telegramWallet.ui.screens.lockScreen.CreateLockScreen
@@ -38,25 +38,28 @@ fun RootNavigationGraph(
     val isFirstStart = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
     val isAcceptedRules = sharedPref.getBoolean(PrefKeys.ACCEPTED_RULES, false)
 
-    val targetRoute = when {
-        !isConnected -> Graph.BlockedAppScreen.route
-        (isFirstStart && !isAcceptedRules) || !isAcceptedRules -> Graph.WelcomingScreen.route
-        (isFirstStart) -> Graph.FirstStart.route
-        else -> Graph.Home.route
-    }
+    var targetRoute by remember { mutableStateOf(Graph.Splash.route) }
+
 
     LaunchedEffect(Unit) {
         pinLockViewModel.navigationEvents.collect { state ->
-            val targetRoute = when (state) {
+                targetRoute = when (state) {
                 LockState.RequireCreation -> Graph.CreateLockScreen.route
                 LockState.RequireUnlock -> Graph.LockScreen.route
-                LockState.None -> null
+                LockState.None -> when {
+                    !isConnected -> Graph.BlockedAppScreen.route
+                    (isFirstStart && !isAcceptedRules) || !isAcceptedRules -> Graph.WelcomingScreen.route
+                    (isFirstStart) -> Graph.FirstStart.route
+                    else -> Graph.Home.route
+                }
             }
-            targetRoute?.let { route ->
-                val current = navController.currentBackStackEntry?.destination?.route
-                if (current != route) {
-                    navController.navigate(route) {
-                        launchSingleTop = true
+            if (state != LockState.None){
+                targetRoute.let { route ->
+                    val current = navController.currentBackStackEntry?.destination?.route
+                    if (current != route) {
+                        navController.navigate(route) {
+                            launchSingleTop = true
+                        }
                     }
                 }
             }
@@ -66,10 +69,13 @@ fun RootNavigationGraph(
     NavHost(
         navController = navController,
         route = Graph.Root.route,
-        startDestination = targetRoute
+        startDestination = Graph.Splash.route
     ) {
         composable(route = Graph.Home.route) {
             HomeScreen()
+        }
+        composable(route = Graph.Splash.route) {
+            SplashScreen()
         }
         composable(route = Graph.CreateLockScreen.route) {
             CreateLockScreen(
@@ -82,7 +88,12 @@ fun RootNavigationGraph(
         composable(route = Graph.LockScreen.route) {
             LockScreen(
                 toNavigate = {
-                    navController.navigateUp()
+                    val previousBackStackEntry = navController.previousBackStackEntry?.destination?.route
+                    if(previousBackStackEntry != Graph.Splash.route || previousBackStackEntry.isEmpty()){
+                        navController.navigateUp()
+                    } else {
+                        navController.navigate(route = targetRoute)
+                    }
                 }
             )
             BackHandler {}
@@ -112,6 +123,7 @@ fun RootNavigationGraph(
 
 sealed class Graph(val route: String) {
     object Root : Graph(route = "root_graph")
+    object Splash : Graph(route = "splash_graph")
     object Home : Graph(route = "home_graph")
     object Profile : Graph(route = "profile_graph")
     object Settings : Graph(route = "settings_graph")
