@@ -1,6 +1,5 @@
 package com.example.telegramWallet.ui.app.navigation.graphs
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +18,10 @@ import com.example.telegramWallet.bridge.view_model.pin_lock.PinLockViewModel
 import com.example.telegramWallet.data.services.NetworkMonitor
 import com.example.telegramWallet.ui.app.navigation.HomeScreen
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.coRAddressNavGraph
+import com.example.telegramWallet.ui.components.animation.enterTransition
+import com.example.telegramWallet.ui.components.animation.exitTransition
+import com.example.telegramWallet.ui.components.animation.popEnterTransition
+import com.example.telegramWallet.ui.components.animation.popExitTransition
 import com.example.telegramWallet.ui.screens.SplashScreen
 import com.example.telegramWallet.ui.screens.createOrRecoveryWallet.WelcomingScreen
 import com.example.telegramWallet.ui.screens.lockScreen.BlockedAppScreen
@@ -34,7 +37,7 @@ fun RootNavigationGraph(
 ) {
     val isConnected by networkMonitor.networkAvailable.collectAsState()
 
-    val sharedPref = sharedPref() //
+    val sharedPref = sharedPref()
 
     val isFirstStart = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
     val isAcceptedRules = sharedPref.getBoolean(PrefKeys.ACCEPTED_RULES, false)
@@ -71,7 +74,11 @@ fun RootNavigationGraph(
     NavHost(
         navController = navController,
         route = Graph.Root.route,
-        startDestination = Graph.Splash.route
+        startDestination = Graph.Splash.route,
+        enterTransition = enterTransition,
+        exitTransition = exitTransition,
+        popEnterTransition = popEnterTransition,
+        popExitTransition = popExitTransition,
     ) {
         composable(route = Graph.Home.route) {
             HomeScreen()
