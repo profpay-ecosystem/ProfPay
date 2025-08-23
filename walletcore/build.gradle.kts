@@ -47,7 +47,11 @@ android {
 }
 
 dependencies {
-    api(":trustwalletcore")
+    implementation(files("libs/wallet-core-release.aar"))
+    implementation(files("libs/wallet-core-proto.jar"))
+
+    implementation("com.google.protobuf:protobuf-javalite:4.32.0")
+
     api("com.squareup.retrofit2:retrofit:3.0.0")
     api("com.squareup.retrofit2:converter-gson:3.0.0")
     api("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0") // Kotlinx serializer
