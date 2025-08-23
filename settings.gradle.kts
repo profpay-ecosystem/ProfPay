@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "TelegramWallet"
 include(":app")
+include(":blockchain")
