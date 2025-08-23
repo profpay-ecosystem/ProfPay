@@ -100,6 +100,7 @@ import rememberStackedSnackbarHostState
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
@@ -626,7 +627,12 @@ fun ContentBottomSheetTransferConfirmation(
     modelTransferFromBS: ModelTransferFromBS,
     confirmTransaction: () -> Unit
 ) {
-    val decimalFormat = DecimalFormat("#.###")
+    val symbols = DecimalFormatSymbols().apply {
+        groupingSeparator = '.'
+        decimalSeparator = ','
+    }
+    val decimalFormat = DecimalFormat("#,###.###", symbols)
+
     val tokenNameModel = modelTransferFromBS.tokenName
 
     val (trxToUsdtRate, setTrxToUsdtRate) = remember { mutableStateOf(BigDecimal.valueOf(1.0)) }

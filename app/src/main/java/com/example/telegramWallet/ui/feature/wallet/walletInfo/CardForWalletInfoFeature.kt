@@ -34,6 +34,7 @@ import com.example.telegramWallet.ui.app.theme.GreenColor
 import com.example.telegramWallet.ui.app.theme.RedColor
 import java.math.BigInteger
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 @Composable
 fun CardForWalletInfoFeature(
@@ -45,7 +46,12 @@ fun CardForWalletInfoFeature(
     viewModel: WalletInfoViewModel,
     onClick: () -> Unit = {},
 ) {
-    val decimalFormat = DecimalFormat("#.###")
+    val symbols = DecimalFormatSymbols().apply {
+        groupingSeparator = '.'
+        decimalSeparator = ','
+    }
+    val decimalFormat = DecimalFormat("#,###.###", symbols)
+
     val (rateValue, setRateValue) = remember { mutableDoubleStateOf(0.0) }
     val (priceChangePercentage24hUsdt, setPriceChangePercentage24hUsdt) = remember {
         mutableDoubleStateOf(
@@ -135,14 +141,20 @@ fun CardForWalletInfoFeature(
                 } else priceChangePercentage24hUsdt
 
                 if (priceChangePercentage24h >= 0.0) {
+                    val symbols = DecimalFormatSymbols().apply {
+                        groupingSeparator = '.'
+                        decimalSeparator = ','
+                    }
+                    val decimalFormat = DecimalFormat("#,###.###", symbols)
+
                     Text(
-                        "+${DecimalFormat("#.##").format(priceChangePercentage24h)}%",
+                        "+${decimalFormat.format(priceChangePercentage24h)}%",
                         color = GreenColor,
                         style = MaterialTheme.typography.labelLarge
                     )
                 } else {
                     Text(
-                        "${DecimalFormat("#.##").format(priceChangePercentage24h)}%",
+                        "${decimalFormat.format(priceChangePercentage24h)}%",
                         color = RedColor,
                         style = MaterialTheme.typography.labelLarge
                     )

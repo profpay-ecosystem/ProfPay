@@ -78,6 +78,7 @@ import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -306,8 +307,11 @@ fun WalletInfoCardInfoFeature(
     setIsOpenSheetChoiceTokenToSend: () -> Unit,
     goToWalletSystemTRX: () -> Unit
 ) {
-
-    val decimalFormat = DecimalFormat("#.###")
+    val symbols = DecimalFormatSymbols().apply {
+        groupingSeparator = '.'
+        decimalSeparator = ','
+    }
+    val decimalFormat = DecimalFormat("#,###.###", symbols)
 
     Card(
         modifier = Modifier

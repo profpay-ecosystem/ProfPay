@@ -21,10 +21,16 @@ import com.example.telegramWallet.data.utils.toTokenAmount
 import com.example.telegramWallet.ui.app.theme.BackgroundIcon
 import com.example.telegramWallet.ui.screens.wallet.formatDate
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 @Composable
 fun CATransactionListHistoryFeature(address: String, groupedTransaction: List<List<TransactionModel?>>) {
-    val decimalFormat = DecimalFormat("#.###")
+    val symbols = DecimalFormatSymbols().apply {
+        groupingSeparator = '.'
+        decimalSeparator = ','
+    }
+    val decimalFormat = DecimalFormat("#,###.###", symbols)
+
     if (groupedTransaction.isNotEmpty() && groupedTransaction[0].isNotEmpty()) {
         if (groupedTransaction[0][0] != null) {
             LazyColumn(

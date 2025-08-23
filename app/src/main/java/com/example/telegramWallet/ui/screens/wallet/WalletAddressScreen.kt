@@ -82,6 +82,7 @@ import kotlinx.coroutines.withContext
 import rememberStackedSnackbarHostState
 import java.math.BigInteger
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -577,9 +578,15 @@ fun LazyListTransactionsFeature(
     goToTXDetailsScreen: () -> Unit,
     goToSystemTRX: () -> Unit = {},
 ) {
+    val symbols = DecimalFormatSymbols().apply {
+        groupingSeparator = '.'
+        decimalSeparator = ','
+    }
+    val decimalFormat = DecimalFormat("#,###.###", symbols)
+
     val sharedPref = sharedPref()
     val addressWa = sharedPref.getString(PrefKeys.ADDRESS_FOR_WALLET_ADDRESS, "")
-    val decimalFormat = DecimalFormat("#.###")
+
     if (groupedTransaction.isNotEmpty() && groupedTransaction[0].isNotEmpty()) {
         if (groupedTransaction[0][0] != null) {
             LazyColumn(

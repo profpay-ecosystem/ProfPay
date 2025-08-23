@@ -85,6 +85,7 @@ import kotlinx.coroutines.withContext
 import rememberStackedSnackbarHostState
 import java.math.BigInteger
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -95,7 +96,13 @@ fun TXDetailsScreen(
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
 
     val amlState by viewModel.state.collectAsStateWithLifecycle()
-    val decimalFormat = DecimalFormat("#.###")
+
+    val symbols = DecimalFormatSymbols().apply {
+        groupingSeparator = '.'
+        decimalSeparator = ','
+    }
+    val decimalFormat = DecimalFormat("#,###.###", symbols)
+
     val sharedPref = sharedPref()
 
     val walletId = sharedPref.getLong("wallet_id", 1)
