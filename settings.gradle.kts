@@ -12,9 +12,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        flatDir {
+            dirs("libs")
+        }
     }
 }
 
 rootProject.name = "TelegramWallet"
 include(":app")
-include(":blockchain")
+include(":walletcore")
