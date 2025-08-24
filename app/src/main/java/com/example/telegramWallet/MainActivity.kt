@@ -21,6 +21,7 @@ import com.example.telegramWallet.data.services.AppLockManager
 import com.example.telegramWallet.data.services.NetworkMonitor
 import com.example.telegramWallet.ui.app.navigation.MyApp
 import com.example.telegramWallet.ui.app.theme.WalletNavigationBottomBarTheme
+import com.example.walletcore.blockchain.tron.manager.TronSigningContextBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.launch

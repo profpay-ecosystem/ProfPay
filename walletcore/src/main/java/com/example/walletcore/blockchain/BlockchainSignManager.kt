@@ -5,7 +5,7 @@ import com.example.walletcore.model.SignerParams
 import com.example.walletcore.primitives.Chain
 import com.example.walletcore.primitives.FeePriority
 
-class BlockchainSignManager(private val blockchains: List<IBlockchainSigner>) {
+class BlockchainSignManager(private val blockchains: List<BlockchainSigner>) {
     suspend fun signTransaction(
         params: SignerParams,
         feePriority: FeePriority,

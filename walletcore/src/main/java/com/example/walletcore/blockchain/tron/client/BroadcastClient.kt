@@ -1,9 +1,9 @@
-package com.example.walletcore.blockchain.tron
+package com.example.walletcore.blockchain.tron.client
 
-import com.example.walletcore.blockchain.IChainClient
+import com.example.walletcore.blockchain.ChainClient
 import com.example.walletcore.primitives.Account
 import com.example.walletcore.primitives.TransactionType
 
-interface IBroadcastClient : IChainClient {
+interface BroadcastClient : ChainClient {
     suspend fun send(account: Account, signedMessage: ByteArray, type: TransactionType): String
 }

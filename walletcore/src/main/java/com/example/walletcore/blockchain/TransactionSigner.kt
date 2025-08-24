@@ -6,7 +6,7 @@ import com.example.walletcore.primitives.Chain
 import com.example.walletcore.primitives.FeePriority
 import java.math.BigInteger
 
-interface ITransactionSigner : IChainClient {
+interface TransactionSigner : ChainClient {
     suspend fun signMessage(
         chain: Chain,
         input: ByteArray,

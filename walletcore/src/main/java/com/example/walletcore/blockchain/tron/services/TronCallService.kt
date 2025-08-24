@@ -1,15 +1,9 @@
 package com.example.walletcore.blockchain.tron.services
 
+import com.example.walletcore.blockchain.tron.api.TronCallApi
 import com.example.walletcore.blockchain.tron.models.TronSmartContractResult
-import retrofit2.http.Body
-import retrofit2.http.POST
 
-interface TronCallService {
-    @POST("/wallet/triggerconstantcontract")
-    suspend fun triggerSmartContract(@Body addressRequest: Any): Result<TronSmartContractResult>
-}
-
-suspend fun TronCallService.triggerSmartContract(
+suspend fun TronCallApi.triggerSmartContract(
     contractAddress: String,
     functionSelector: String,
     parameter: String? = null,

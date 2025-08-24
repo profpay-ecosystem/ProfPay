@@ -1,6 +1,6 @@
 package com.example.walletcore.model
 
-data class NodeStatus(
+data class NodeStatusModel(
     val url: String,
     val chainId: String,
     val blockNumber: String,

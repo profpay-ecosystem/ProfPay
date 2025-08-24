@@ -1,5 +1,6 @@
 package com.example.walletcore.blockchain.tron.models
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,8 +10,10 @@ data class TronAccountPermission (
 
 @Serializable
 data class TronVote (
-    val vote_address: String,
-    val vote_count: Long
+    @SerialName("vote_address")
+    val voteAddress: String,
+    @SerialName("vote_count")
+    val voteCount: Long
 )
 
 @Serializable
@@ -21,15 +24,18 @@ data class TronFrozen (
 
 @Serializable
 data class TronUnfrozen (
-    val unfreeze_amount: Long? = null,
-    val unfreeze_expire_time: Long? = null
+    @SerialName("unfreeze_amount")
+    val unfreezeAmount: Long? = null,
+    @SerialName("unfreeze_expire_time")
+    val unfreezeExpireTime: Long? = null
 )
 
 @Serializable
 data class TronAccount (
     val balance: Long? = null,
     val address: String? = null,
-    val active_permission: List<TronAccountPermission>? = null,
+    @SerialName("active_permission")
+    val activePermission: List<TronAccountPermission>? = null,
     val votes: List<TronVote>? = null,
     val frozenV2: List<TronFrozen>? = null,
     val unfrozenV2: List<TronUnfrozen>? = null
@@ -45,8 +51,10 @@ data class TronAccountRequest (
 data class TronAccountUsage (
     val freeNetUsed: Long? = null,
     val freeNetLimit: Long? = null,
-    val EnergyUsed: Long? = null,
-    val EnergyLimit: Long? = null
+    @SerialName("EnergyUsed")
+    val energyUsed: Long? = null,
+    @SerialName("EnergyLimit")
+    val energyLimit: Long? = null
 )
 
 @Serializable

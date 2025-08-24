@@ -6,7 +6,7 @@ import com.example.walletcore.primitives.Chain
 import com.example.walletcore.primitives.FeePriority
 import java.math.BigInteger
 
-interface IBlockchainSigner : IChainClient {
+interface BlockchainSigner : ChainClient {
     suspend fun signMessage(
         chain: Chain,
         input: ByteArray,

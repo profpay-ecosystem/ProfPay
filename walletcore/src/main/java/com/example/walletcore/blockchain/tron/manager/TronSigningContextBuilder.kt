@@ -1,13 +1,14 @@
-package com.example.walletcore.blockchain.tron
+package com.example.walletcore.blockchain.tron.manager
 
 import com.example.walletcore.ConfirmParams
 import com.example.walletcore.blockchain.NativeTransferPreloader
 import com.example.walletcore.blockchain.TokenTransferPreloader
+import com.example.walletcore.blockchain.tron.api.TronAccountsApi
+import com.example.walletcore.blockchain.tron.api.TronCallApi
+import com.example.walletcore.blockchain.tron.api.TronNodeStatusApi
+import com.example.walletcore.blockchain.tron.fee.TronFeeCalculator
 import com.example.walletcore.blockchain.tron.models.TronAccount
 import com.example.walletcore.blockchain.tron.models.TronAccountUsage
-import com.example.walletcore.blockchain.tron.services.TronAccountsService
-import com.example.walletcore.blockchain.tron.services.TronCallService
-import com.example.walletcore.blockchain.tron.services.TronNodeStatusService
 import com.example.walletcore.blockchain.tron.services.getAccount
 import com.example.walletcore.blockchain.tron.services.getAccountUsage
 import com.example.walletcore.model.ChainSignData
@@ -21,9 +22,9 @@ import kotlinx.coroutines.withContext
 
 class TronSigningContextBuilder(
     private val chain: Chain,
-    private val nodeStatusService: TronNodeStatusService,
-    private val accountsService: TronAccountsService,
-    callService: TronCallService,
+    private val nodeStatusService: TronNodeStatusApi,
+    private val accountsService: TronAccountsApi,
+    callService: TronCallApi,
 ) : NativeTransferPreloader, TokenTransferPreloader {
     val feeCalculator = TronFeeCalculator(chain, nodeStatusService, callService)
 
@@ -63,12 +64,12 @@ class TronSigningContextBuilder(
         SignerParams(
             input = params,
             chainData = TronChainData(
-                number = nowBlock.block_header.raw_data.number,
-                version = nowBlock.block_header.raw_data.version,
-                txTrieRoot = nowBlock.block_header.raw_data.txTrieRoot,
-                witnessAddress = nowBlock.block_header.raw_data.witness_address,
-                parentHash = nowBlock.block_header.raw_data.parentHash,
-                timestamp = nowBlock.block_header.raw_data.timestamp,
+                number = nowBlock.blockHeader.rawData.number,
+                version = nowBlock.blockHeader.rawData.version,
+                txTrieRoot = nowBlock.blockHeader.rawData.txTrieRoot,
+                witnessAddress = nowBlock.blockHeader.rawData.witnessAddress,
+                parentHash = nowBlock.blockHeader.rawData.parentHash,
+                timestamp = nowBlock.blockHeader.rawData.timestamp,
                 fee = fee,
                 votes = votes(account)
             )

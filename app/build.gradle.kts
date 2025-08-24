@@ -189,6 +189,8 @@ buildscript {
 }
 
 dependencies {
+    implementation(project(":walletcore"))
+
     implementation(files("libs/bitcoinj-core-0.17-SNAPSHOT.jar"))
     val navVersion = "2.9.2"
     val roomVersion = "2.7.2"

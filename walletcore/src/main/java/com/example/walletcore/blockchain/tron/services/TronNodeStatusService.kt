@@ -1,19 +1,29 @@
 package com.example.walletcore.blockchain.tron.services
 
-import com.example.walletcore.blockchain.tron.models.TronBlock
-import com.example.walletcore.blockchain.tron.models.TronChainParameters
-import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Url
+import com.example.walletcore.blockchain.tron.client.NodeStatus
+import com.example.walletcore.blockchain.tron.client.TronRpcClient
+import com.example.walletcore.model.NodeStatusModel
+import com.example.walletcore.primitives.Chain
+import com.example.walletcore.rpc.getLatency
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-interface TronNodeStatusService {
-    @GET("/wallet/getchainparameters")
-    suspend fun getChainParameters(): Result<TronChainParameters>
+class TronNodeStatusService(
+    private val chain: Chain,
+    private val rpcClient: TronRpcClient,
+) : NodeStatus {
+    override suspend fun getNodeStatus(chain: Chain, url: String): NodeStatusModel? =
+        withContext(Dispatchers.IO) {
+            val resp = rpcClient.nowBlock("$url/wallet/getnowblock")
+            NodeStatusModel(
+                url = url,
+                blockNumber = resp.body()?.blockHeader?.rawData?.number?.toString()
+                    ?: return@withContext null,
+                inSync = true,
+                chainId = "",
+                latency = resp.getLatency(),
+            )
+        }
 
-    @POST("/wallet/getnowblock")
-    suspend fun nowBlock(): Result<TronBlock>
-
-    @POST//("/wallet/getnowblock")
-    suspend fun nowBlock(@Url url: String): Response<TronBlock>
+    override fun supported(chain: Chain): Boolean = this.chain == chain
 }
