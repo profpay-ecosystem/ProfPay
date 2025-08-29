@@ -32,9 +32,8 @@ import com.example.telegramWallet.bridge.view_model.wallet.WalletInfoViewModel
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.example.telegramWallet.ui.app.theme.GreenColor
 import com.example.telegramWallet.ui.app.theme.RedColor
+import com.example.telegramWallet.utils.decimalFormat
 import java.math.BigInteger
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 
 @Composable
 fun CardForWalletInfoFeature(
@@ -46,12 +45,6 @@ fun CardForWalletInfoFeature(
     viewModel: WalletInfoViewModel,
     onClick: () -> Unit = {},
 ) {
-    val symbols = DecimalFormatSymbols().apply {
-        groupingSeparator = '.'
-        decimalSeparator = ','
-    }
-    val decimalFormat = DecimalFormat("#,###.###", symbols)
-
     val (rateValue, setRateValue) = remember { mutableDoubleStateOf(0.0) }
     val (priceChangePercentage24hUsdt, setPriceChangePercentage24hUsdt) = remember {
         mutableDoubleStateOf(
@@ -79,9 +72,9 @@ fun CardForWalletInfoFeature(
     }
 
     val priceInUsdt: String = if (label == "TRX") {
-        decimalFormat.format(balance.toTokenAmount().toDouble() * rateValue)
+        decimalFormat(balance.toTokenAmount() * rateValue.toBigDecimal())
     } else {
-        decimalFormat.format(balance.toTokenAmount())
+        decimalFormat(balance.toTokenAmount())
     }
 
     Card(
@@ -121,7 +114,7 @@ fun CardForWalletInfoFeature(
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = "${decimalFormat.format(balance.toTokenAmount())} $shortNameToken",
+                            text = "${decimalFormat(balance.toTokenAmount())} $shortNameToken",
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
@@ -141,20 +134,14 @@ fun CardForWalletInfoFeature(
                 } else priceChangePercentage24hUsdt
 
                 if (priceChangePercentage24h >= 0.0) {
-                    val symbols = DecimalFormatSymbols().apply {
-                        groupingSeparator = '.'
-                        decimalSeparator = ','
-                    }
-                    val decimalFormat = DecimalFormat("#,###.###", symbols)
-
                     Text(
-                        "+${decimalFormat.format(priceChangePercentage24h)}%",
+                        "+${decimalFormat(priceChangePercentage24h.toBigDecimal())}%",
                         color = GreenColor,
                         style = MaterialTheme.typography.labelLarge
                     )
                 } else {
                     Text(
-                        "${decimalFormat.format(priceChangePercentage24h)}%",
+                        "${decimalFormat(priceChangePercentage24h.toBigDecimal())}%",
                         color = RedColor,
                         style = MaterialTheme.typography.labelLarge
                     )

@@ -1,5 +1,6 @@
 package com.example.telegramWallet.tron.smart_contract
 
+import com.example.telegramWallet.AppConstants
 import com.google.protobuf.ByteString
 import org.tron.trident.abi.TypeReference
 import org.tron.trident.abi.datatypes.Address
@@ -27,7 +28,7 @@ data class DealData(
 
 class MultiSigWrite {
     fun executeDisputed(id: Long, ownerAddress: String, privateKey: String, contractAddress: String): ByteString {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val executeDisputed = Function("executeDisputed",
             listOf(Uint256(id)),
@@ -44,7 +45,7 @@ class MultiSigWrite {
      * Позволяет покупателю внести сумму токенов для конкретной сделки.
      */
     fun depositDeal(id: Long, ownerAddress: String, privateKey: String, contractAddress: String): ByteString {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val depositDeal = Function("depositDeal",
             listOf(Uint256(id)),
@@ -61,7 +62,7 @@ class MultiSigWrite {
      * Позволяет участникам голосовать за завершение сделки.
      */
     fun voteDeal(id: Long, ownerAddress: String, privateKey: String, contractAddress: String): ByteString {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val voteDeal = Function("voteDeal",
             listOf(Uint256(id)),
@@ -78,7 +79,7 @@ class MultiSigWrite {
      * Позволяет закрыть контракт на ранних этапах, вернуть деньги покупателю и отдать комиссии админам.
      */
     fun cancelDeal(id: Long, ownerAddress: String, privateKey: String, contractAddress: String): ByteString {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val cancelDeal = Function("cancelDeal",
             listOf(Uint256(id)),
@@ -92,7 +93,7 @@ class MultiSigWrite {
     }
 
     fun paySellerExpertFee(id: Long, ownerAddress: String, privateKey: String, contractAddress: String): ByteString {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val paySellerExpertFee = Function("paySellerExpertFee",
             listOf(Uint256(id)),
@@ -109,7 +110,7 @@ class MultiSigWrite {
      * Дает доступ контракту для перевода USDT с адреса указанного в контракте.
      */
     fun approve(ownerAddress: String, privateKey: String, contractAddress: String): ByteString {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val builder = wrapper.triggerCall(
             ownerAddress,
@@ -134,7 +135,7 @@ class MultiSigWrite {
 
     fun assignDecisionAdminAndSetAmounts(id: Long, ownerAddress: String, privateKey: String, contractAddress: String,
                                          sellerValue: BigInteger, buyerValue: BigInteger): ByteString {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val assignDecisionAdminAndSetAmounts = Function("assignDecisionAdminAndSetAmounts",
             listOf(
@@ -152,7 +153,7 @@ class MultiSigWrite {
     }
 
     fun voteOnDisputeResolution(id: Long, ownerAddress: String, privateKey: String, contractAddress: String): ByteString {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val voteOnDisputeResolution = Function("voteOnDisputeResolution",
             listOf(Uint256(id)),
@@ -166,7 +167,7 @@ class MultiSigWrite {
     }
 
     fun declineDisputeResolution(id: Long, ownerAddress: String, privateKey: String, contractAddress: String): ByteString {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val declineDisputeResolution = Function("declineDisputeResolution",
             listOf(Uint256(id)),
@@ -180,7 +181,7 @@ class MultiSigWrite {
     }
 
     fun createDeal(ownerAddress: String, contractAddress: String, privateKey: String, params: MutableList<Type<*>> = ArrayList()): ByteString {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val createDeal = Function(
             "createDeal",

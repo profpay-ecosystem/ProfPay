@@ -105,9 +105,6 @@ fun RootNavigationGraph(
             WelcomingScreen(
                 toNavigate = { route ->
                     navController.navigate(route)
-                },
-                toNavigateUp = {
-                    navController.navigateUp()
                 }
             )
             BackHandler {}

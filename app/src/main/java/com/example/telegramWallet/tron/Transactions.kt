@@ -1,6 +1,7 @@
 package com.example.telegramWallet.tron
 
 import android.util.Log
+import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.google.protobuf.ByteString
 import org.tron.trident.abi.FunctionEncoder
@@ -30,7 +31,7 @@ data class SignedTransactionData(
 class Transactions() {
     // Перевод USDT валюты на другой адрес.
     fun trc20Transfer(fromAddress: String?, toAddress: String?, privateKey: String, amount: Long): String {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
         val contract: Contract = wrapper.getContract(contractAddress)
@@ -40,7 +41,7 @@ class Transactions() {
 
     // Перевод TRX валюты на другой адрес.
     fun trxTransfer(fromAddress: String?, toAddress: String?, privateKey: String, amount: Long): String {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val txnExt: TransactionExtention = wrapper.transfer(
             fromAddress, toAddress, amount
@@ -62,7 +63,7 @@ class Transactions() {
         privateKey: String,
         amount: BigInteger
     ): EstimateEnergyData {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
         val transfer = Function(
@@ -92,7 +93,7 @@ class Transactions() {
         privateKey: String,
         amount: BigInteger
     ): SignedTransactionData {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val txnExt: TransactionExtention = wrapper.transfer(fromAddress, toAddress, amount.toLong())
         if (Response.TransactionReturn.response_code.SUCCESS !== txnExt.result.code) {
@@ -117,7 +118,7 @@ class Transactions() {
         privateKey: String,
         amount: BigInteger
     ): SignedTransactionData {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
         val transfer = Function(
@@ -150,7 +151,7 @@ class Transactions() {
         privateKey: String,
         amount: BigInteger
     ): EstimateBandwidthData {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val txnExt: TransactionExtention = wrapper.transfer(
             fromAddress, toAddress, amount.toLong()
@@ -171,7 +172,7 @@ class Transactions() {
         privateKey: String,
         amount: BigInteger
     ): EstimateBandwidthData {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
         val transfer = Function(
@@ -202,7 +203,7 @@ class Transactions() {
         address: String,
         privateKey: String
     ): EstimateBandwidthData {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val func = FunctionEncoder.encode(function)
 
@@ -224,7 +225,7 @@ class Transactions() {
     }
 
     fun estimateEnergy(function: Function, contractAddress: String, address: String, privateKey: String): EstimateEnergyData {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", privateKey)
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val func = FunctionEncoder.encode(function)
         val energyRequired = wrapper.estimateEnergyV2(

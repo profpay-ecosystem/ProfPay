@@ -218,7 +218,7 @@ class TransactionProcessorService @Inject constructor(
                         .setAddress(sender)
                         .setReceiverAddress(receiver)
                         .setAmount(amountSending.toByteString())
-                        .setEstimateEnergy(estimateEnergy.energy)
+                        .setEstimateEnergy(155000)
                         .setBandwidthRequired(
                             if (tron.accounts.hasEnoughBandwidth(
                                     sender,

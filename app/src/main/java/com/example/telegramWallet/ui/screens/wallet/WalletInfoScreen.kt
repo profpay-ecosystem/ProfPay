@@ -71,14 +71,13 @@ import com.example.telegramWallet.ui.app.theme.RedColor
 import com.example.telegramWallet.ui.feature.wallet.walletInfo.CardForWalletInfoFeature
 import com.example.telegramWallet.ui.feature.wallet.walletInfo.bottomSheetChoiceTokenToSend
 import com.example.telegramWallet.ui.shared.sharedPref
+import com.example.telegramWallet.utils.decimalFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -307,12 +306,6 @@ fun WalletInfoCardInfoFeature(
     setIsOpenSheetChoiceTokenToSend: () -> Unit,
     goToWalletSystemTRX: () -> Unit
 ) {
-    val symbols = DecimalFormatSymbols().apply {
-        groupingSeparator = '.'
-        decimalSeparator = ','
-    }
-    val decimalFormat = DecimalFormat("#,###.###", symbols)
-
     Card(
         modifier = Modifier
             .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
@@ -392,7 +385,7 @@ fun WalletInfoCardInfoFeature(
 //                                    drawRect(Color.Green.copy(alpha = 0.4f))
 //                                }
                             Text(
-                                text = "$${decimalFormat.format(totalBalance.toTokenAmount())}",
+                                text = "$${decimalFormat(totalBalance.toTokenAmount())}",
                                 fontSize = 35.sp,
                                 style = MaterialTheme.typography.displayMedium
                             )
@@ -409,13 +402,13 @@ fun WalletInfoCardInfoFeature(
                         )
                         if (pricePercentage24h >= 0.0) {
                             Text(
-                                "+${decimalFormat.format(pricePercentage24h)}%",
+                                "+${decimalFormat(pricePercentage24h.toBigDecimal())}%",
                                 color = GreenColor,
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         } else {
                             Text(
-                                "${decimalFormat.format(pricePercentage24h)}%",
+                                "${decimalFormat(pricePercentage24h.toBigDecimal())}%",
                                 color = RedColor,
                                 style = MaterialTheme.typography.bodyLarge
                             )

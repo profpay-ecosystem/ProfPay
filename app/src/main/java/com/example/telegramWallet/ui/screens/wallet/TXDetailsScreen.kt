@@ -28,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -55,7 +54,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -70,7 +68,6 @@ import com.example.telegramWallet.data.flow_db.repo.AmlResult
 import com.example.telegramWallet.data.utils.toBigInteger
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.example.telegramWallet.exceptions.aml.ServerAmlException
-import com.example.telegramWallet.tron.Transactions
 import com.example.telegramWallet.ui.app.theme.BackgroundContainerButtonLight
 import com.example.telegramWallet.ui.app.theme.GreenColor
 import com.example.telegramWallet.ui.app.theme.PubAddressDark
@@ -78,14 +75,13 @@ import com.example.telegramWallet.ui.feature.wallet.tx_details.KnowAMLFeature
 import com.example.telegramWallet.ui.feature.wallet.tx_details.UnknownAMLFeature
 import com.example.telegramWallet.ui.shared.sharedPref
 import com.example.telegramWallet.ui.widgets.dialog.AlertDialogWidget
+import com.example.telegramWallet.utils.decimalFormat
 import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rememberStackedSnackbarHostState
 import java.math.BigInteger
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,15 +89,7 @@ fun TXDetailsScreen(
     goToBack: () -> Unit,
     viewModel: TXDetailsViewModel = hiltViewModel()
 ) {
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
-
     val amlState by viewModel.state.collectAsStateWithLifecycle()
-
-    val symbols = DecimalFormatSymbols().apply {
-        groupingSeparator = '.'
-        decimalSeparator = ','
-    }
-    val decimalFormat = DecimalFormat("#,###.###", symbols)
 
     val sharedPref = sharedPref()
 
@@ -129,15 +117,14 @@ fun TXDetailsScreen(
             }
 
             if (transactionEntity!!.tokenName == "USDT") {
-                dollarAmount = decimalFormat.format(
+                dollarAmount = decimalFormat(
                     (transactionEntity?.amount ?: BigInteger.ONE).toTokenAmount()
                 )
             } else {
                 val trxToUsdtRate =
                     viewModel.exchangeRatesRepo.getExchangeRateValue(BinanceSymbolEnum.TRX_USDT.symbol)
-                dollarAmount = decimalFormat.format(
-                    (transactionEntity?.amount ?: BigInteger.ONE).toTokenAmount()
-                        .toDouble() * trxToUsdtRate
+                dollarAmount = decimalFormat(
+                    (transactionEntity?.amount ?: BigInteger.ONE).toTokenAmount() * trxToUsdtRate.toBigDecimal()
                 )
             }
 
@@ -293,7 +280,7 @@ fun TXDetailsScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "${decimalFormat.format((transactionEntity?.amount ?: BigInteger.ONE).toTokenAmount())} ${currentTokenName.shortName}",
+                                text = "${decimalFormat((transactionEntity?.amount ?: BigInteger.ONE).toTokenAmount())} ${currentTokenName.shortName}",
                                 style = MaterialTheme.typography.bodySmall,
                             )
                             Text(

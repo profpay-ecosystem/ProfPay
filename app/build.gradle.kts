@@ -50,7 +50,7 @@ android {
 //        MAJOR: Внесение изменений, ломающих обратную совместимость.
 //        MINOR: Добавление новых функций без нарушения совместимости.
 //        PATCH: Исправление ошибок и незначительные улучшения без изменения функциональности.
-        versionName = "5.4.16" // MAJOR.MINOR.PATCH
+        versionName = "5.4.20" // MAJOR.MINOR.PATCH
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -189,6 +189,8 @@ buildscript {
 }
 
 dependencies {
+//    implementation(project(":walletcore"))
+
     implementation(files("libs/bitcoinj-core-0.17-SNAPSHOT.jar"))
     val navVersion = "2.9.2"
     val roomVersion = "2.7.2"

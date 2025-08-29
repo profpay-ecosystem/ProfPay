@@ -14,6 +14,7 @@ import com.example.telegramWallet.security.KeystoreEncryptionUtils
 import dagger.Lazy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.sentry.Sentry
+import javax.crypto.AEADBadTagException
 import javax.inject.Inject
 
 class SharedPrefsTokenProvider @Inject constructor(
@@ -103,14 +104,23 @@ class SharedPrefsTokenProvider @Inject constructor(
         return Base64.encodeToString(encryptedBytes, Base64.NO_WRAP)
     }
 
-    private fun decryptBase64(base64Value: String): String {
+    private fun decryptBase64(base64Value: String): String? {
         return try {
             val encryptedBytes = Base64.decode(base64Value, Base64.NO_WRAP)
             val decryptedBytes = keystore.decrypt(encryptedBytes)
             String(decryptedBytes, Charsets.UTF_8)
-        } catch (e: Exception) {
+        } catch (e: AEADBadTagException) {
+            prefs.edit { remove(PrefKeys.JWT_ACCESS_TOKEN) }
+            prefs.edit { remove(PrefKeys.JWT_REFRESH_TOKEN) }
+
             Sentry.captureException(e)
-            ""
+            null
+        } catch (e: Exception) {
+            prefs.edit { remove(PrefKeys.JWT_ACCESS_TOKEN) }
+            prefs.edit { remove(PrefKeys.JWT_REFRESH_TOKEN) }
+
+            Sentry.captureException(e)
+            throw e
         }
     }
 }

@@ -3,12 +3,8 @@ package com.example.telegramWallet.ui.screens.wallet
 import StackedSnackbarHost
 import StackedSnakbarHostState
 import androidx.compose.animation.animateColor
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -91,6 +87,7 @@ import com.example.telegramWallet.ui.app.theme.ProgressIndicator
 import com.example.telegramWallet.ui.app.theme.PubAddressDark
 import com.example.telegramWallet.ui.app.theme.RedColor
 import com.example.telegramWallet.ui.shared.sharedPref
+import com.example.telegramWallet.utils.decimalFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
@@ -99,8 +96,6 @@ import kotlinx.coroutines.withContext
 import rememberStackedSnackbarHostState
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
@@ -627,12 +622,6 @@ fun ContentBottomSheetTransferConfirmation(
     modelTransferFromBS: ModelTransferFromBS,
     confirmTransaction: () -> Unit
 ) {
-    val symbols = DecimalFormatSymbols().apply {
-        groupingSeparator = '.'
-        decimalSeparator = ','
-    }
-    val decimalFormat = DecimalFormat("#,###.###", symbols)
-
     val tokenNameModel = modelTransferFromBS.tokenName
 
     val (trxToUsdtRate, setTrxToUsdtRate) = remember { mutableStateOf(BigDecimal.valueOf(1.0)) }
@@ -679,13 +668,13 @@ fun ContentBottomSheetTransferConfirmation(
             )
             if (tokenNameModel.shortName == "TRX") {
                 Text(
-                    text = "≈ ${decimalFormat.format(modelTransferFromBS.amount * trxToUsdtRate)} $",
+                    text = "≈ ${decimalFormat(modelTransferFromBS.amount * trxToUsdtRate)} $",
                     style = MaterialTheme.typography.bodyMedium,
                     color = PubAddressDark
                 )
             } else {
                 Text(
-                    text = "≈ ${decimalFormat.format(modelTransferFromBS.amount)} $",
+                    text = "≈ ${decimalFormat(modelTransferFromBS.amount)} $",
                     style = MaterialTheme.typography.bodyMedium,
                     color = PubAddressDark
                 )
@@ -820,7 +809,7 @@ fun ContentBottomSheetTransferConfirmation(
                             modifier = Modifier.padding(bottom = 4.dp)
                         )
                         Text(
-                            text = "≈ ${decimalFormat.format(modelTransferFromBS.commission * trxToUsdtRate)} $",
+                            text = "≈ ${decimalFormat(modelTransferFromBS.commission * trxToUsdtRate)} $",
                             style = MaterialTheme.typography.bodyMedium,
                             color = PubAddressDark
                         )
@@ -849,7 +838,7 @@ fun ContentBottomSheetTransferConfirmation(
                             )
                             Text(
                                 text = "≈ ${
-                                    decimalFormat.format(
+                                    decimalFormat(
                                         createNewAccountFeeInSystemContract.toTokenAmount() * trxToUsdtRate
                                     )
                                 } $",
@@ -875,7 +864,7 @@ fun ContentBottomSheetTransferConfirmation(
                         modifier = Modifier
                     )
                     Text(
-                        text = "${decimalFormat.format((createNewAccountFeeInSystemContract.toTokenAmount() + modelTransferFromBS.commission) * trxToUsdtRate + modelTransferFromBS.amount)} $",
+                        text = "${decimalFormat((createNewAccountFeeInSystemContract.toTokenAmount() + modelTransferFromBS.commission) * trxToUsdtRate + modelTransferFromBS.amount)} $",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                     )

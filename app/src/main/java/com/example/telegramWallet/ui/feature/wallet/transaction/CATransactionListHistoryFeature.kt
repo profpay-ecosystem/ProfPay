@@ -20,17 +20,10 @@ import com.example.telegramWallet.data.database.models.TransactionModel
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.example.telegramWallet.ui.app.theme.BackgroundIcon
 import com.example.telegramWallet.ui.screens.wallet.formatDate
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
+import com.example.telegramWallet.utils.decimalFormat
 
 @Composable
 fun CATransactionListHistoryFeature(address: String, groupedTransaction: List<List<TransactionModel?>>) {
-    val symbols = DecimalFormatSymbols().apply {
-        groupingSeparator = '.'
-        decimalSeparator = ','
-    }
-    val decimalFormat = DecimalFormat("#,###.###", symbols)
-
     if (groupedTransaction.isNotEmpty() && groupedTransaction[0].isNotEmpty()) {
         if (groupedTransaction[0][0] != null) {
             LazyColumn(
@@ -69,7 +62,7 @@ fun CATransactionListHistoryFeature(address: String, groupedTransaction: List<Li
                                 paintIconId = currentTokenName.paintIconId,
                                 shortNameToken = currentTokenName.shortName,
                                 transactionEntity = item.toEntity(),
-                                amount = decimalFormat.format(item.amount.toTokenAmount()),
+                                amount = decimalFormat(item.amount.toTokenAmount()),
                                 address = address
                             )
                         }

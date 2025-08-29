@@ -76,13 +76,12 @@ import com.example.telegramWallet.ui.feature.wallet.tx_details.bottomSheetReject
 import com.example.telegramWallet.ui.feature.wallet.tx_details.bottomSheetTransOnGeneralReceipt
 import com.example.telegramWallet.ui.shared.sharedPref
 import com.example.telegramWallet.ui.widgets.dialog.AlertDialogWidget
+import com.example.telegramWallet.utils.decimalFormat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rememberStackedSnackbarHostState
 import java.math.BigInteger
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -578,12 +577,6 @@ fun LazyListTransactionsFeature(
     goToTXDetailsScreen: () -> Unit,
     goToSystemTRX: () -> Unit = {},
 ) {
-    val symbols = DecimalFormatSymbols().apply {
-        groupingSeparator = '.'
-        decimalSeparator = ','
-    }
-    val decimalFormat = DecimalFormat("#,###.###", symbols)
-
     val sharedPref = sharedPref()
     val addressWa = sharedPref.getString(PrefKeys.ADDRESS_FOR_WALLET_ADDRESS, "")
 
@@ -642,7 +635,7 @@ fun LazyListTransactionsFeature(
                                     },
                                     paintIconId = currentTokenName.paintIconId,
                                     shortNameToken = currentTokenName.shortName,
-                                    amount = decimalFormat.format(item.amount.toTokenAmount()),
+                                    amount = decimalFormat(item.amount.toTokenAmount()),
                                     typeTransaction = item.type,
                                     address = currentAddress,
                                     transactionEntity = item.toEntity(),
@@ -671,7 +664,7 @@ fun LazyListTransactionsFeature(
                                     paintIconId = currentTokenName.paintIconId,
                                     shortNameToken = currentTokenName.shortName,
                                     transactionEntity = item.toEntity(),
-                                    amount = decimalFormat.format(item.amount.toTokenAmount()),
+                                    amount = decimalFormat(item.amount.toTokenAmount()),
                                     typeTransaction = item.type,
                                     address = currentAddress
                                 )

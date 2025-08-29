@@ -49,6 +49,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.telegramWallet.PrefKeys
 import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.welcoming_screen.WelcomingViewModel
+import com.example.telegramWallet.ui.app.navigation.graphs.Graph
 import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.OnboardingScreen
 import com.example.telegramWallet.ui.app.theme.BackgroundDark
 import com.example.telegramWallet.ui.app.theme.BackgroundLight
@@ -60,7 +61,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WelcomingScreen(toNavigate: (String) -> Unit,
-                    toNavigateUp: () -> Unit,
                     viewModel: WelcomingViewModel = hiltViewModel()
 ) {
     val sharedPref = sharedPref() //
@@ -245,7 +245,7 @@ fun WelcomingScreen(toNavigate: (String) -> Unit,
                                     if (isFirstStart) {
                                         toNavigate(OnboardingScreen.CreateOrRecoverWalletFS.route)
                                     } else {
-                                        toNavigateUp()
+                                        toNavigate(Graph.Home.route)
                                     }
 
                                     viewModel.viewModelScope.launch(Dispatchers.IO) {

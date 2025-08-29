@@ -19,8 +19,7 @@ class SmartContract(val context: Context) {
         privateKey: String,
     ): ByteString? {
         val wrapper = ApiWrapper(
-            "5.39.223.8:59151",
-            "5.39.223.8:50061",
+            AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
             privateKey
         )
         val assetManager: AssetManager = context.assets
@@ -48,8 +47,7 @@ class SmartContract(val context: Context) {
 
     suspend fun estimateDeployingContract(privateKey: String): Pair<Int, Int> {
         val wrapper = ApiWrapper(
-            "5.39.223.8:59151",
-            "5.39.223.8:50061",
+            AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
             privateKey
         )
 

@@ -4,6 +4,7 @@ import android.util.Log
 import cash.z.ecc.android.bip39.Mnemonics
 import cash.z.ecc.android.bip39.toEntropy
 import cash.z.ecc.android.bip39.toSeed
+import com.example.telegramWallet.AppConstants
 import io.sentry.Sentry
 import kotlinx.coroutines.withTimeout
 import org.bitcoinj.base.Base58
@@ -187,7 +188,7 @@ class AddressUtilities {
      */
     fun getUsdtBalance(accountAddr: String): BigInteger {
         try {
-            val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", KeyPair.generate().toPrivateKey())
+            val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, KeyPair.generate().toPrivateKey())
 
             val contract: Contract = wrapper.getContract("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t")
             val token = Trc20Contract(contract, "TJJaVcRremausriMLkZeRedM95v7HW4j4D", wrapper)
@@ -206,7 +207,7 @@ class AddressUtilities {
      */
     fun getTrxBalance(accountAddr: String): BigInteger {
         try {
-            val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", KeyPair.generate().toPrivateKey())
+            val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, KeyPair.generate().toPrivateKey())
             val balanceInSun: BigInteger = BigInteger.valueOf(wrapper.getAccountBalance(accountAddr))
             wrapper.close()
             return balanceInSun
@@ -354,7 +355,7 @@ class AddressUtilities {
     }
 
     suspend fun isAddressActivated(address: String): Boolean {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", KeyPair.generate().toPrivateKey())
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, KeyPair.generate().toPrivateKey())
 
         return try {
             withTimeout(5000) {
@@ -370,7 +371,7 @@ class AddressUtilities {
     }
 
     fun getCreateNewAccountFeeInSystemContract(): BigInteger {
-        val wrapper = ApiWrapper("5.39.223.8:59151", "5.39.223.8:50061", KeyPair.generate().toPrivateKey())
+        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, KeyPair.generate().toPrivateKey())
 
         for (chainParameter in wrapper.chainParameters.chainParameterList) {
             if (chainParameter.key == "getCreateNewAccountFeeInSystemContract") {

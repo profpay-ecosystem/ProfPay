@@ -2,6 +2,7 @@ package com.example.telegramWallet.security
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import java.security.GeneralSecurityException
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -52,6 +53,7 @@ class KeystoreEncryptionUtils {
         return iv + encryptedData
     }
 
+    @Throws(GeneralSecurityException::class)
     fun decrypt(encryptedDataWithIv: ByteArray): ByteArray {
         val iv = encryptedDataWithIv.copyOfRange(0, ivSize)
         val encryptedData = encryptedDataWithIv.copyOfRange(ivSize, encryptedDataWithIv.size)
