@@ -17,8 +17,8 @@ class BlockchainRpcManager {
      * Возвращаем зарегистрированного клиента для указанной блокчейн-сети.
      */
     @Suppress("UNCHECKED_CAST")
-    fun <T> getRpcClient(chain: Chain): T? {
-        return clientRegistry[chain] as? T
+    fun <T> getRpcClient(chain: Chain): T {
+        return clientRegistry[chain] as T
     }
 
     /**

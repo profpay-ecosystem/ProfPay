@@ -9,7 +9,6 @@ data class SignerParams(
     val input: ConfirmParams,
     val chainData: ChainSignData,
     val finalAmount: BigInteger = BigInteger.ZERO,
-    val scanTransaction: ScanTransaction? = null,
 )
 
 interface ChainSignData {
