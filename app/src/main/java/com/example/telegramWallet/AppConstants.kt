@@ -5,8 +5,8 @@ object AppConstants {
         const val GRPC_ENDPOINT = "grpc.wallet-services-srv.com"
         const val GRPC_PORT = 8443
 
-        const val TRON_GRPC_ENDPOINT = "18.141.79.38:50051"
-        const val TRON_GRPC_ENDPOINT_SOLIDITY = "18.141.79.38:50061"
+        const val TRON_GRPC_ENDPOINT = "45.137.213.192:59151"
+        const val TRON_GRPC_ENDPOINT_SOLIDITY = "45.137.213.192:50061"
     }
 
     object SmartContract {
