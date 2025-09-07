@@ -29,9 +29,23 @@ message EstimateCommissionRequest {
   optional uint64 bandwidth_required = 4;
 }
 
+enum CommissionType {
+  USER_GROUP_FEE = 0;
+  ENERGY_PRICE = 1;
+  BANDWIDTH_PRICE = 2;
+  AML_PRICE = 3;
+}
+
+message CommissionCategory {
+  CommissionType type = 1;
+  bytes amount = 2;
+  string description = 3;
+}
+
 message EstimateCommissionResponse {
-  double commission = 1;
-  google.protobuf.Timestamp timestamp = 2;
+  bytes commission = 1;
+  repeated CommissionCategory categories = 2;
+  google.protobuf.Timestamp timestamp = 3;
 }
 
 message SendUsdtTransactionRequest {
@@ -58,6 +72,7 @@ message TransactionCommissionData {
   optional uint64 estimate_energy = 3;
   uint64 bandwidth_required = 4;
   bytes txn_bytes = 5;
+  repeated CommissionCategory categories = 6;
 }
 
 enum TransferNetwork {

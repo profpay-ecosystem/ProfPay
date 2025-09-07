@@ -16,6 +16,7 @@ import com.example.telegramWallet.data.database.repositories.wallet.TokenRepo
 import com.example.telegramWallet.data.flow_db.repo.EstimateCommissionResult
 import com.example.telegramWallet.data.flow_db.repo.SendFromWalletRepo
 import com.example.telegramWallet.data.services.TransactionProcessorService
+import com.example.telegramWallet.data.utils.toBigInteger
 import com.example.telegramWallet.data.utils.toSunAmount
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.example.telegramWallet.tron.Tron
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.example.protobuf.transfer.TransferProto
 import java.math.BigDecimal
 import java.math.BigInteger
 import javax.inject.Inject
@@ -39,6 +41,7 @@ data class TransferUiState(
     val isEnoughBalance: Boolean = true,
     val warning: String? = null,
     val commission: BigDecimal = BigDecimal.ZERO,
+    val commissionResult: TransferProto.EstimateCommissionResponse = TransferProto.EstimateCommissionResponse.getDefaultInstance(),
     val tokenBalance: BigInteger = BigInteger.ZERO,
     val isButtonEnabled: Boolean = false
 )
@@ -106,7 +109,12 @@ class SendFromWalletViewModel @Inject constructor(
     fun onCommissionResult(result: EstimateCommissionResult) {
         when (result) {
             is EstimateCommissionResult.Success -> {
-                _uiState.update { it.copy(commission = result.response.commission.toBigDecimal()) }
+                _uiState.update {
+                    it.copy(
+                        commission = result.response.commission.toBigInteger().toTokenAmount(),
+                        commissionResult = result.response
+                    )
+                }
             }
 
             is EstimateCommissionResult.Error -> {
@@ -141,14 +149,16 @@ class SendFromWalletViewModel @Inject constructor(
     suspend fun transferProcess(
         senderAddress: String, receiverAddress: String,
         amount: BigInteger, commission: BigInteger,
-        tokenEntity: TokenWithPendingTransactions
+        tokenEntity: TokenWithPendingTransactions,
+        commissionResult: TransferProto.EstimateCommissionResponse
     ): TransferResult {
         return transactionProcessorService.sendTransaction(
             sender = senderAddress,
             receiver = receiverAddress,
             amount = amount,
             commission = commission,
-            tokenEntity = tokenEntity
+            tokenEntity = tokenEntity,
+            commissionResult = commissionResult
         )
     }
 

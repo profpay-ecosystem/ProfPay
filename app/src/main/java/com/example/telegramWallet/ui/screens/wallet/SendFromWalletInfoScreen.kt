@@ -93,6 +93,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.example.protobuf.transfer.TransferProto
 import rememberStackedSnackbarHostState
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -153,7 +154,8 @@ fun SendFromWalletInfoScreen(
             addressReceiver = addressSending,
             addressSender = uiState.addressWithTokens?.addressEntity?.address ?: "",
             commission = uiState.commission,
-            addressWithTokens = uiState.addressWithTokens
+            addressWithTokens = uiState.addressWithTokens,
+            commissionResult = uiState.commissionResult
         ),
         snackbar = stackedSnackbarHostState
     )
@@ -404,7 +406,8 @@ data class ModelTransferFromBS(
     val addressReceiver: String,
     val addressSender: String,
     val commission: BigDecimal,
-    val addressWithTokens: AddressWithTokens?
+    val addressWithTokens: AddressWithTokens?,
+    val commissionResult: TransferProto.EstimateCommissionResponse
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -504,7 +507,8 @@ fun bottomSheetTransferConfirmation(
                                     receiverAddress = modelTransferFromBS.addressReceiver,
                                     amount = modelTransferFromBS.amount.toSunAmount(),
                                     commission = modelTransferFromBS.commission.toSunAmount(),
-                                    tokenEntity = tokenEntity
+                                    tokenEntity = tokenEntity,
+                                    commissionResult = modelTransferFromBS.commissionResult
                                 )
 
                                 when (result) {

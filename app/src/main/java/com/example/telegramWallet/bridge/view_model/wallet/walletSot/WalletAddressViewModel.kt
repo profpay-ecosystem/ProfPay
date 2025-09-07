@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.example.protobuf.transfer.TransferProto
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -99,14 +100,16 @@ class WalletAddressViewModel @Inject constructor(
         addressWithTokens: AddressWithTokens,
         amount: BigInteger,
         commission: BigInteger,
-        tokenEntity: TokenWithPendingTransactions?
+        tokenEntity: TokenWithPendingTransactions?,
+        commissionResult: TransferProto.EstimateCommissionResponse
     ): TransferResult {
         return transactionProcessorService.sendTransaction(
             sender = addressWithTokens.addressEntity.address,
             receiver = toAddress,
             amount = amount,
             commission = commission,
-            tokenEntity = tokenEntity
+            tokenEntity = tokenEntity,
+            commissionResult = commissionResult
         )
     }
 
@@ -115,7 +118,8 @@ class WalletAddressViewModel @Inject constructor(
         commission: BigInteger,
         walletId: Long,
         tokenEntity: TokenWithPendingTransactions?,
-        amount: BigInteger
+        amount: BigInteger,
+        commissionResult: TransferProto.EstimateCommissionResponse
     ): TransferResult {
         val generalAddress = addressRepo.getGeneralAddressByWalletId(walletId)
         return transactionProcessorService.sendTransaction(
@@ -123,7 +127,8 @@ class WalletAddressViewModel @Inject constructor(
             receiver = generalAddress,
             amount = amount,
             commission = commission,
-            tokenEntity = tokenEntity
+            tokenEntity = tokenEntity,
+            commissionResult = commissionResult
         )
     }
 }

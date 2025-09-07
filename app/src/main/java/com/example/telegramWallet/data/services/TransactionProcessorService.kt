@@ -55,7 +55,8 @@ class TransactionProcessorService @Inject constructor(
         receiver: String,
         amount: BigInteger,
         commission: BigInteger,
-        tokenEntity: TokenWithPendingTransactions?
+        tokenEntity: TokenWithPendingTransactions?,
+        commissionResult: TransferProto.EstimateCommissionResponse
     ): TransferResult {
         val tokenName = tokenEntity?.token?.tokenName ?: return fail("Токен не найден")
         val addressEntity = addressRepo.getAddressEntityByAddress(sender) ?: return fail("Адрес отправителя не найден")
@@ -111,7 +112,8 @@ class TransactionProcessorService @Inject constructor(
             commission = commission,
             estimateCommissionBandwidth = estimateCommissionBandwidth,
             token = tokenType,
-            addressEntity = addressEntity
+            addressEntity = addressEntity,
+            commissionResult = commissionResult
         )
     }
 
@@ -208,7 +210,8 @@ class TransactionProcessorService @Inject constructor(
         commission: BigInteger,
         estimateCommissionBandwidth: EstimateBandwidthData,
         token: TransferToken,
-        addressEntity: AddressEntity
+        addressEntity: AddressEntity,
+        commissionResult: TransferProto.EstimateCommissionResponse
     ): TransferResult {
         return withContext(Dispatchers.IO) {
             try {
@@ -239,6 +242,7 @@ class TransactionProcessorService @Inject constructor(
                         )
                         .setTxnBytes(signedTxnBytesCommission.signedTxn)
                         .setAmount(commission.toByteString())
+                        .addAllCategories(commissionResult.categoriesList)
                         .build(),
                     network = TransferNetwork.MAIN_NET,
                     token = token,

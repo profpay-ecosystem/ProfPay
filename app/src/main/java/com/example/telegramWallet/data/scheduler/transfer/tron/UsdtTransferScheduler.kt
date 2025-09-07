@@ -2,6 +2,7 @@ package com.example.telegramWallet.data.scheduler.transfer.tron
 
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
+import com.example.telegramWallet.backend.grpc.AmlGrpcClient
 import com.example.telegramWallet.data.database.entities.wallet.TransactionEntity
 import com.example.telegramWallet.data.database.entities.wallet.TransactionType
 import com.example.telegramWallet.data.database.entities.wallet.assignTransactionType
@@ -11,6 +12,7 @@ import com.example.telegramWallet.data.database.repositories.wallet.AddressRepo
 import com.example.telegramWallet.data.database.repositories.wallet.CentralAddressRepo
 import com.example.telegramWallet.data.database.repositories.wallet.PendingTransactionRepo
 import com.example.telegramWallet.data.database.repositories.wallet.TokenRepo
+import com.example.telegramWallet.data.flow_db.repo.AmlResult
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.example.telegramWallet.tron.Tron
 import com.example.telegramWallet.tron.http.Trc20TransactionsApi
@@ -25,6 +27,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
+import java.time.Duration
+import java.time.Instant
 
 class UsdtTransferScheduler(
     var addressRepo: AddressRepo,
@@ -34,7 +38,8 @@ class UsdtTransferScheduler(
     private var centralAddressRepo: CentralAddressRepo,
     private var notificationFunction: (String, String) -> Unit,
     private var tron: Tron,
-    private var pendingTransactionRepo: PendingTransactionRepo
+    private var pendingTransactionRepo: PendingTransactionRepo,
+    private var amlClient: AmlGrpcClient
 ) {
     suspend fun scheduleAddresses() = withContext(Dispatchers.IO) {
         val addressList = addressRepo.getAddressesSotsWithTokensByBlockchain("Tron")
@@ -129,6 +134,25 @@ class UsdtTransferScheduler(
         }
 
         if (receiverAddressEntity != null) {
+            val blockTime = Instant.ofEpochMilli(transaction.block_timestamp)
+            val now = Instant.now()
+
+            val within10Minutes = Duration.between(blockTime, now).abs().toMinutes() <= 10
+
+            if (within10Minutes) {
+                runCatching {
+                    val userId = profileRepo.getProfileUserId()
+                    amlClient.getAmlFromTransactionId(
+                        userId = userId,
+                        address = transaction.from,
+                        tx = transaction.transaction_id,
+                        tokenName = tokenName
+                    )
+                }.onFailure { ex ->
+                    Sentry.captureException(ex)
+                }
+            }
+
             val balance = tron.addressUtilities.getUsdtBalance(receiverAddressEntity.address)
             tokenRepo.updateTronBalanceViaId(balance, receiverAddressEntity.addressId!!, tokenName)
         }
@@ -203,6 +227,24 @@ class UsdtTransferScheduler(
         }
 
         if (receiverAddressEntity != null) {
+            val blockTime = Instant.ofEpochMilli(transaction.block_timestamp)
+            val now = Instant.now()
+
+            val within10Minutes = Duration.between(blockTime, now).abs().toMinutes() <= 10
+            if (within10Minutes && contract.parameter.value.amount > 1000000) {
+                runCatching {
+                    val userId = profileRepo.getProfileUserId()
+                    amlClient.getAmlFromTransactionId(
+                        userId = userId,
+                        address = ownerAddress,
+                        tx = transaction.txID,
+                        tokenName = tokenName
+                    )
+                }.onFailure { ex ->
+                    Sentry.captureException(ex)
+                }
+            }
+
             val balance = tron.addressUtilities.getTrxBalance(receiverAddressEntity.address)
             tokenRepo.updateTronBalanceViaId(balance, receiverAddressEntity.addressId!!, tokenName)
         }

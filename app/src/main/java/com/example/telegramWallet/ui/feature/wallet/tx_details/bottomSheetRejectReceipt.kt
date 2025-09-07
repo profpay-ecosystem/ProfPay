@@ -46,6 +46,7 @@ import com.example.telegramWallet.bridge.view_model.dto.transfer.TransferResult
 import com.example.telegramWallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
 import com.example.telegramWallet.data.database.models.AddressWithTokens
 import com.example.telegramWallet.data.flow_db.repo.EstimateCommissionResult
+import com.example.telegramWallet.data.utils.toBigInteger
 import com.example.telegramWallet.data.utils.toSunAmount
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.example.telegramWallet.ui.app.theme.BackgroundContainerButtonLight
@@ -55,6 +56,7 @@ import com.example.telegramWallet.ui.screens.wallet.ContentBottomSheetTransferPr
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.example.protobuf.transfer.TransferProto
 import java.math.BigDecimal
 
 
@@ -81,6 +83,8 @@ fun bottomSheetRejectReceipt(
     var valueAmount by remember { mutableStateOf("0.0") }
     val (commissionOnTransaction, setCommissionOnTransaction) = remember { mutableStateOf(BigDecimal.ZERO) }
     val commissionState by viewModel.stateCommission.collectAsStateWithLifecycle()
+
+    val (commissionResult, setCommissionResult) = remember { mutableStateOf(TransferProto.EstimateCommissionResponse.getDefaultInstance()) }
 
     var isButtonEnabled by remember { mutableStateOf(false) }
 
@@ -135,12 +139,14 @@ fun bottomSheetRejectReceipt(
                 is EstimateCommissionResult.Loading -> {}
                 is EstimateCommissionResult.Success -> {
                     val commission = (commissionState as EstimateCommissionResult.Success).response.commission
+                    val commissionResult = (commissionState as EstimateCommissionResult.Success).response
                     isButtonEnabled = true
 
                     if (valueAmount == "0.0") {
                         valueAmount = tokenEntity?.balanceWithoutFrozen?.toTokenAmount().toString()
                     }
-                    setCommissionOnTransaction(commission.toBigDecimal())
+                    setCommissionOnTransaction(commission.toBigInteger().toTokenAmount())
+                    setCommissionResult(commissionResult)
                 }
                 is EstimateCommissionResult.Error -> {}
                 is EstimateCommissionResult.Empty -> {}
@@ -341,7 +347,8 @@ fun bottomSheetRejectReceipt(
                                             addressWithTokens = addressWithTokens,
                                             amount = valueAmount.toBigDecimal().toSunAmount(),
                                             commission = commissionOnTransaction.toSunAmount(),
-                                            tokenEntity = tokenEntity
+                                            tokenEntity = tokenEntity,
+                                            commissionResult = commissionResult
                                         )
                                     }
 

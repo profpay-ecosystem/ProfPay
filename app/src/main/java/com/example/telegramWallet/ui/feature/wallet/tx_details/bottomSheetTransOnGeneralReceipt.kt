@@ -39,6 +39,7 @@ import com.example.telegramWallet.bridge.view_model.dto.transfer.TransferResult
 import com.example.telegramWallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
 import com.example.telegramWallet.data.database.models.AddressWithTokens
 import com.example.telegramWallet.data.flow_db.repo.EstimateCommissionResult
+import com.example.telegramWallet.data.utils.toBigInteger
 import com.example.telegramWallet.data.utils.toSunAmount
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.example.telegramWallet.ui.app.theme.BackgroundContainerButtonLight
@@ -47,6 +48,7 @@ import com.example.telegramWallet.ui.screens.wallet.ContentBottomSheetTransferPr
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.example.protobuf.transfer.TransferProto
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -73,6 +75,7 @@ fun bottomSheetTransOnGeneralReceipt(
     val commissionState by viewModel.stateCommission.collectAsStateWithLifecycle()
 
     val (commissionOnTransaction, setCommissionOnTransaction) = remember { mutableStateOf(BigDecimal.ZERO) }
+    val (commissionResult, setCommissionResult) = remember { mutableStateOf(TransferProto.EstimateCommissionResponse.getDefaultInstance()) }
     val (generalAddressActivatedCommission, setGeneralAddressActivatedCommission) = remember { mutableStateOf(BigInteger.ZERO) }
     val (isGeneralAddressNotActivatedVisible, setIsGeneralAddressNotActivatedVisible) = remember { mutableStateOf(false) }
 
@@ -128,8 +131,11 @@ fun bottomSheetTransOnGeneralReceipt(
                 is EstimateCommissionResult.Loading -> {}
                 is EstimateCommissionResult.Success -> {
                     val commission = (commissionState as EstimateCommissionResult.Success).response.commission
+                    val commissionResult = (commissionState as EstimateCommissionResult.Success).response
+
                     isButtonEnabled = true
-                    setCommissionOnTransaction(commission.toBigDecimal())
+                    setCommissionOnTransaction(commission.toBigInteger().toTokenAmount())
+                    setCommissionResult(commissionResult)
                 }
                 is EstimateCommissionResult.Error -> {}
                 is EstimateCommissionResult.Empty -> {}
@@ -247,14 +253,15 @@ fun bottomSheetTransOnGeneralReceipt(
                                         commission = commissionOnTransaction.toSunAmount(),
                                         walletId = walletId,
                                         tokenEntity = tokenEntity,
-                                        amount = balance ?: tokenEntity?.balanceWithoutFrozen!!
+                                        amount = balance ?: tokenEntity?.balanceWithoutFrozen!!,
+                                        commissionResult = commissionResult
                                     )
                                 }
 
                                 when (result) {
                                     is TransferResult.Success -> snackbar.showSuccessSnackbar(
                                         "Успешное действие",
-                                        "Успешно отправлено ${commissionOnTransaction.toBigInteger()} $tokenName",
+                                        "Успешно отправлено ${(balance ?: tokenEntity?.balanceWithoutFrozen!!).toTokenAmount()} $tokenName",
                                         "Закрыть",
                                     )
                                     is TransferResult.Failure -> snackbar.showErrorSnackbar(
