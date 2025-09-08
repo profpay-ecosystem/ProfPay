@@ -1,17 +1,24 @@
 package com.example.telegramWallet.ui.screens.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,23 +50,27 @@ fun SettingsPrivacyPolicyScreen(goToBack: () -> Unit) {
     val sectionsTextPrivacyPolicy = listOf(
         PolicySection(
             "1. Общие положения",
-            "Настоящая Политика конфиденциальности определяет порядок обработки и защиты персональных данных пользователей Android-приложения [название приложения] (далее — «Приложение»).\n" +
+            "Настоящая Политика конфиденциальности определяет порядок обработки и защиты персональных данных пользователей Android-приложения ProfPay (далее — «Приложение»).\n" +
                     "Используя Приложение, пользователь подтверждает согласие с условиями настоящей Политики."
         ),
         PolicySection(
             "2. Обрабатываемые данные",
             "Мы обрабатываем и храним следующие данные:",
-                    "Историю транзакций, совершённых пользователем через Приложение;\n" +
-                    "AML-отчёты, связанные с транзакциями;\n" +
-                    "Публичные ключи криптовалютных адресов (не приватные ключи);\n" +
-                    "Username и идентификатор Telegram-аккаунта;\n" +
-                    "Технические отчёты об ошибках (включая IP-адрес устройства и параметры системы), собираемые через self-hosted Sentry."
+            listOf(
+                "Историю транзакций, совершённых пользователем через Приложение;",
+                "AML-отчёты, связанные с транзакциями;",
+                "Публичные ключи криптовалютных адресов (не приватные ключи);",
+                "Username и идентификатор Telegram-аккаунта;",
+                "Технические отчёты об ошибках (включая IP-адрес устройства и параметры системы), собираемые через self-hosted Sentry."
+            )
         ),
         PolicySection(
             "3. Цели обработки данных",
             "Мы используем данные исключительно для:",
-                    "Предоставления доступа к функционалу Приложения;\n" +
-                    "Технической поддержки пользователей и исправления ошибок.\n"
+            listOf(
+                "Предоставления доступа к функционалу Приложения;",
+                "Технической поддержки пользователей и исправления ошибок."
+            )
         ),
         PolicySection(
             "4. Хранение и защита данных",
@@ -69,9 +80,11 @@ fun SettingsPrivacyPolicyScreen(goToBack: () -> Unit) {
         PolicySection(
             "5. Права пользователя",
             "Пользователь имеет право:",
-            "Запросить копию своих данных;\n" +
-                    "Запросить удаление своих данных, если это не противоречит обязательным требованиям законодательства (например, в части AML).\n" +
-                    "Для реализации прав пользователь может связаться с нами через Telegram-бота или иные доступные каналы поддержки."
+            listOf(
+                "Запросить копию своих данных;",
+                "Запросить удаление своих данных, если это не противоречит обязательным требованиям законодательства (например, в части AML).",
+                "Для реализации прав пользователь может связаться с нами через Telegram-бота или иные доступные каналы поддержки."
+            )
         ),
         PolicySection(
             "6. Изменения политики",
@@ -146,10 +159,10 @@ fun SettingsPrivacyPolicyScreen(goToBack: () -> Unit) {
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                    modifier = Modifier,
-                    text = "ПОЛИТИКА КОНФИДЕЦИАЛЬНОСТИ",
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+                        modifier = Modifier,
+                        text = "ПОЛИТИКА КОНФИДЕЦИАЛЬНОСТИ",
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
                     sectionsTextPrivacyPolicy.forEach { section ->
                         TextForPrivacyPolicy(isTitle = true, text = section.title)
                         TextForPrivacyPolicy(text = section.text, listingText = section.listingText)
@@ -161,10 +174,18 @@ fun SettingsPrivacyPolicyScreen(goToBack: () -> Unit) {
     }
 }
 
-data class PolicySection(val title: String, val text: String, val listingText: String = "")
+data class PolicySection(
+    val title: String,
+    val text: String,
+    val listingText: List<String> = emptyList()
+)
 
 @Composable
-fun TextForPrivacyPolicy(isTitle: Boolean = false, text: String, listingText: String = "") {
+fun TextForPrivacyPolicy(
+    isTitle: Boolean = false,
+    text: String,
+    listingText: List<String> = emptyList()
+) {
     if (isTitle) {
         Text(
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
@@ -179,10 +200,27 @@ fun TextForPrivacyPolicy(isTitle: Boolean = false, text: String, listingText: St
         )
     }
     if (listingText.isNotEmpty()) {
-        Text(
-            modifier = Modifier.padding(start = 16.dp, top = 8.dp),
-            text = listingText,
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        Column(modifier = Modifier.padding(start = 16.dp, top = 8.dp)) {
+            listingText.forEach { item ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .width(12.dp),
+                    )
+                    Text(
+                        text = item,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+            }
+        }
     }
 }
