@@ -42,39 +42,39 @@ fun SettingsPrivacyPolicyScreen(goToBack: () -> Unit) {
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
     val sectionsTextPrivacyPolicy = listOf(
         PolicySection(
-            "1. Общие положения\n\n",
+            "1. Общие положения",
             "Настоящая Политика конфиденциальности определяет порядок обработки и защиты персональных данных пользователей Android-приложения [название приложения] (далее — «Приложение»).\n" +
-                    "Используя Приложение, пользователь подтверждает согласие с условиями настоящей Политики.\n\n"
+                    "Используя Приложение, пользователь подтверждает согласие с условиями настоящей Политики."
         ),
         PolicySection(
-            "2. Обрабатываемые данные\n\n",
-            "Мы обрабатываем и храним следующие данные:\n\n" +
-                    "   Историю транзакций, совершённых пользователем через Приложение;\n\n" +
-                    "   AML-отчёты, связанные с транзакциями;\n\n" +
-                    "   Публичные ключи криптовалютных адресов (не приватные ключи);\n\n" +
-                    "   Username и идентификатор Telegram-аккаунта;\n\n" +
-                    "   Технические отчёты об ошибках (включая IP-адрес устройства и параметры системы), собираемые через self-hosted Sentry.\n\n"
+            "2. Обрабатываемые данные",
+            "Мы обрабатываем и храним следующие данные:",
+                    "Историю транзакций, совершённых пользователем через Приложение;\n" +
+                    "AML-отчёты, связанные с транзакциями;\n" +
+                    "Публичные ключи криптовалютных адресов (не приватные ключи);\n" +
+                    "Username и идентификатор Telegram-аккаунта;\n" +
+                    "Технические отчёты об ошибках (включая IP-адрес устройства и параметры системы), собираемые через self-hosted Sentry."
         ),
         PolicySection(
-            "3. Цели обработки данных\n\n",
-            "Мы используем данные исключительно для:\n\n" +
-                    "   Предоставления доступа к функционалу Приложения;\n\n" +
-                    "   Технической поддержки пользователей и исправления ошибок.\n\n"
+            "3. Цели обработки данных",
+            "Мы используем данные исключительно для:",
+                    "Предоставления доступа к функционалу Приложения;\n" +
+                    "Технической поддержки пользователей и исправления ошибок.\n"
         ),
         PolicySection(
-            "4. Хранение и защита данных\n\n",
-            "Все данные хранятся на наших серверах и не передаются третьим лицам, за исключением случаев, прямо предусмотренных законодательством.\n\n" +
-                    "Мы применяем технические и организационные меры для защиты данных от несанкционированного доступа, изменения, раскрытия или уничтожения.\n\n"
+            "4. Хранение и защита данных",
+            "Все данные хранятся на наших серверах и не передаются третьим лицам, за исключением случаев, прямо предусмотренных законодательством.\n" +
+                    "Мы применяем технические и организационные меры для защиты данных от несанкционированного доступа, изменения, раскрытия или уничтожения."
         ),
         PolicySection(
-            "5. Права пользователя\n\n",
-            "Пользователь имеет право:\n\n" +
-                    "   Запросить копию своих данных;\n\n" +
-                    "   Запросить удаление своих данных, если это не противоречит обязательным требованиям законодательства (например, в части AML).\n\n" +
-                    "   Для реализации прав пользователь может связаться с нами через Telegram-бота или иные доступные каналы поддержки.\n\n"
+            "5. Права пользователя",
+            "Пользователь имеет право:",
+            "Запросить копию своих данных;\n" +
+                    "Запросить удаление своих данных, если это не противоречит обязательным требованиям законодательства (например, в части AML).\n" +
+                    "Для реализации прав пользователь может связаться с нами через Telegram-бота или иные доступные каналы поддержки."
         ),
         PolicySection(
-            "6. Изменения политики\n\n",
+            "6. Изменения политики",
             "Мы можем время от времени обновлять настоящую Политику. Обновлённая версия будет доступна внутри Приложения."
         ),
     )
@@ -140,13 +140,19 @@ fun SettingsPrivacyPolicyScreen(goToBack: () -> Unit) {
                 Column(
                     modifier = Modifier
                         .padding(bottom = bottomPadding.dp)
+                        .padding(top = 32.dp)
                         .padding(vertical = 0.dp, horizontal = 16.dp)
                         .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.Start
                 ) {
+                    Text(
+                    modifier = Modifier,
+                    text = "ПОЛИТИКА КОНФИДЕЦИАЛЬНОСТИ",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
                     sectionsTextPrivacyPolicy.forEach { section ->
                         TextForPrivacyPolicy(isTitle = true, text = section.title)
-                        TextForPrivacyPolicy(text = section.text)
+                        TextForPrivacyPolicy(text = section.text, listingText = section.listingText)
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                 }
@@ -155,23 +161,27 @@ fun SettingsPrivacyPolicyScreen(goToBack: () -> Unit) {
     }
 }
 
-data class PolicySection(val title: String, val text: String)
+data class PolicySection(val title: String, val text: String, val listingText: String = "")
 
 @Composable
-fun TextForPrivacyPolicy(isTitle: Boolean = false, text: String) {
+fun TextForPrivacyPolicy(isTitle: Boolean = false, text: String, listingText: String = "") {
     if (isTitle) {
         Text(
-            modifier = Modifier
-                .padding(vertical = 8.dp, horizontal = 16.dp)
-//                .padding(start = 8.dp)
-            ,
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
             text = text,
             style = MaterialTheme.typography.bodyLarge,
         )
     } else {
         Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = 0.dp),
             text = text,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+    if (listingText.isNotEmpty()) {
+        Text(
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp),
+            text = listingText,
             style = MaterialTheme.typography.bodyMedium,
         )
     }

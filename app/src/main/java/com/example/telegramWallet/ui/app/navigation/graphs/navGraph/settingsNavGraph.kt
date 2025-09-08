@@ -35,7 +35,7 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
                 goToSettingsAccount = {
                     navController.navigate(route = SettingsS.SettingsAccount.route)
                 },
-                goToSettingsSettingsPrivacyPolicy = {
+                goToSettingsPrivacyPolicy = {
                     navController.navigate(route = SettingsS.SettingsPrivacyPolicy.route)
                 }
             )
@@ -57,7 +57,7 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
                 goToLock = {navController.navigate(route = SettingsSecurity.LockScreen.route)}
             )
         }
-        composable(route = SettingsS.SettingsAccount.route) {
+        composable(route = SettingsS.SettingsPrivacyPolicy.route) {
             SettingsPrivacyPolicyScreen(
                 goToBack = { navController.navigateUp() }
             )
