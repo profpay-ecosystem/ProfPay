@@ -47,6 +47,7 @@ import com.example.telegramWallet.ui.shared.sharedPref
 fun SettingsPrivacyPolicyScreen(goToBack: () -> Unit) {
 
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
+
     val sectionsTextPrivacyPolicy = listOf(
         PolicySection(
             "1. Общие положения",
