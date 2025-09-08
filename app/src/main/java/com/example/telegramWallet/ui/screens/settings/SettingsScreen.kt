@@ -68,6 +68,7 @@ fun SettingsScreen(
     goToLockGraph: () -> Unit,
     goToTheme: () -> Unit,
     goToSettingsNotifications: () -> Unit,
+    goToSettingsPrivacyPolicy: () -> Unit,
     goToSettingsAccount: () -> Unit,
     goToSettingsSecurity: () -> Unit
 ) {
@@ -265,10 +266,8 @@ fun SettingsScreen(
                                         }
                                     }
                                 )
-
                             }
                         }
-
                     }
 
                     CardForSettings(
@@ -303,7 +302,7 @@ fun SettingsScreen(
                         label = "FAQ"
                     )
                     CardForSettings(
-                        onClick = {},
+                        onClick = {goToSettingsPrivacyPolicy()},
                         iconID = R.drawable.icon_settings_privacy_policy,
                         label = "Политика \nКонфиденциальности",
                         smallLabel = true

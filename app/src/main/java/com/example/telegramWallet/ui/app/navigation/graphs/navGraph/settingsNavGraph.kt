@@ -12,6 +12,7 @@ import com.example.telegramWallet.ui.screens.settings.SettingsScreen
 import com.example.telegramWallet.ui.screens.settings.SettingsSecurityScreen
 import com.example.telegramWallet.ui.screens.lockScreen.CreateLockScreen
 import com.example.telegramWallet.ui.screens.lockScreen.LockScreen
+import com.example.telegramWallet.ui.screens.settings.SettingsPrivacyPolicyScreen
 
 fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
     navigation(
@@ -33,6 +34,9 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
                 },
                 goToSettingsAccount = {
                     navController.navigate(route = SettingsS.SettingsAccount.route)
+                },
+                goToSettingsPrivacyPolicy = {
+                    navController.navigate(route = SettingsS.SettingsPrivacyPolicy.route)
                 }
             )
         }
@@ -53,7 +57,11 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
                 goToLock = {navController.navigate(route = SettingsSecurity.LockScreen.route)}
             )
         }
-
+        composable(route = SettingsS.SettingsPrivacyPolicy.route) {
+            SettingsPrivacyPolicyScreen(
+                goToBack = { navController.navigateUp() }
+            )
+        }
 
         composable(route = SettingsSecurity.LockScreen.route) {
             LockScreen(
@@ -88,6 +96,8 @@ sealed class SettingsS(val route: String) {
     data object SettingsNotifications : SettingsS(route = "settings_notifications")
     data object SettingsSecurity : SettingsS(route = "settings_security")
     data object SettingsAccount : SettingsS(route = "settings_account")
+    data object SettingsPrivacyPolicy : SettingsS(route = "settings_privacy_policy")
+
 }
 
 sealed class SettingsSecurity(val route: String) {
