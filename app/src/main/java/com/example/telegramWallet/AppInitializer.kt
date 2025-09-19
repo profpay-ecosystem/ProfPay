@@ -3,6 +3,7 @@ package com.example.telegramWallet
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.core.content.edit
 import com.example.telegramWallet.backend.http.binance.BinancePriceConverterApi.binancePriceConverterService
 import com.example.telegramWallet.backend.http.binance.BinancePriceConverterRequestCallback
@@ -21,6 +22,7 @@ import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.pushy.sdk.Pushy
+import me.pushy.sdk.util.exceptions.PushyNetworkException
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
@@ -37,10 +39,15 @@ class AppInitializer @Inject constructor(
         if (PusherService.isRunning) return
 
         if (firstStarted) {
-            withContext(Dispatchers.IO) {
-                val deviceToken = Pushy.register(context)
-                sharedPrefs.edit { putString(PrefKeys.DEVICE_TOKEN, deviceToken) }
+            val deviceToken = try {
+                withContext(Dispatchers.IO) {
+                    Pushy.register(context)
+                }
+            } catch (e: PushyNetworkException) {
+                Log.e("Init", "Pushy registration failed", e)
+                throw e
             }
+            sharedPrefs.edit { putString(PrefKeys.DEVICE_TOKEN, deviceToken) }
         }
 
         syncExchangeRatesAndTrends()

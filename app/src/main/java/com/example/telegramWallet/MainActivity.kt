@@ -2,6 +2,7 @@ package com.example.telegramWallet
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -20,11 +21,15 @@ import com.example.telegramWallet.bridge.view_model.settings.ThemeViewModel
 import com.example.telegramWallet.data.services.AppLockManager
 import com.example.telegramWallet.data.services.NetworkMonitor
 import com.example.telegramWallet.ui.app.navigation.MyApp
+import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.WalletInfo
 import com.example.telegramWallet.ui.app.theme.WalletNavigationBottomBarTheme
+import com.example.telegramWallet.ui.screens.NotNetworkScreen
 import dagger.hilt.android.AndroidEntryPoint
+import io.sentry.Sentry
 import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.launch
 import me.pushy.sdk.Pushy
+import me.pushy.sdk.util.exceptions.PushyNetworkException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -36,6 +41,12 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Pushy.listen(this)
+
+        SentryAndroid.init(this) { options ->
+            options.isEnableUserInteractionTracing = true
+            options.isEnableUserInteractionBreadcrumbs = true
+            options.isAttachScreenshot = false
+        }
 
         val sharedPrefs = getSharedPreferences(
             ContextCompat.getString(this, R.string.preference_file_key),
@@ -52,17 +63,38 @@ class MainActivity : FragmentActivity() {
             )
         )
 
-        SentryAndroid.init(this) { options ->
-            options.isEnableUserInteractionTracing = true
-            options.isEnableUserInteractionBreadcrumbs = true
-            options.isAttachScreenshot = false
-        }
-
         lifecycleScope.launch {
-            appInitializer.initialize(sharedPrefs, this@MainActivity)
+            try {
+                appInitializer.initialize(sharedPrefs, this@MainActivity)
+                launchContent(sharedPrefs)
+            } catch (e: PushyNetworkException) {
+                Sentry.captureException(e)
+                launchEthLostContent(sharedPrefs)
+            }
         }
+    }
 
-        launchContent(sharedPrefs)
+    private fun launchEthLostContent(sharedPrefs: SharedPreferences) {
+        setContent {
+            val themeViewModel: ThemeViewModel = hiltViewModel()
+            val state by themeViewModel.state.collectAsStateWithLifecycle()
+            val isSystemDark = isSystemInDarkTheme()
+
+            when (val themeState = state) {
+                is ThemeState.Loading -> {
+                    themeViewModel.getThemeApp(sharedPrefs)
+                }
+                is ThemeState.Success -> {
+                    val isDarkTheme = themeViewModel.isDarkTheme(
+                        themeState.themeStateResult,
+                        isSystemDark
+                    )
+                    WalletNavigationBottomBarTheme(activity = this, isDarkTheme = isDarkTheme) {
+                        NotNetworkScreen()
+                    }
+                }
+            }
+        }
     }
 
     private fun launchContent(sharedPrefs: SharedPreferences) {
