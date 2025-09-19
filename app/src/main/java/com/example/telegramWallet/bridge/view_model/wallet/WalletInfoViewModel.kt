@@ -1,20 +1,24 @@
 package com.example.telegramWallet.bridge.view_model.wallet
 
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.navigation.NavController
 import com.example.telegramWallet.backend.http.models.binance.BinanceSymbolEnum
 import com.example.telegramWallet.backend.http.models.coingecko.CoinSymbolEnum
 import com.example.telegramWallet.bridge.view_model.dto.TokenName
 import com.example.telegramWallet.data.database.entities.wallet.TokenEntity
 import com.example.telegramWallet.data.database.models.AddressWithTokens
 import com.example.telegramWallet.data.database.models.TransactionModel
+import com.example.telegramWallet.data.database.repositories.ProfileRepo
 import com.example.telegramWallet.data.database.repositories.TransactionsRepo
 import com.example.telegramWallet.data.database.repositories.wallet.AddressRepo
 import com.example.telegramWallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.example.telegramWallet.data.database.repositories.wallet.TokenRepo
 import com.example.telegramWallet.data.database.repositories.wallet.TradingInsightsRepo
 import com.example.telegramWallet.data.database.repositories.wallet.WalletProfileRepo
+import com.example.telegramWallet.data.flow_db.repo.WalletInfoRepo
 import com.example.telegramWallet.data.utils.toSunAmount
 import com.example.telegramWallet.data.utils.toTokenAmount
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,8 +39,14 @@ class WalletInfoViewModel @Inject constructor(
     private val addressRepo: AddressRepo,
     private val tokenRepo: TokenRepo,
     val exchangeRatesRepo: ExchangeRatesRepo,
-    val tradingInsightsRepo: TradingInsightsRepo
+    val tradingInsightsRepo: TradingInsightsRepo,
+    private val profileRepo: ProfileRepo,
+    private val walletInfoRepo: WalletInfoRepo
 ) : ViewModel() {
+    suspend fun getProfileTelegramId(): Long? {
+        return profileRepo.getProfileTelegramId()
+    }
+
     suspend fun getWalletNameById(walletId: Long): String? {
         return walletProfileRepo.getWalletNameById(walletId)
     }
@@ -44,6 +54,14 @@ class WalletInfoViewModel @Inject constructor(
     fun getAddressesSotsWithTokens(walletId: Long): LiveData<List<AddressWithTokens>> {
         return liveData(Dispatchers.IO) {
             emitSource(addressRepo.getAddressesSotsWithTokensLD(walletId))
+        }
+    }
+
+    suspend fun getUserPermissions(sharedPrefs: SharedPreferences, navController: NavController) {
+        try {
+            walletInfoRepo.getUserPermissions(sharedPrefs, navController)
+        } catch (e: Exception) {
+            throw e
         }
     }
 

@@ -20,7 +20,10 @@ interface ProfileDao {
     fun getProfileAppId(): String
 
     @Query("SELECT telegram_id FROM profile")
-    fun getProfileTelegramId(): LiveData<Long>
+    fun getProfileTelegramIdLiveData(): LiveData<Long>
+
+    @Query("SELECT telegram_id FROM profile")
+    fun getProfileTelegramId(): Long?
 
     @Query("SELECT username FROM profile")
     fun getProfileTgUsername(): LiveData<String>

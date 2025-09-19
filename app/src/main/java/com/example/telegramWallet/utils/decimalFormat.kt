@@ -10,8 +10,19 @@ fun decimalFormat(value: BigDecimal): String {
         groupingSeparator = '.'
         decimalSeparator = ','
     }
-    val decimalFormat = DecimalFormat("###,##0.00", symbols).apply {
+
+    val decimalFormat = DecimalFormat().apply {
+        decimalFormatSymbols = symbols
         roundingMode = RoundingMode.DOWN
+
+        if (value.abs() >= BigDecimal.ONE) {
+            minimumFractionDigits = 2
+            maximumFractionDigits = 2
+        } else {
+            minimumFractionDigits = 2
+            maximumFractionDigits = 8
+        }
     }
+
     return decimalFormat.format(value)
 }

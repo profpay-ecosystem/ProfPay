@@ -63,8 +63,8 @@ fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
         composable(route = SeedPhraseConfirmationFS.WalletAddedFS.route) {
             CreatedWalletAddingScreen(
                 goToHome = {
-                    navController.navigate(route = Graph.Root.route) {
-                        popUpTo(route = Graph.Root.route)
+                    navController.navigate(route = Graph.Home.route) {
+                        popUpTo(route = Graph.Home.route)
                     }
                 },
                 goToBack = {
@@ -75,8 +75,8 @@ fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
         composable(route = RecoverWalletFS.RecoveringWalletAddingFS.route) {
             RecoveringWalletAddingScreen(
                 goToHome = {
-                    navController.navigate(route = Graph.Root.route) {
-                        popUpTo(route = Graph.Root.route)
+                    navController.navigate(route = Graph.Home.route) {
+                        popUpTo(route = Graph.Home.route)
                     }
                 },
                 goToBack = {

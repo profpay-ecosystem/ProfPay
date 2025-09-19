@@ -1,5 +1,6 @@
 package com.example.telegramWallet.ui.app.navigation.graphs.navGraph
 
+import androidx.activity.compose.BackHandler
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -8,6 +9,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.example.telegramWallet.ui.app.navigation.bottom_bar.BottomBarScreen
 import com.example.telegramWallet.ui.app.navigation.graphs.Graph
+import com.example.telegramWallet.ui.screens.NotNetworkScreen
+import com.example.telegramWallet.ui.screens.lockScreen.BlockedAppScreen
 import com.example.telegramWallet.ui.screens.wallet.CentralAddressTxHistoryScreen
 import com.example.telegramWallet.ui.screens.wallet.ReceiveFromWalletSotsScreen
 import com.example.telegramWallet.ui.screens.wallet.SendFromWalletInfoScreen
@@ -37,8 +40,21 @@ fun NavGraphBuilder.profileNavGraph(navController: NavController) {
                 goToWalletSystem = { navController.navigate(route = WalletInfo.WalletSystem.route) },
                 goToWalletSystemTRX = { navController.navigate(route = WalletInfo.WalletSystemTRX.route) },
                 goToWalletSots = { navController.navigate(route = WalletInfo.WalletSots.route) },
-                goToTXDetailsScreen = { navController.navigate(route = WalletInfo.TXDetails.route) }
+                goToTXDetailsScreen = { navController.navigate(route = WalletInfo.TXDetails.route) },
+                navController = navController
             )
+        }
+
+        composable(route = WalletInfo.BlockedAppScreen.route) {
+            BlockedAppScreen(toNavigate = {
+                navController.navigateUp()
+            })
+            BackHandler {}
+        }
+
+        composable(route = WalletInfo.NotNetworkScreen.route) {
+            NotNetworkScreen()
+            BackHandler {}
         }
 
         composable(WalletInfo.WalletSots.route) {
@@ -148,6 +164,8 @@ sealed class WalletInfo(val route: String) {
     object WalletSystem : WalletInfo(route = "wallet_system")
     object WalletSystemTRX : WalletInfo(route = "wallet_system_trx")
     object CentralAddressTxHistory : WalletInfo(route = "central_address_tx_history")
+    object BlockedAppScreen : WalletInfo(route = "b_app_wi")
+    object NotNetworkScreen : WalletInfo(route = "not_network")
 }
 
 sealed class WalletSots(val route: String) {

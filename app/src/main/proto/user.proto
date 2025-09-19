@@ -15,6 +15,17 @@ service UserService {
   rpc RegisterUserDevice(RegisterUserDeviceRequest) returns (RegisterUserDeviceResponse);
   rpc IsUserExists(IsUserExistsRequest) returns (IsUserExistsResponse);
   rpc SetUserLegalConsentsTrue(UserLegalConsentsRequest) returns (UserLegalConsentsResponse);
+  rpc GetUserPermissions(GetUserPermissionsRequest) returns (GetUserPermissionsResponse);
+}
+
+message GetUserPermissionsRequest {
+  string device_token = 1;
+  string app_id = 2;
+}
+
+message GetUserPermissionsResponse {
+  bool is_app_allowed = 1;
+  repeated string permissions = 2;
 }
 
 message UserLegalConsentsRequest {

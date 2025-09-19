@@ -75,6 +75,17 @@ class UserGrpcClient(private val channel: ManagedChannel, val token: SharedPrefs
         }
     }
 
+    suspend fun getUserPermissions(appId: String, deviceToken: String): Result<UserProto.GetUserPermissionsResponse> = token.safeGrpcCall {
+        withContext(Dispatchers.IO) {
+            val request = UserProto.GetUserPermissionsRequest.newBuilder()
+                .setAppId(appId)
+                .setDeviceToken(deviceToken)
+                .build()
+            val response = stub.getUserPermissions(request)
+            Result.success(response)
+        }
+    }
+
     fun shutdown() {
         channel.shutdown()
     }

@@ -17,7 +17,8 @@ interface ProfileRepo {
     // Создание профиля аккаунта
     suspend fun insertNewProfile(profileEntity: ProfileEntity)
     // Получение TgId подтверждённого профиля
-    suspend fun getProfileTelegramId(): LiveData<Long>
+    suspend fun getProfileTelegramIdLiveData(): LiveData<Long>
+    suspend fun getProfileTelegramId(): Long?
     suspend fun getProfileTgUsername(): LiveData<String>
     // Получение кол-ва профилей в бд
     suspend fun isProfileExists(): Boolean
@@ -60,7 +61,13 @@ class ProfileRepoImpl @Inject constructor(private val profileDao: ProfileDao): P
         }
     }
 
-    override suspend fun getProfileTelegramId(): LiveData<Long> {
+    override suspend fun getProfileTelegramIdLiveData(): LiveData<Long> {
+        return withContext(Dispatchers.IO) {
+            return@withContext profileDao.getProfileTelegramIdLiveData()
+        }
+    }
+
+    override suspend fun getProfileTelegramId(): Long? {
         return withContext(Dispatchers.IO) {
             return@withContext profileDao.getProfileTelegramId()
         }

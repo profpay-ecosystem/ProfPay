@@ -1,5 +1,6 @@
 package com.example.telegramWallet.ui.screens.wallet
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -58,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.dto.TokenName
 import com.example.telegramWallet.bridge.view_model.wallet.WalletInfoViewModel
@@ -66,6 +68,9 @@ import com.example.telegramWallet.data.database.entities.wallet.TransactionEntit
 import com.example.telegramWallet.data.database.entities.wallet.TransactionType
 import com.example.telegramWallet.data.database.models.TransactionModel
 import com.example.telegramWallet.data.utils.toTokenAmount
+import com.example.telegramWallet.ui.app.navigation.graphs.Graph
+import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.SettingsS
+import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.WalletInfo
 import com.example.telegramWallet.ui.app.theme.GreenColor
 import com.example.telegramWallet.ui.app.theme.RedColor
 import com.example.telegramWallet.ui.feature.wallet.walletInfo.CardForWalletInfoFeature
@@ -91,6 +96,7 @@ fun WalletInfoScreen(
     goToWalletSystemTRX: () -> Unit,
     goToWalletSots: () -> Unit,
     goToTXDetailsScreen: () -> Unit,
+    navController: NavController
 ) {
     val sharedPref = sharedPref()
     val walletId = sharedPref.getLong("wallet_id", 1)
@@ -111,15 +117,31 @@ fun WalletInfoScreen(
     val (totalPPercentage24, setTotalPPercentage24) = remember { mutableDoubleStateOf(0.0) }
 
     LaunchedEffect(Unit) {
-        snapshotFlow { addressesSotsWithTokens }
-            .distinctUntilChanged()
-            .collectLatest { addresses ->
-                withContext(Dispatchers.IO) {
-                    setWalletName(viewModel.getWalletNameById(walletId) ?: "")
-                    setListTokensWithTotalBalance(viewModel.getListTokensWithTotalBalance(addresses))
-                    viewModel.updateTokenBalances(addresses)
+        val telegramId = viewModel.getProfileTelegramId()
+        if (telegramId != null && telegramId != 0L) {
+            try {
+                viewModel.getUserPermissions(sharedPref, navController)
+            } catch (e: Exception) {
+                navController.navigate(WalletInfo.NotNetworkScreen.route) {
+                    popUpTo(0) { inclusive = true }
+                    launchSingleTop = true
                 }
             }
+            snapshotFlow { addressesSotsWithTokens }
+                .distinctUntilChanged()
+                .collectLatest { addresses ->
+                    withContext(Dispatchers.IO) {
+                        setWalletName(viewModel.getWalletNameById(walletId) ?: "")
+                        setListTokensWithTotalBalance(viewModel.getListTokensWithTotalBalance(addresses))
+                        viewModel.updateTokenBalances(addresses)
+                    }
+                }
+        } else {
+            navController.navigate(SettingsS.SettingsAccount.route) {
+                popUpTo(0) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
     }
 
     LaunchedEffect(listTokensWithTotalBalance) {

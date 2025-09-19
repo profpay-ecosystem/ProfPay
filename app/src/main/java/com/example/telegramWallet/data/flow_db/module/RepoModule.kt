@@ -16,6 +16,8 @@ import com.example.telegramWallet.data.flow_db.repo.ThemeAppRepo
 import com.example.telegramWallet.data.flow_db.repo.ThemeAppRepoImpl
 import com.example.telegramWallet.data.flow_db.repo.WalletAddressRepo
 import com.example.telegramWallet.data.flow_db.repo.WalletAddressRepoImpl
+import com.example.telegramWallet.data.flow_db.repo.WalletInfoRepo
+import com.example.telegramWallet.data.flow_db.repo.WalletInfoRepoImpl
 import com.example.telegramWallet.data.flow_db.repo.WalletSotRepo
 import com.example.telegramWallet.data.flow_db.repo.WalletSotRepoImpl
 import dagger.Binds
@@ -62,4 +64,8 @@ abstract class RepoModule {
     @Binds
     @Singleton
     abstract fun bindWalletAddressRepo(walletAddressRepo: WalletAddressRepoImpl): WalletAddressRepo
+
+    @Binds
+    @Singleton
+    abstract fun bindWalletInfoRepo(walletInfoRepo: WalletInfoRepoImpl): WalletInfoRepo
 }

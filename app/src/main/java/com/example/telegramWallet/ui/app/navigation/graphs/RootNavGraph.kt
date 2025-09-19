@@ -60,7 +60,7 @@ fun RootNavigationGraph(
                 val current = navController.currentBackStackEntry?.destination?.route
                 if (current != route) {
                     val previousBackStackEntry = navController.previousBackStackEntry?.destination?.route
-                    if (state == LockState.None && previousBackStackEntry != Graph.Splash.route) {
+                    if (state == LockState.None && previousBackStackEntry != Graph.Splash.route && targetRoute != Graph.Home.route) {
                         navController.navigateUp()
                     } else {
                         navController.navigate(route) {

@@ -16,7 +16,7 @@ class SettingsAccountViewModel @Inject constructor(
     private val settingsAccountRepo: SettingsAccountRepo
 ) : ViewModel() {
     val profileTelegramId: LiveData<Long> = liveData(Dispatchers.IO) {
-        emitSource(profileRepo.getProfileTelegramId())
+        emitSource(profileRepo.getProfileTelegramIdLiveData())
     }
 
     val profileTelegramUsername: LiveData<String> = liveData(Dispatchers.IO) {
