@@ -54,6 +54,8 @@ jobs:
 #    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 #    needs: build
 #    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
 #
 #    steps:
 #      - name: Download build artifact
@@ -77,8 +79,11 @@ jobs:
 #          body: |
 #            ✅ Автоматический релиз после слияния в `main`.
 #
-#            🔐 SHA256: `${{ steps.sha.outputs.sha }}`
+#            📌 Этот релиз содержит стабильную первую сборку и предназначен для закрытого тестирования.
 #
-#            Скачайте APK и убедитесь в целостности.
+#            💬 Нашли баг или есть предложения? Оставьте issue 👇
+#            https://github.com/profpay-ecosystem/ProfPay/issues
+#
+#            🔐 SHA256: `${{ steps.sha.outputs.sha }}`
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

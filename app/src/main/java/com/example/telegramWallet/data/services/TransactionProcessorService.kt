@@ -136,8 +136,14 @@ class TransactionProcessorService @Inject constructor(
         if (!tron.addressUtilities.isAddressActivated(sender))
             throw IllegalStateException("Для активации необходимо нажать кнопку «Системный TRX»")
 
-        if (feeBalance < commission.toTokenAmount())
-            throw IllegalStateException("Недостаточно средств для комиссии")
+        if (feeBalance < commission.toTokenAmount()) {
+            val targetAddr = if (tokenName == TokenName.TRX.tokenName) {
+                sender
+            } else {
+                commissionAddress.address
+            }
+            throw IllegalStateException("Недостаточно средств для комиссии.\nАдрес для пополнения:\n$targetAddr")
+        }
 
         if (tokenEntity.balanceWithoutFrozen.toTokenAmount() < amount.toTokenAmount())
             throw IllegalStateException("Сумма транзакции превышает доступную")
