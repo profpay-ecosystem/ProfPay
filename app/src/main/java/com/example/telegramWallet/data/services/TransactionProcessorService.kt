@@ -1,5 +1,6 @@
 package com.example.telegramWallet.data.services
 
+import android.util.Log
 import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import com.example.telegramWallet.backend.grpc.ProfPayServerGrpcClient
@@ -142,7 +143,7 @@ class TransactionProcessorService @Inject constructor(
             } else {
                 commissionAddress.address
             }
-            throw IllegalStateException("Недостаточно средств для комиссии.\nАдрес для пополнения:\n$targetAddr")
+            throw IllegalStateException("Недостаточно средств для комиссии.\nАдрес: $targetAddr")
         }
 
         if (tokenEntity.balanceWithoutFrozen.toTokenAmount() < amount.toTokenAmount())
