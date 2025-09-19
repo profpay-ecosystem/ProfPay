@@ -164,8 +164,7 @@ fun WalletInfoScreen(
         goToSendWalletInfo = goToSendWalletInfo
     )
 
-    val sharedPrefExe = sharedPref()
-    val bottomPadding by remember { mutableFloatStateOf(sharedPrefExe.getFloat("bottomPadding", 54f)) }
+    val bottomPadding by remember { mutableFloatStateOf(sharedPref.getFloat("bottomPadding", 54f)) }
 
     Scaffold(
         modifier = Modifier,
