@@ -474,6 +474,18 @@ class AppDatabaseModule {
             }
         }
 
+        val MIGRATION_31_32 = object : Migration(31, 32) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE transactions ADD COLUMN status_code INTEGER NOT NULL DEFAULT 1")
+            }
+        }
+
+        val MIGRATION_32_33 = object : Migration(32, 33) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE transactions ADD COLUMN commission TEXT NOT NULL DEFAULT '0'")
+            }
+        }
+
         return Room.databaseBuilder(
             appContext, AppDatabase::class.java,
             "room_crypto_wallet.db"
@@ -507,6 +519,8 @@ class AppDatabaseModule {
             .addMigrations(MIGRATION_28_29)
             .addMigrations(MIGRATION_29_30)
             .addMigrations(MIGRATION_30_31)
+            .addMigrations(MIGRATION_31_32)
+            .addMigrations(MIGRATION_32_33)
             .build()
     }
 }

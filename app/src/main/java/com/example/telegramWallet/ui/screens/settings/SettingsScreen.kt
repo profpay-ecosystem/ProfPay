@@ -69,7 +69,8 @@ fun SettingsScreen(
     goToTheme: () -> Unit,
     goToSettingsNotifications: () -> Unit,
     goToSettingsAccount: () -> Unit,
-    goToSettingsSecurity: () -> Unit
+    goToSettingsSecurity: () -> Unit,
+    goToSettingsAml: () -> Unit,
 ) {
 
     val snackbarHostState = rememberStackedSnackbarHostState()
@@ -158,6 +159,12 @@ fun SettingsScreen(
                         label = "Аккаунт",
                         iconSize = 24,
                         onClick = {goToSettingsAccount()}
+                    )
+                    CardForSettings(
+                        iconID = R.drawable.icon_settings_account,
+                        label = "AML",
+                        iconSize = 24,
+                        onClick = {goToSettingsAml()}
                     )
                     CardForSettings(
                         iconID = R.drawable.icon_settings_theme,

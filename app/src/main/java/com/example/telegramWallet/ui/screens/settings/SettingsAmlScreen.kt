@@ -22,10 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,24 +34,25 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
+import com.example.telegramWallet.PrefKeys.AUTO_CHECK_AML
 import com.example.telegramWallet.R
 import com.example.telegramWallet.ui.shared.sharedPref
-import androidx.core.content.edit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsSecurityScreen(goToBack: () -> Unit, goToLock: () -> Unit){
+fun SettingsAmlScreen(goToBack: () -> Unit) {
     val sharedPref = sharedPref()
 
-    val (useBiomAuth, setUseBiomAuth) = remember {
+    val (useAutoCheckAml, setUseAutoCheckAml) = remember {
         mutableStateOf(
-            sharedPref.getBoolean("useBiomAuth", true)
+            sharedPref.getBoolean(AUTO_CHECK_AML, true)
         )
     }
 
-    val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
+    val bottomPadding = sharedPref.getFloat("bottomPadding", 54f)
 
-    Scaffold(modifier = Modifier) { padding ->
+    Scaffold(modifier = Modifier,) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -65,7 +64,7 @@ fun SettingsSecurityScreen(goToBack: () -> Unit, goToLock: () -> Unit){
             TopAppBar(
                 title = {
                     Text(
-                        text = "Security",
+                        text = "AML notifications",
                         style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
                     )
                 },
@@ -118,20 +117,12 @@ fun SettingsSecurityScreen(goToBack: () -> Unit, goToLock: () -> Unit){
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Spacer(modifier = Modifier.size(16.dp))
-                    if(!sharedPref.getBoolean("usedBiometry", false)){
-                        CardWithText(label = "Вход с Биометрией") {
-                            setUseBiomAuth(
-                                switchForSettings(useBiomAuth) {
-                                    sharedPref.edit() { putBoolean("useBiomAuth", it) }
-                                }
-                            )
-                        }
-                    }
-                    CardWithText(
-                        label = "Сменить пин-код",
-                        noClick = false,
-                        onClick = {goToLock()}) {
-                        Spacer(modifier = Modifier.padding(vertical = 20.dp))
+                    CardWithText(label = "Авто. проверка AML") {
+                        setUseAutoCheckAml(
+                            switchForSettings(useAutoCheckAml) {
+                                sharedPref.edit { putBoolean(AUTO_CHECK_AML, it) }
+                            }
+                        )
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                 }

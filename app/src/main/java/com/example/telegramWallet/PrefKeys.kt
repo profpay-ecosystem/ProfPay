@@ -8,4 +8,5 @@ object PrefKeys {
     const val JWT_REFRESH_TOKEN = "refresh_token"
     const val ADDRESS_FOR_RECEIVE = "address_for_receive"
     const val ADDRESS_FOR_WALLET_ADDRESS = "address_for_wa"
+    const val AUTO_CHECK_AML = "auto_check_aml"
 }

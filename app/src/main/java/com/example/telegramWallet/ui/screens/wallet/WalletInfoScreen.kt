@@ -77,6 +77,7 @@ import com.example.telegramWallet.ui.feature.wallet.walletInfo.CardForWalletInfo
 import com.example.telegramWallet.ui.feature.wallet.walletInfo.bottomSheetChoiceTokenToSend
 import com.example.telegramWallet.ui.shared.sharedPref
 import com.example.telegramWallet.utils.decimalFormat
+import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -117,31 +118,40 @@ fun WalletInfoScreen(
     val (totalPPercentage24, setTotalPPercentage24) = remember { mutableDoubleStateOf(0.0) }
 
     LaunchedEffect(Unit) {
-        val telegramId = viewModel.getProfileTelegramId()
-        if (telegramId != null && telegramId != 0L) {
-            try {
-                viewModel.getUserPermissions(sharedPref, navController)
-            } catch (e: Exception) {
-                navController.navigate(WalletInfo.NotNetworkScreen.route) {
-                    popUpTo(0) { inclusive = true }
-                    launchSingleTop = true
+        snapshotFlow { addressesSotsWithTokens }
+            .distinctUntilChanged()
+            .collectLatest { addresses ->
+                withContext(Dispatchers.IO) {
+                    setWalletName(viewModel.getWalletNameById(walletId) ?: "")
+                    setListTokensWithTotalBalance(viewModel.getListTokensWithTotalBalance(addresses))
+                    viewModel.updateTokenBalances(addresses)
                 }
             }
-            snapshotFlow { addressesSotsWithTokens }
-                .distinctUntilChanged()
-                .collectLatest { addresses ->
-                    withContext(Dispatchers.IO) {
-                        setWalletName(viewModel.getWalletNameById(walletId) ?: "")
-                        setListTokensWithTotalBalance(viewModel.getListTokensWithTotalBalance(addresses))
-                        viewModel.updateTokenBalances(addresses)
-                    }
-                }
-        } else {
-            navController.navigate(SettingsS.SettingsAccount.route) {
-                popUpTo(0) { inclusive = true }
-                launchSingleTop = true
-            }
-        }
+//        val telegramId = viewModel.getProfileTelegramId()
+//        if (telegramId != null && telegramId != 0L) {
+//            try {
+//                viewModel.getUserPermissions(sharedPref, navController)
+//            } catch (e: Exception) {
+//                navController.navigate(WalletInfo.NotNetworkScreen.route) {
+//                    popUpTo(0) { inclusive = true }
+//                    launchSingleTop = true
+//                }
+//            }
+//            snapshotFlow { addressesSotsWithTokens }
+//                .distinctUntilChanged()
+//                .collectLatest { addresses ->
+//                    withContext(Dispatchers.IO) {
+//                        setWalletName(viewModel.getWalletNameById(walletId) ?: "")
+//                        setListTokensWithTotalBalance(viewModel.getListTokensWithTotalBalance(addresses))
+//                        viewModel.updateTokenBalances(addresses)
+//                    }
+//                }
+//        } else {
+//            navController.navigate(SettingsS.SettingsAccount.route) {
+//                popUpTo(0) { inclusive = true }
+//                launchSingleTop = true
+//            }
+//        }
     }
 
     LaunchedEffect(listTokensWithTotalBalance) {

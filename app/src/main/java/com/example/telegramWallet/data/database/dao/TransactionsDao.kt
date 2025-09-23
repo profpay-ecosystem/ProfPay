@@ -16,6 +16,9 @@ interface TransactionsDao {
     @Query("SELECT EXISTS(SELECT * FROM transactions WHERE tx_id = :txid)")
     fun transactionExistsViaTxid(txid: String): Int
 
+    @Query("SELECT EXISTS(SELECT * FROM transactions WHERE tx_id = :txid AND status_code = 0)")
+    suspend fun isTransactionPending(txid: String): Boolean
+
     @Transaction
     @Query(
         "SELECT *, DATE(ROUND(transactions.timestamp / 1000), 'unixepoch') AS transaction_date " +
@@ -67,5 +70,11 @@ interface TransactionsDao {
 
     @Query("SELECT * FROM transactions WHERE tx_id = :txId")
     fun getTransactionByTxId(txId: String): TransactionEntity
+
+    @Query("UPDATE transactions SET status_code = :statusCode, timestamp = :timestamp WHERE tx_id = :txid")
+    suspend fun updateStatusAndTimestampByTxId(statusCode: Int, timestamp: Long, txid: String)
+
+    @Query("SELECT EXISTS(SELECT * FROM transactions WHERE tx_id = :txid AND status_code = 1)")
+    suspend fun isTransactionSuccessful(txid: String): Boolean
 }
 

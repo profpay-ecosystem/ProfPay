@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import com.example.telegramWallet.backend.grpc.AmlGrpcClient
 import com.example.telegramWallet.data.database.entities.wallet.TransactionEntity
+import com.example.telegramWallet.data.database.entities.wallet.TransactionStatusCode
 import com.example.telegramWallet.data.database.entities.wallet.TransactionType
 import com.example.telegramWallet.data.database.entities.wallet.assignTransactionType
 import com.example.telegramWallet.data.database.repositories.ProfileRepo
@@ -108,24 +109,35 @@ class UsdtTransferScheduler(
 
         val amount = BigInteger(transaction.value)
 
-        try {
-             transactionsRepo.insertNewTransaction(
-                TransactionEntity(
-                    txId = transaction.transaction_id,
-                    senderAddressId = senderAddressEntity?.addressId,
-                    receiverAddressId = receiverAddressEntity?.addressId,
-                    senderAddress = transaction.from,
-                    receiverAddress = transaction.to,
-                    walletId = addressEntity.walletId,
-                    tokenName = tokenName, // TODO: Плоховато..
-                    amount = amount,
-                    timestamp = transaction.block_timestamp,
-                    status = "Success",
-                    type = assignTransactionType(idSend = senderAddressEntity?.addressId, idReceive = receiverAddressEntity?.addressId)
-                )
+        val isTransactionPending = transactionsRepo.isTransactionPending(transaction.transaction_id)
+
+        if (isTransactionPending && isSender) {
+            transactionsRepo.updateStatusAndTimestampByTxId(
+                statusCode = TransactionStatusCode.SUCCESS.index,
+                timestamp = transaction.block_timestamp,
+                txid = transaction.transaction_id
             )
-        } catch (_: SQLiteConstraintException) {
-            return@coroutineScope
+        } else {
+            try {
+                transactionsRepo.insertNewTransaction(
+                    TransactionEntity(
+                        txId = transaction.transaction_id,
+                        senderAddressId = senderAddressEntity?.addressId,
+                        receiverAddressId = receiverAddressEntity?.addressId,
+                        senderAddress = transaction.from,
+                        receiverAddress = transaction.to,
+                        walletId = addressEntity.walletId,
+                        tokenName = tokenName,
+                        amount = amount,
+                        timestamp = transaction.block_timestamp,
+                        status = "Success",
+                        type = assignTransactionType(idSend = senderAddressEntity?.addressId, idReceive = receiverAddressEntity?.addressId),
+                        statusCode = TransactionStatusCode.SUCCESS.index
+                    )
+                )
+            } catch (_: SQLiteConstraintException) {
+                return@coroutineScope
+            }
         }
 
         if (senderAddressEntity != null) {
@@ -170,7 +182,6 @@ class UsdtTransferScheduler(
     }
 
     suspend fun transferTrx(transaction: TrxTransactionDataResponse, tokenName: String, address: String) = coroutineScope {
-        if (transactionsRepo.transactionExistsViaTxid(transaction.txID) > 2) return@coroutineScope
         val contract = transaction.raw_data.contract[0]
         if (contract.parameter.value.to_address == null || contract.parameter.value.amount == null)
             return@coroutineScope
@@ -191,6 +202,9 @@ class UsdtTransferScheduler(
             receiverAddressEntity?.address -> Pair(receiverAddressEntity, false)
             else -> return@coroutineScope
         }
+
+        val isTransactionPending = transactionsRepo.isTransactionPending(transaction.txID)
+
         val typeValue: Int = when (contract.type) {
             "TransferContract" -> {
                 assignTransactionType(idSend = senderAddressEntity?.addressId, idReceive = receiverAddressEntity?.addressId)
@@ -201,24 +215,33 @@ class UsdtTransferScheduler(
             else -> return@coroutineScope
         }
 
-        try {
-            transactionsRepo.insertNewTransaction(
-                TransactionEntity(
-                    txId = transaction.txID,
-                    senderAddressId = senderAddressEntity?.addressId,
-                    receiverAddressId = receiverAddressEntity?.addressId,
-                    senderAddress = ownerAddress,
-                    receiverAddress = toAddress,
-                    walletId = addressEntity.walletId,
-                    tokenName = tokenName, // TODO: Плоховато..
-                    amount = BigInteger.valueOf(contract.parameter.value.amount),
-                    timestamp = transaction.block_timestamp,
-                    status = "Success",
-                    type = typeValue
-                )
+        if (isTransactionPending && isSender) {
+            transactionsRepo.updateStatusAndTimestampByTxId(
+                statusCode = TransactionStatusCode.SUCCESS.index,
+                timestamp = transaction.block_timestamp,
+                txid = transaction.txID
             )
-        } catch (_: SQLiteConstraintException) {
-            return@coroutineScope
+        } else {
+            try {
+                transactionsRepo.insertNewTransaction(
+                    TransactionEntity(
+                        txId = transaction.txID,
+                        senderAddressId = senderAddressEntity?.addressId,
+                        receiverAddressId = receiverAddressEntity?.addressId,
+                        senderAddress = ownerAddress,
+                        receiverAddress = toAddress,
+                        walletId = addressEntity.walletId,
+                        tokenName = tokenName,
+                        amount = BigInteger.valueOf(contract.parameter.value.amount),
+                        timestamp = transaction.block_timestamp,
+                        status = "Success",
+                        type = typeValue,
+                        statusCode = TransactionStatusCode.SUCCESS.index
+                    )
+                )
+            } catch (_: SQLiteConstraintException) {
+                return@coroutineScope
+            }
         }
 
         if (senderAddressEntity != null) {
@@ -291,7 +314,8 @@ class UsdtTransferScheduler(
                     amount = BigInteger.ZERO,
                     timestamp = transaction.block_timestamp,
                     status = "Success",
-                    type = TransactionType.TRIGGER_SMART_CONTRACT.index
+                    type = TransactionType.TRIGGER_SMART_CONTRACT.index,
+                    statusCode = TransactionStatusCode.SUCCESS.index
                 )
             )
         } catch (_: SQLiteConstraintException) {
@@ -337,7 +361,8 @@ class UsdtTransferScheduler(
                     amount = BigInteger.valueOf(contract.parameter.value.amount),
                     timestamp = transaction.block_timestamp,
                     status = "Success",
-                    type = assignTransactionType(idSend = senderAddressId, idReceive = receiverAddressId, isCentralAddress = true)
+                    type = assignTransactionType(idSend = senderAddressId, idReceive = receiverAddressId, isCentralAddress = true),
+                    statusCode = TransactionStatusCode.SUCCESS.index
                 )
             )
         } catch (_: SQLiteConstraintException) {

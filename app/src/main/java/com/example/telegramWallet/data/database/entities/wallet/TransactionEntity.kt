@@ -49,6 +49,8 @@ data class TransactionEntity(
     @ColumnInfo(name = "is_processed", defaultValue = "0") val isProcessed: Boolean = false,
     @ColumnInfo(name = "server_response_received", defaultValue = "0") val serverResponseReceived: Boolean = false,
     @ColumnInfo(name = "type", defaultValue = "0") val type: Int,
+    @ColumnInfo(name = "status_code", defaultValue = "1") val statusCode: Int,
+    @ColumnInfo(name = "commission", defaultValue = "0") val commission: BigInteger = BigInteger.ZERO
 )
 
 enum class TransactionType(val index: Int) {
@@ -57,6 +59,29 @@ enum class TransactionType(val index: Int) {
     BETWEEN_YOURSELF(2),
     TRIGGER_SMART_CONTRACT(3),
     CENTRAL_ADDRESS(4),
+}
+
+enum class TransactionStatusCode(val index: Int) {
+    PENDING(0),
+    SUCCESS(1),
+    FAILED(2),
+    UNKNOWN(3);
+
+    companion object {
+        fun fromIndex(index: Int): TransactionStatusCode {
+            return entries.find { it.index == index } ?: UNKNOWN
+        }
+    }
+}
+
+fun getTransactionStatusName(statusCode: TransactionStatusCode): String {
+    return when (statusCode) {
+        TransactionStatusCode.PENDING -> "В обработке"
+        TransactionStatusCode.SUCCESS -> "Обработано"
+        TransactionStatusCode.FAILED -> "Произошла ошибка"
+        TransactionStatusCode.UNKNOWN -> "Неизвестно"
+    }
+
 }
 
 fun assignTransactionType(idSend: Long?, idReceive: Long?, isCentralAddress: Boolean? = false): Int {

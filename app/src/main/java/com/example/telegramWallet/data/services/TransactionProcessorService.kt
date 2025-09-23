@@ -1,6 +1,6 @@
 package com.example.telegramWallet.data.services
 
-import android.util.Log
+import android.database.sqlite.SQLiteConstraintException
 import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.backend.grpc.GrpcClientFactory
 import com.example.telegramWallet.backend.grpc.ProfPayServerGrpcClient
@@ -8,9 +8,13 @@ import com.example.telegramWallet.bridge.view_model.dto.TokenName
 import com.example.telegramWallet.bridge.view_model.dto.transfer.TransferResult
 import com.example.telegramWallet.data.database.entities.wallet.AddressEntity
 import com.example.telegramWallet.data.database.entities.wallet.PendingTransactionEntity
+import com.example.telegramWallet.data.database.entities.wallet.TransactionEntity
+import com.example.telegramWallet.data.database.entities.wallet.TransactionStatusCode
+import com.example.telegramWallet.data.database.entities.wallet.assignTransactionType
 import com.example.telegramWallet.data.database.models.HasTronCredentials
 import com.example.telegramWallet.data.database.models.TokenWithPendingTransactions
 import com.example.telegramWallet.data.database.repositories.ProfileRepo
+import com.example.telegramWallet.data.database.repositories.TransactionsRepo
 import com.example.telegramWallet.data.database.repositories.wallet.AddressRepo
 import com.example.telegramWallet.data.database.repositories.wallet.CentralAddressRepo
 import com.example.telegramWallet.data.database.repositories.wallet.PendingTransactionRepo
@@ -42,6 +46,7 @@ class TransactionProcessorService @Inject constructor(
     private val profileRepo: ProfileRepo,
     private val tokenRepo: TokenRepo,
     private val pendingTransactionRepo: PendingTransactionRepo,
+    private val transactionsRepo: TransactionsRepo,
     val tron: Tron,
     grpcClientFactory: GrpcClientFactory
 ) {
@@ -161,6 +166,7 @@ class TransactionProcessorService @Inject constructor(
         commission: BigInteger
     ): BigInteger {
         val isReceiverActivated = tron.addressUtilities.isAddressActivated(receiver)
+
         return when {
             !isReceiverActivated && tokenName == TokenName.TRX.tokenName ->
                 amount - tron.addressUtilities.getCreateNewAccountFeeInSystemContract() - commission
@@ -269,6 +275,35 @@ class TransactionProcessorService @Inject constructor(
                         amount = amountSending
                     )
                 )
+
+                try {
+                    val senderAddressEntity = addressRepo.getAddressEntityByAddress(sender)
+                    val receiverAddressEntity = addressRepo.getAddressEntityByAddress(receiver)
+
+                    val transactionAddressEntity = when (sender) {
+                        senderAddressEntity?.address -> senderAddressEntity
+                        receiverAddressEntity?.address -> receiverAddressEntity
+                        else -> throw Exception("Не удалось найти адреса")
+                    }
+
+                    transactionsRepo.insertNewTransaction(
+                        TransactionEntity(
+                            txId = signedTxnBytes.txid,
+                            senderAddressId = senderAddressEntity?.addressId,
+                            receiverAddressId = receiverAddressEntity?.addressId,
+                            senderAddress = sender,
+                            receiverAddress = receiver,
+                            walletId = transactionAddressEntity.walletId,
+                            tokenName = tokenType,
+                            amount = amountSending,
+                            timestamp = System.currentTimeMillis(),
+                            status = "Success",
+                            type = assignTransactionType(idSend = senderAddressEntity?.addressId, idReceive = receiverAddressEntity?.addressId),
+                            statusCode = TransactionStatusCode.PENDING.index,
+                            commission = commission
+                        )
+                    )
+                } catch (_: SQLiteConstraintException) { }
 
                 TransferResult.Success
             } catch (e: Exception) {

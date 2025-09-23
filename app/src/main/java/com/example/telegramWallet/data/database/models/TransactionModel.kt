@@ -20,6 +20,7 @@ data class TransactionModel(
     @ColumnInfo(name = "server_response_received", defaultValue = "0") val serverResponseReceived: Boolean = false,
     @ColumnInfo(name = "transaction_date") val transactionDate: String,
     @ColumnInfo(name = "type") val type: Int,
+    @ColumnInfo(name = "status_code") val statusCode: Int,
 ){
     fun toEntity(): TransactionEntity {
         return TransactionEntity(
@@ -35,7 +36,8 @@ data class TransactionModel(
             timestamp = timestamp,
             status = status,
             isProcessed = isProcessed,
-            type = type
+            type = type,
+            statusCode = statusCode
         )
     }
 }

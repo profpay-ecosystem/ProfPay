@@ -12,6 +12,7 @@ import com.example.telegramWallet.ui.screens.settings.SettingsScreen
 import com.example.telegramWallet.ui.screens.settings.SettingsSecurityScreen
 import com.example.telegramWallet.ui.screens.lockScreen.CreateLockScreen
 import com.example.telegramWallet.ui.screens.lockScreen.LockScreen
+import com.example.telegramWallet.ui.screens.settings.SettingsAmlScreen
 
 fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
     navigation(
@@ -33,6 +34,9 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
                 },
                 goToSettingsAccount = {
                     navController.navigate(route = SettingsS.SettingsAccount.route)
+                },
+                goToSettingsAml = {
+                    navController.navigate(route = SettingsS.SettingsAml.route)
                 }
             )
         }
@@ -54,6 +58,11 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
             )
         }
 
+        composable(route = SettingsS.SettingsAml.route) {
+            SettingsAmlScreen(
+                goToBack = { navController.navigateUp() }
+            )
+        }
 
         composable(route = SettingsSecurity.LockScreen.route) {
             LockScreen(
@@ -88,6 +97,7 @@ sealed class SettingsS(val route: String) {
     data object SettingsNotifications : SettingsS(route = "settings_notifications")
     data object SettingsSecurity : SettingsS(route = "settings_security")
     data object SettingsAccount : SettingsS(route = "settings_account")
+    data object SettingsAml : SettingsS(route = "settings_aml")
 }
 
 sealed class SettingsSecurity(val route: String) {

@@ -27,6 +27,9 @@ interface TransactionsRepo {
         isSender: Boolean,
         isCentralAddress: Boolean
     ): LiveData<List<TransactionModel>>
+    suspend fun isTransactionPending(txid: String): Boolean
+    suspend fun updateStatusAndTimestampByTxId(statusCode: Int, timestamp: Long, txid: String)
+    suspend fun isTransactionSuccessful(txid: String): Boolean
 }
 
 @Singleton
@@ -94,5 +97,27 @@ class TransactionsRepoImpl @Inject constructor(private val transactionsDao: Tran
             isSender = isSender,
             isCentralAddress = isCentralAddress
         )
+    }
+
+    override suspend fun isTransactionPending(txid: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            return@withContext transactionsDao.isTransactionPending(txid)
+        }
+    }
+
+    override suspend fun updateStatusAndTimestampByTxId(
+        statusCode: Int,
+        timestamp: Long,
+        txid: String
+    ) {
+        return withContext(Dispatchers.IO) {
+            return@withContext transactionsDao.updateStatusAndTimestampByTxId(statusCode, timestamp, txid)
+        }
+    }
+
+    override suspend fun isTransactionSuccessful(txid: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            return@withContext transactionsDao.isTransactionSuccessful(txid)
+        }
     }
 }

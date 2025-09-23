@@ -34,7 +34,7 @@ import com.example.telegramWallet.data.database.entities.wallet.WalletProfileEnt
 
 // Создание Базы Данных
 @Database(
-    version = 31,
+    version = 33,
     autoMigrations = [
         AutoMigration(from = 25, to = 26, spec = AppDatabase.AutoMigrationFrom25To26::class)
     ],

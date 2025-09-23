@@ -9,7 +9,7 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.media.RingtoneManager
-import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.telegramWallet.MainActivity
 import com.example.telegramWallet.data.database.entities.wallet.SmartContractEntity
@@ -52,6 +52,7 @@ class PushReceiver : BroadcastReceiver(), CoroutineScope {
         val notificationText = if (intent.getStringExtra("message") != null) intent.getStringExtra("message") else "Test notification"
         val transferErrorMessage = if (intent.getStringExtra("transferErrorMessage") != null) intent.getStringExtra("transferErrorMessage") else null
         val pushyTransferSuccessfullyMessage = if (intent.getStringExtra("pushyTransferSuccessfullyMessage") != null) intent.getStringExtra("pushyTransferSuccessfullyMessage") else null
+        val transferSuccessfullyMessage = if (intent.getStringExtra("transferSuccessfullyMessage") != null) intent.getStringExtra("transferSuccessfullyMessage") else null
 
         val pushyDeployContractSuccessfullyMessage = if (intent.getStringExtra("pushyDeployContractSuccessfullyMessage") != null) intent.getStringExtra("pushyDeployContractSuccessfullyMessage") else null
         var pushyDeployContractErrorMessage = if (intent.getStringExtra("pushyDeployContractErrorMessage") != null) intent.getStringExtra("pushyDeployContractErrorMessage") else null
@@ -79,6 +80,13 @@ class PushReceiver : BroadcastReceiver(), CoroutineScope {
                 } else {
                     smartContractRepo.restoreSmartContract(pushyObj.contractAddress)
                 }
+            }
+        }
+
+        if (transferSuccessfullyMessage != null) {
+            val pushyObj = localJson.decodeFromString<PushyTransferSuccessfullyMessage>(transferSuccessfullyMessage)
+            launch {
+                pendingTransactionRepo.deletePendingTransactionByTxId(pushyObj.txid)
             }
         }
 
