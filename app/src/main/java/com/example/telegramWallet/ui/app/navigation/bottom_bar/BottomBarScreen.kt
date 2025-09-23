@@ -57,6 +57,7 @@ sealed class BottomBarScreen(
             SettingsS.SettingsNotifications.route,
             SettingsS.SettingsSecurity.route,
             SettingsS.SettingsAccount.route,
+            SettingsS.SettingsAml.route
         )
     )
 }
