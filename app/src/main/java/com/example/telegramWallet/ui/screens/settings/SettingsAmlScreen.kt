@@ -64,7 +64,7 @@ fun SettingsAmlScreen(goToBack: () -> Unit) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "AML notifications",
+                        text = "AML",
                         style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
                     )
                 },
