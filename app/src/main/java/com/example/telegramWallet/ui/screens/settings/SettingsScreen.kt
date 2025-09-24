@@ -161,7 +161,7 @@ fun SettingsScreen(
                         onClick = {goToSettingsAccount()}
                     )
                     CardForSettings(
-                        iconID = R.drawable.icon_settings_account,
+                        iconID = R.drawable.icon_settings_aml,
                         label = "AML",
                         iconSize = 24,
                         onClick = {goToSettingsAml()}
@@ -387,7 +387,7 @@ fun CardForSettings(
     label: String,
     smallLabel: Boolean = false,
     noClick: Boolean = false,
-    iconSize: Int = 0,
+    iconSize: Int = 40,
     content: @Composable () -> Unit = {}
 ) {
     @Composable
@@ -411,13 +411,7 @@ fun CardForSettings(
                    ) {
                    Icon(
                        modifier = Modifier
-                           .size(
-                               if (iconSize > 0) {
-                                   iconSize.dp
-                               } else {
-                                   40.dp
-                               }
-                           ),
+                           .size(iconSize.dp),
                        imageVector = ImageVector.vectorResource(id = iconID),
                        contentDescription = "",
                        tint = MaterialTheme.colorScheme.primary
