@@ -6,11 +6,11 @@ import kotlinx.serialization.Serializable
 data class AuthUserRequest(
     val telegram_id: Long,
     val access_token: String,
-    val android_unique: String
+    val android_unique: String,
 )
 
 @Serializable
 data class AuthUserResponse(
     val access_token: String,
-    val expires_at: Long
+    val expires_at: Long,
 )

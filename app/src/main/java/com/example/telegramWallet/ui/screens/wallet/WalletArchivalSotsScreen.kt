@@ -61,46 +61,49 @@ import com.example.telegramWallet.ui.shared.sharedPref
 import kotlinx.coroutines.launch
 import java.math.BigInteger
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun WalletArchivalSotsScreen(
     goToBack: () -> Unit,
     goToWalletAddress: () -> Unit,
-    viewModel: WalletArchivalSotViewModel = hiltViewModel()
+    viewModel: WalletArchivalSotViewModel = hiltViewModel(),
 ) {
-
     val coroutineScope = rememberCoroutineScope()
     val sharedPref = sharedPref()
 
     val walletId = sharedPref.getLong("wallet_id", 1)
     val token = sharedPref.getString("token_name", TokenName.USDT.tokenName) ?: TokenName.USDT.tokenName
 
-    val addressWithTokensArchival by viewModel.getAddressWithTokensArchivalByBlockchainLD(
-        walletId = walletId, blockchainName = TokenName.valueOf(token).blockchainName
-    ).observeAsState(emptyList())
+    val addressWithTokensArchival by viewModel
+        .getAddressWithTokensArchivalByBlockchainLD(
+            walletId = walletId,
+            blockchainName = TokenName.valueOf(token).blockchainName,
+        ).observeAsState(emptyList())
 
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
 
     Scaffold(modifier = Modifier) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ), verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             TopAppBar(
                 title = {
                     Text(
                         text = "Wallet Archival Sots",
-                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
+                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
                     run {
                         IconButton(onClick = { goToBack() }) {
@@ -108,7 +111,7 @@ fun WalletArchivalSotsScreen(
                                 modifier = Modifier.size(34.dp),
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
@@ -120,56 +123,58 @@ fun WalletArchivalSotsScreen(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
             Card(
-                modifier = Modifier
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .clip(
-                        RoundedCornerShape(15.dp)
-                    )
+                modifier =
+                    Modifier
+                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .clip(
+                            RoundedCornerShape(15.dp),
+                        ),
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp, horizontal = 12.dp)
-                        .fillMaxSize(),
+                    modifier =
+                        Modifier
+                            .padding(vertical = 8.dp, horizontal = 12.dp)
+                            .fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
-
-                    ) {
+                ) {
                     Text(text = "Архив сот", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.size(6.dp))
                     Text(
                         text = "Список ваших замененных адресов сот.",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }
 
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomEnd = 0.dp,
-                            bottomStart = 0.dp
-                        )
-                    )
-                    .weight(0.8f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 0.dp,
+                            ),
+                        ).weight(0.8f),
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(bottom = bottomPadding.dp)
-                        .padding(vertical = 8.dp, horizontal = 0.dp)
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier
+                            .padding(bottom = bottomPadding.dp)
+                            .padding(vertical = 8.dp, horizontal = 0.dp)
+                            .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     val titles = listOf("All", "With funds")
                     val pagerState = rememberPagerState(pageCount = { titles.size })
@@ -178,7 +183,7 @@ fun WalletArchivalSotsScreen(
                         selectedTabIndex = pagerState.currentPage,
                         containerColor = Color.Transparent,
                         divider = {},
-                        indicator = {}
+                        indicator = {},
                     ) {
                         titles.forEachIndexed { index, title ->
                             Tab(
@@ -196,33 +201,36 @@ fun WalletArchivalSotsScreen(
                                         style = MaterialTheme.typography.titleLarge,
                                         maxLines = 2,
                                     )
-                                }
+                                },
                             )
                         }
                     }
                     HorizontalPager(
-                        state = pagerState, modifier = Modifier
-                            .fillMaxWidth()
-
+                        state = pagerState,
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
                     ) { page ->
                         when (page) {
                             0 -> {
                                 if (addressWithTokensArchival.isNotEmpty()) {
                                     LazyColumn(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .padding(
-                                                horizontal = 16.dp
+                                        modifier =
+                                            Modifier
+                                                .fillMaxSize()
+                                                .padding(
+                                                    horizontal = 16.dp,
+                                                ),
+                                        contentPadding =
+                                            PaddingValues(
+                                                horizontal = 0.dp,
+                                                vertical = 0.dp,
                                             ),
-                                        contentPadding = PaddingValues(
-                                            horizontal = 0.dp,
-                                            vertical = 0.dp
-                                        ),
                                     ) {
                                         items(addressWithTokensArchival) { addressWithTokens ->
                                             CardArchivalAddress(
                                                 goToWalletAddress = { goToWalletAddress() },
-                                                addressWithTokens = addressWithTokens
+                                                addressWithTokens = addressWithTokens,
                                             )
                                         }
                                         item { Spacer(modifier = Modifier.size(10.dp)) }
@@ -231,13 +239,13 @@ fun WalletArchivalSotsScreen(
                                     Column(
                                         modifier = Modifier.fillMaxSize(),
                                         horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
+                                        verticalArrangement = Arrangement.Center,
                                     ) {
                                         Text(
                                             text = "У вас пока нет архивных сот...",
                                             fontSize = 22.sp,
                                             fontWeight = FontWeight.SemiBold,
-                                            color = BackgroundIcon
+                                            color = BackgroundIcon,
                                         )
                                         Spacer(modifier = Modifier.size(10.dp))
                                     }
@@ -245,26 +253,29 @@ fun WalletArchivalSotsScreen(
                             }
 
                             1 -> {
-                                val addressWTAWithFunds = viewModel.getAddressesWTAWithFunds(
-                                    addressWithTokensArchival,
-                                    token
-                                )
+                                val addressWTAWithFunds =
+                                    viewModel.getAddressesWTAWithFunds(
+                                        addressWithTokensArchival,
+                                        token,
+                                    )
                                 if (addressWTAWithFunds.isNotEmpty()) {
                                     LazyColumn(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .padding(
-                                                horizontal = 16.dp
+                                        modifier =
+                                            Modifier
+                                                .fillMaxSize()
+                                                .padding(
+                                                    horizontal = 16.dp,
+                                                ),
+                                        contentPadding =
+                                            PaddingValues(
+                                                horizontal = 0.dp,
+                                                vertical = 0.dp,
                                             ),
-                                        contentPadding = PaddingValues(
-                                            horizontal = 0.dp,
-                                            vertical = 0.dp
-                                        ),
                                     ) {
                                         items(addressWTAWithFunds) { addressWithTokens ->
                                             CardArchivalAddress(
                                                 goToWalletAddress = { goToWalletAddress() },
-                                                addressWithTokens = addressWithTokens
+                                                addressWithTokens = addressWithTokens,
                                             )
                                         }
                                         item { Spacer(modifier = Modifier.size(100.dp)) }
@@ -273,13 +284,13 @@ fun WalletArchivalSotsScreen(
                                     Column(
                                         modifier = Modifier.fillMaxSize(),
                                         horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.Center
+                                        verticalArrangement = Arrangement.Center,
                                     ) {
                                         Text(
                                             text = "Нет архивных сот \n с средствами...",
                                             style = MaterialTheme.typography.titleMedium,
                                             color = BackgroundIcon,
-                                            textAlign = TextAlign.Center
+                                            textAlign = TextAlign.Center,
                                         )
                                         Spacer(modifier = Modifier.size(100.dp))
                                     }
@@ -294,54 +305,58 @@ fun WalletArchivalSotsScreen(
 }
 
 @Composable
-fun CardArchivalAddress(goToWalletAddress: () -> Unit, addressWithTokens: AddressWithTokens) {
+fun CardArchivalAddress(
+    goToWalletAddress: () -> Unit,
+    addressWithTokens: AddressWithTokens,
+) {
     val sharedPref = sharedPref()
 
     val tokenName = sharedPref.getString("token_name", TokenName.USDT.tokenName)
-    val tokenEntity = addressWithTokens.tokens.stream()
-        .filter { currentToken -> currentToken.token.tokenName == tokenName }
-        .findFirst()
-        .orElse(null)
+    val tokenEntity =
+        addressWithTokens.tokens
+            .stream()
+            .filter { currentToken -> currentToken.token.tokenName == tokenName }
+            .findFirst()
+            .orElse(null)
 
     Card(
         shape = RoundedCornerShape(10.dp),
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min),
+        modifier =
+            Modifier
+                .padding(vertical = 4.dp)
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
         elevation = CardDefaults.cardElevation(10.dp),
         onClick = {
-            sharedPref.edit() {
+            sharedPref.edit {
                 putString(PrefKeys.ADDRESS_FOR_WALLET_ADDRESS, addressWithTokens.addressEntity.address)
             }
             goToWalletAddress()
-        }
+        },
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-
             Row(verticalAlignment = Alignment.CenterVertically) {
-
                 Column(modifier = Modifier.padding(horizontal = 12.dp, 8.dp)) {
                     Text(
-                        text = "${addressWithTokens.addressEntity.address.take(7)}..." +
+                        text =
+                            "${addressWithTokens.addressEntity.address.take(7)}..." +
                                 "${addressWithTokens.addressEntity.address.takeLast(7)} ",
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
                     )
                     val balanceWF = tokenEntity?.balanceWithoutFrozen ?: BigInteger.ZERO
                     if (balanceWF > BigInteger.ZERO) {
                         Text(
                             text = "$${balanceWF.toTokenAmount()}",
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                     }
                 }
             }
-
         }
     }
-
 }

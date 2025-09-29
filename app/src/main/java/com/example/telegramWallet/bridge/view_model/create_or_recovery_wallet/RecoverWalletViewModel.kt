@@ -12,38 +12,42 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RecoverWalletViewModel @Inject constructor(
-    private val addressAndMnemonicRepo: AddressAndMnemonicRepo
-) : ViewModel() {
-    // Восстановление кошелька по мнемонике(сид-фразе)
-    // Данные восстановленного кошелька
+class RecoverWalletViewModel
+    @Inject
+    constructor(
+        private val addressAndMnemonicRepo: AddressAndMnemonicRepo,
+    ) : ViewModel() {
+        // Восстановление кошелька по мнемонике(сид-фразе)
+        // Данные восстановленного кошелька
 
-    private val _mutableState = MutableStateFlow<RecoverWalletState>(RecoverWalletState.Loading)
-    val state: StateFlow<RecoverWalletState> = _mutableState.asStateFlow()
+        private val _mutableState = MutableStateFlow<RecoverWalletState>(RecoverWalletState.Loading)
+        val state: StateFlow<RecoverWalletState> = _mutableState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            addressAndMnemonicRepo.addressFromMnemonic.collect {
-                _mutableState.value = RecoverWalletState.Success(it)
+        init {
+            viewModelScope.launch {
+                addressAndMnemonicRepo.addressFromMnemonic.collect {
+                    _mutableState.value = RecoverWalletState.Success(it)
+                }
+            }
+        }
+
+        fun recoverWallet(mnemonic: String) {
+            viewModelScope.launch {
+                addressAndMnemonicRepo.generateAddressFromMnemonic(mnemonic)
+            }
+        }
+
+        fun clearAddressFromMnemonic() {
+            viewModelScope.launch {
+                addressAndMnemonicRepo.clearAddressFromMnemonic()
             }
         }
     }
 
-    fun recoverWallet(mnemonic: String) {
-        viewModelScope.launch {
-            addressAndMnemonicRepo.generateAddressFromMnemonic(mnemonic)
-        }
-    }
-
-    fun clearAddressFromMnemonic() {
-        viewModelScope.launch {
-            addressAndMnemonicRepo.clearAddressFromMnemonic()
-        }
-    }
-}
 sealed interface RecoverWalletState {
     data object Loading : RecoverWalletState
+
     data class Success(
-        val addressRecoverResult: RecoveryResult
+        val addressRecoverResult: RecoveryResult,
     ) : RecoverWalletState
 }

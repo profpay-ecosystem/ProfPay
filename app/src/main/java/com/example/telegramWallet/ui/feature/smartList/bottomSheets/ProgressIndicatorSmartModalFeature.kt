@@ -16,17 +16,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.telegramWallet.ui.app.theme.ProgressIndicator
 
-
 @Composable
 fun ProgressIndicatorSmartModalFeature(text: String) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.weight(0.05f))
         CircularProgressIndicator(
             modifier = Modifier.weight(0.1f),
-            color = ProgressIndicator
+            color = ProgressIndicator,
         )
         Spacer(modifier = Modifier.weight(0.05f))
         Text(

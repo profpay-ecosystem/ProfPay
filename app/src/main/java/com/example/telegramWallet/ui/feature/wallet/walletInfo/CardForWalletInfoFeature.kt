@@ -46,107 +46,117 @@ fun CardForWalletInfoFeature(
     onClick: () -> Unit = {},
 ) {
     val (rateValue, setRateValue) = remember { mutableDoubleStateOf(0.0) }
-    val (priceChangePercentage24hUsdt, setPriceChangePercentage24hUsdt) = remember {
-        mutableDoubleStateOf(
-            0.0
-        )
-    }
-    val (priceChangePercentage24hTrx, setPriceChangePercentage24hTrx) = remember {
-        mutableDoubleStateOf(
-            0.0
-        )
-    }
+    val (priceChangePercentage24hUsdt, setPriceChangePercentage24hUsdt) =
+        remember {
+            mutableDoubleStateOf(
+                0.0,
+            )
+        }
+    val (priceChangePercentage24hTrx, setPriceChangePercentage24hTrx) =
+        remember {
+            mutableDoubleStateOf(
+                0.0,
+            )
+        }
 
     LaunchedEffect(Unit) {
         setRateValue(viewModel.exchangeRatesRepo.getExchangeRateValue(BinanceSymbolEnum.TRX_USDT.symbol))
         setPriceChangePercentage24hUsdt(
             viewModel.tradingInsightsRepo.getPriceChangePercentage24h(
-                CoinSymbolEnum.USDT_TRC20.symbol
-            )
+                CoinSymbolEnum.USDT_TRC20.symbol,
+            ),
         )
         setPriceChangePercentage24hTrx(
             viewModel.tradingInsightsRepo.getPriceChangePercentage24h(
-                CoinSymbolEnum.TRON.symbol
-            )
+                CoinSymbolEnum.TRON.symbol,
+            ),
         )
     }
 
-    val priceInUsdt: String = if (label == "TRX") {
-        decimalFormat(balance.toTokenAmount() * rateValue.toBigDecimal())
-    } else {
-        decimalFormat(balance.toTokenAmount())
-    }
+    val priceInUsdt: String =
+        if (label == "TRX") {
+            decimalFormat(balance.toTokenAmount() * rateValue.toBigDecimal())
+        } else {
+            decimalFormat(balance.toTokenAmount())
+        }
 
     Card(
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .shadow(7.dp, RoundedCornerShape(10.dp)),
-        onClick = { onClick() }
+        modifier =
+            Modifier
+                .padding(vertical = 4.dp)
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .shadow(7.dp, RoundedCornerShape(10.dp)),
+        onClick = { onClick() },
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier =
+                Modifier
+                    .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 16.dp)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.Center
+                modifier =
+                    Modifier
+                        .padding(start = 10.dp, end = 16.dp)
+                        .fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .size(40.dp)
-                            .paint(
-                                painterResource(id = paintIconId),
-                                contentScale = ContentScale.FillBounds
-                            ),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .padding(vertical = 8.dp)
+                                .size(40.dp)
+                                .paint(
+                                    painterResource(id = paintIconId),
+                                    contentScale = ContentScale.FillBounds,
+                                ),
+                        contentAlignment = Alignment.Center,
                     ) {}
                     Column(modifier = Modifier.padding(horizontal = 8.dp)) {
                         Text(
                             text = label,
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                         Text(
                             text = "${decimalFormat(balance.toTokenAmount())} $shortNameToken",
-                            style = MaterialTheme.typography.labelLarge
+                            style = MaterialTheme.typography.labelLarge,
                         )
                     }
                 }
             }
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxHeight(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxHeight(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End
+                horizontalAlignment = Alignment.End,
             ) {
-                Text(text = "$${priceInUsdt}", style = MaterialTheme.typography.bodySmall)
+                Text(text = "$$priceInUsdt", style = MaterialTheme.typography.bodySmall)
 
-                val priceChangePercentage24h = if (shortNameToken == "TRX") {
-                    priceChangePercentage24hTrx
-                } else priceChangePercentage24hUsdt
+                val priceChangePercentage24h =
+                    if (shortNameToken == "TRX") {
+                        priceChangePercentage24hTrx
+                    } else {
+                        priceChangePercentage24hUsdt
+                    }
 
                 if (priceChangePercentage24h >= 0.0) {
                     Text(
                         "+${decimalFormat(priceChangePercentage24h.toBigDecimal())}%",
                         color = GreenColor,
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 } else {
                     Text(
                         "${decimalFormat(priceChangePercentage24h.toBigDecimal())}%",
                         color = RedColor,
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 }
-
             }
         }
     }

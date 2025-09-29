@@ -11,11 +11,11 @@ import androidx.room.PrimaryKey
         Index(
             value = ["contract_address"],
             name = "smart_contracts_ind_contract_address",
-            unique = true
-        )
-    ]
+            unique = true,
+        ),
+    ],
 )
-data class SmartContractEntity (
+data class SmartContractEntity(
     @PrimaryKey(autoGenerate = true) val id: Long? = null,
     @ColumnInfo(name = "contract_address") val contractAddress: String,
     @ColumnInfo(name = "owner_address") val ownerAddress: String,

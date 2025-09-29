@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
@@ -54,19 +53,17 @@ import com.example.telegramWallet.ui.app.theme.HexagonColor6
 import com.example.telegramWallet.ui.app.theme.HexagonColor7
 import com.example.telegramWallet.ui.shared.sharedPref
 import com.example.telegramWallet.ui.widgets.dialog.AlertDialogWidget
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class HexagonWithCircleShape(private val rotate: Boolean = false) : Shape {
+class HexagonWithCircleShape(
+    private val rotate: Boolean = false,
+) : Shape {
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
-        density: Density
+        density: Density,
     ): Outline {
         val path =
             RoundedPolygon(
@@ -74,10 +71,11 @@ class HexagonWithCircleShape(private val rotate: Boolean = false) : Shape {
                 radius = size.minDimension / 2,
                 centerX = size.width / 2,
                 centerY = size.height / 2,
-                rounding = CornerRounding(
-                    size.minDimension / 15f,
-                    smoothing = 0.75f
-                )
+                rounding =
+                    CornerRounding(
+                        size.minDimension / 15f,
+                        smoothing = 0.75f,
+                    ),
             ).toPath()
         if (rotate) {
             val matrix = Matrix()
@@ -89,12 +87,13 @@ class HexagonWithCircleShape(private val rotate: Boolean = false) : Shape {
     }
 }
 
-
-class HexagonShape(private val rotate: Boolean = false) : Shape {
+class HexagonShape(
+    private val rotate: Boolean = false,
+) : Shape {
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
-        density: Density
+        density: Density,
     ): Outline {
         val path =
             RoundedPolygon(
@@ -102,10 +101,11 @@ class HexagonShape(private val rotate: Boolean = false) : Shape {
                 radius = size.minDimension / 2,
                 centerX = size.width / 2,
                 centerY = size.height / 2,
-                rounding = CornerRounding(
-                    size.minDimension / 15f,
-                    smoothing = 0.75f
-                )
+                rounding =
+                    CornerRounding(
+                        size.minDimension / 15f,
+                        smoothing = 0.75f,
+                    ),
             ).toPath()
         if (rotate) {
             val matrix = Matrix()
@@ -115,7 +115,6 @@ class HexagonShape(private val rotate: Boolean = false) : Shape {
         return Outline.Generic(path.asComposePath())
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,18 +129,18 @@ fun HexagonsFeature(
 
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
 
-    val listColors: List<Color> = listOf(
-        HexagonColor2,
-        HexagonColor3,
-        HexagonColor4,
-        HexagonColor5,
-        HexagonColor6,
-        HexagonColor7
-    )
+    val listColors: List<Color> =
+        listOf(
+            HexagonColor2,
+            HexagonColor3,
+            HexagonColor4,
+            HexagonColor5,
+            HexagonColor6,
+            HexagonColor7,
+        )
     val hexagonPoints = generateHexagonPoints()
 
     var clickSot1 by remember { mutableStateOf(false) }
-
 
     Box(modifier = Modifier) {
         TopAppBar(
@@ -150,83 +149,88 @@ fun HexagonsFeature(
                     text = "Wallet",
                     fontSize = if ((size.value / 16) >= 18) (size.value / 16).sp else 18.sp,
                     fontWeight = FontWeight.SemiBold,
-                    style = TextStyle(color = Color.White)
+                    style = TextStyle(color = Color.White),
                 )
             },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Transparent
-            ),
+            colors =
+                TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                ),
             navigationIcon = {
                 run {
                     IconButton(
                         modifier = Modifier.size(32.dp),
-                        onClick = { goToBack() }) {
+                        onClick = { goToBack() },
+                    ) {
                         Icon(
                             modifier = Modifier.size(30.dp),
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = "Back",
-                            tint = Color.White
+                            tint = Color.White,
                         )
                     }
                 }
-            }
+            },
         )
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(size),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .size(size),
+            contentAlignment = Alignment.Center,
         ) {
             Box(
-                modifier = Modifier
-                    .clip(HexagonWithCircleShape(clickSot1))
-                    .size(size / 4)
+                modifier =
+                    Modifier
+                        .clip(HexagonWithCircleShape(clickSot1))
+                        .size(size / 4)
 //                        .background(Color(0xFF6A0E8D,))
-                    .border(size / 80, Color(0xFF6A0E8D), HexagonWithCircleShape(clickSot1))
-                    .clickable() {
-                        openDialog = !openDialog
-                    }
-                    .animateContentSize(), contentAlignment = Alignment.Center
+                        .border(size / 80, Color(0xFF6A0E8D), HexagonWithCircleShape(clickSot1))
+                        .clickable {
+                            openDialog = !openDialog
+                        }.animateContentSize(),
+                contentAlignment = Alignment.Center,
             ) {
                 Text(text = "1", fontSize = (size / 10).value.sp, fontWeight = FontWeight.Thin, color = Color.White)
             }
             hexagonPoints.forEachIndexed { index, point ->
                 var clickSots by remember { mutableStateOf(false) }
                 Box(
-                    modifier = Modifier
-                        .size(size / 4)
-                        .offset(x = point.first * size / 6.25f, y = point.second * size / 6.25f)
-                        .clip(HexagonShape(clickSots))
-                        .border(size / 80, listColors[index], HexagonShape(clickSots))
-                        .clickable {
-                            sharedPref
-                                .edit {
-                                    putString(
-                                        PrefKeys.ADDRESS_FOR_RECEIVE,
-                                        addressList[index + 1].addressEntity.address
-                                    )
-                                }
-                            goToReceive()
-                        }
-                        .animateContentSize(), contentAlignment = Alignment.Center
+                    modifier =
+                        Modifier
+                            .size(size / 4)
+                            .offset(x = point.first * size / 6.25f, y = point.second * size / 6.25f)
+                            .clip(HexagonShape(clickSots))
+                            .border(size / 80, listColors[index], HexagonShape(clickSots))
+                            .clickable {
+                                sharedPref
+                                    .edit {
+                                        putString(
+                                            PrefKeys.ADDRESS_FOR_RECEIVE,
+                                            addressList[index + 1].addressEntity.address,
+                                        )
+                                    }
+                                goToReceive()
+                            }.animateContentSize(),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(
                         text = "${index + 2}",
                         fontSize = (size / 10).value.sp,
                         fontWeight = FontWeight.Thin,
-                        color = Color.White
+                        color = Color.White,
                     )
                 }
             }
 
-            if(openDialog){
+            if (openDialog) {
                 AlertDialogWidget(
                     onConfirmation = {
                         sharedPref
                             .edit {
                                 putString(
                                     PrefKeys.ADDRESS_FOR_RECEIVE,
-                                    addressList[0].addressEntity.address
+                                    addressList[0].addressEntity.address,
                                 )
                             }
                         goToReceive()
@@ -236,7 +240,8 @@ fun HexagonsFeature(
                         openDialog = !openDialog
                     },
                     dialogTitle = "Главный адрес",
-                    dialogText = "Пополнение главной соты не рекомендуется " +
+                    dialogText =
+                        "Пополнение главной соты не рекомендуется " +
                             "вместо этого откройте любую доп-соту и пополните ее.\nПосле AML проверки " +
                             "Вы сможете перевести валюту на центральную соту, " +
                             "так Ваш центральный адрес будет чист всегда.",
@@ -257,5 +262,3 @@ fun generateHexagonPoints(): List<Pair<Float, Float>> {
         Pair(radius * cos(angle - 32.99f), radius * sin(angle - 32.99f))
     }
 }
-
-

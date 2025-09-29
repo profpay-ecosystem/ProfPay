@@ -25,7 +25,6 @@ fun HomeNavGraph(navController: NavHostController) {
         popEnterTransition = popEnterTransition,
         popExitTransition = popExitTransition,
     ) {
-
         composable(route = BottomBarScreen.SmartContractList.route) {
 //           SmartListScreen(
 //               goToSystemTRX = { navController.navigate(route = WalletInfo.WalletSystemTRX.route) }
@@ -38,4 +37,3 @@ fun HomeNavGraph(navController: NavHostController) {
         coRAddressFromWalletSystemNG(navController)
     }
 }
-

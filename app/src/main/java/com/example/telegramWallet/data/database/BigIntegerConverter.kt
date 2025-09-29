@@ -5,12 +5,8 @@ import java.math.BigInteger
 
 class BigIntegerConverter {
     @TypeConverter
-    fun fromBigInteger(value: BigInteger?): String? {
-        return value?.toString()
-    }
+    fun fromBigInteger(value: BigInteger?): String? = value?.toString()
 
     @TypeConverter
-    fun toBigInteger(value: String?): BigInteger? {
-        return value?.let { BigInteger(it) }
-    }
+    fun toBigInteger(value: String?): BigInteger? = value?.let { BigInteger(it) }
 }

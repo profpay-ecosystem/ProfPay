@@ -39,7 +39,7 @@ fun CreateLockScreen(
     toNavigate: () -> Unit,
     viewModel: PinLockViewModel = hiltViewModel(),
     goToBack: () -> Unit = {},
-    goingBack: Boolean = false
+    goingBack: Boolean = false,
 ) {
     val inputPinCode = remember { mutableStateListOf<Int>() }
     val repeatInputPinCode = remember { mutableStateListOf<Int>() }
@@ -56,45 +56,54 @@ fun CreateLockScreen(
                         containerColor = Color(0xFFff2a00),
                         contentColor = Color.White,
                     )
-                }
+                },
             )
         },
     ) { padding ->
         padding
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding()
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(),
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Spacer(modifier = Modifier.fillMaxWidth(0.1f))
 
                 Icon(
-                    painter = painterResource(id = R.drawable.icon_smart), contentDescription = "",
-                    modifier = Modifier
-                        .fillMaxSize(0.5f)
-                        .clip(CircleShape)
-                        .weight(1f)
+                    painter = painterResource(id = R.drawable.icon_smart),
+                    contentDescription = "",
+                    modifier =
+                        Modifier
+                            .fillMaxSize(0.5f)
+                            .clip(CircleShape)
+                            .weight(1f),
                 )
                 Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
                 Text(text = "Hii, User!")
 
-                if (inputPinCode.size < 4) Text(text = "Create 4-digit security PIN")
-                else Text(text = "Repeat 4-digit security PIN")
+                if (inputPinCode.size < 4) {
+                    Text(text = "Create 4-digit security PIN")
+                } else {
+                    Text(text = "Repeat 4-digit security PIN")
+                }
 
                 Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
-                if (inputPinCode.size < 4 && repeatInputPinCode.isEmpty()) InputDots(inputPinCode)
-                else if (inputPinCode.size == 4) InputDots(
-                    repeatInputPinCode,
-                    isError,
-                    onErrorReset = { isError = false }
-                )
+                if (inputPinCode.size < 4 && repeatInputPinCode.isEmpty()) {
+                    InputDots(inputPinCode)
+                } else if (inputPinCode.size == 4) {
+                    InputDots(
+                        repeatInputPinCode,
+                        isError,
+                        onErrorReset = { isError = false },
+                    )
+                }
 
                 NumberBoard(
                     inputPinCode,
@@ -107,29 +116,33 @@ fun CreateLockScreen(
                             }
 
                             "X" -> {
-                                if (inputPinCode.size <= 4 && inputPinCode.isNotEmpty()
-                                    && repeatInputPinCode.isEmpty()
+                                if (inputPinCode.size <= 4 &&
+                                    inputPinCode.isNotEmpty() &&
+                                    repeatInputPinCode.isEmpty()
                                 ) {
                                     inputPinCode.removeAt(inputPinCode.lastIndex)
                                 } else {
-                                    if (repeatInputPinCode.isNotEmpty()) repeatInputPinCode.removeAt(
-                                        repeatInputPinCode.lastIndex
-                                    )
+                                    if (repeatInputPinCode.isNotEmpty()) {
+                                        repeatInputPinCode.removeAt(
+                                            repeatInputPinCode.lastIndex,
+                                        )
+                                    }
                                 }
                             }
 
                             else -> {
-                                if (inputPinCode.size == 1 || repeatInputPinCode.size == 1)
+                                if (inputPinCode.size == 1 || repeatInputPinCode.size == 1) {
                                     isError = false
+                                }
 
-                                if (inputPinCode.size < 4)
+                                if (inputPinCode.size < 4) {
                                     inputPinCode.add(enterNumber.toInt())
-                                else if (repeatInputPinCode.size < 4) {
+                                } else if (repeatInputPinCode.size < 4) {
                                     repeatInputPinCode.add(enterNumber.toInt())
                                 }
                             }
                         }
-                    }
+                    },
                 )
 
                 Spacer(modifier = Modifier.weight(0.1f))

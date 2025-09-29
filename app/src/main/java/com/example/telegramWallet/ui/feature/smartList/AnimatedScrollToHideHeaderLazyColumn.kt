@@ -27,12 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AnimatedScrollToHideHeaderLazyColumn(
     contentToHide: @Composable () -> Unit = {},
-    contentInLColumn: LazyListScope.() -> Unit
+    contentInLColumn: LazyListScope.() -> Unit,
 ) {
     val listState = rememberLazyListState()
     var previousIndex by remember { mutableIntStateOf(0) }
@@ -42,19 +41,22 @@ fun AnimatedScrollToHideHeaderLazyColumn(
     // Плавная анимация прозрачности с измененной продолжительностью и кривой
     val animatedAlpha by animateFloatAsState(
         targetValue = if (isVisible) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 600,  // Продолжительность анимации
-            easing = FastOutSlowInEasing  // Кривая интерполяции
-        )
+        animationSpec =
+            tween(
+                durationMillis = 600, // Продолжительность анимации
+                easing = FastOutSlowInEasing, // Кривая интерполяции
+            ),
     )
 
     // Отслеживаем изменения прокрутки
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
             .collect { (currentIndex, currentScrollOffset) ->
-                val scrolledDown = (currentIndex > previousIndex) ||
+                val scrolledDown =
+                    (currentIndex > previousIndex) ||
                         (currentIndex == previousIndex && currentScrollOffset > previousScrollOffset)
-                val scrolledUp = (currentIndex < previousIndex) ||
+                val scrolledUp =
+                    (currentIndex < previousIndex) ||
                         (currentIndex == previousIndex && currentScrollOffset < previousScrollOffset)
 
                 if (scrolledDown) {
@@ -77,10 +79,11 @@ fun AnimatedScrollToHideHeaderLazyColumn(
             stickyHeader {
                 // Анимируемый заголовок
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(animatedAlpha) // Анимируем высоту
-                        .alpha(animatedAlpha)     // Анимируем прозрачность
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(animatedAlpha) // Анимируем высоту
+                            .alpha(animatedAlpha), // Анимируем прозрачность
                 ) {
                     if (isVisible || animatedAlpha > 0f) {
                         contentToHide()
@@ -91,7 +94,7 @@ fun AnimatedScrollToHideHeaderLazyColumn(
 
             contentInLColumn()
 
-            if(!isVisible){
+            if (!isVisible) {
                 item { Spacer(modifier = Modifier.size(90.dp)) }
             }
         }

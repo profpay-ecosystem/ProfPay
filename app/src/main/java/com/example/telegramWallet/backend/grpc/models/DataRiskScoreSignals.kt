@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class DataRiskScoreSignals (
+class DataRiskScoreSignals(
     val atm: Float,
     @SerialName(value = "child_exploitation") val childExploitation: Float,
     @SerialName(value = "dark_market") val darkMarket: Float,
@@ -29,5 +29,5 @@ class DataRiskScoreSignals (
     @SerialName(value = "seized_assets") val seizedAssets: Float,
     @SerialName(value = "stolen_coins") val stolenCoins: Float,
     @SerialName(value = "terrorism_financing") val terrorismFinancing: Float,
-    val wallet: Float
+    val wallet: Float,
 )

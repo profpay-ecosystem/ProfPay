@@ -19,44 +19,57 @@ class TrxTransactionsService {
 
     suspend fun makeRequest(address: String): List<TrxTransactionDataResponse> =
         suspendCoroutine { continuation ->
-            val http = HttpUrl.Builder()
-                .scheme("https")
-                .host("api.trongrid.io")
-                .addPathSegments("v1/accounts/${address}/transactions")
-                .addQueryParameter("limit", "200")
-                .build()
+            val http =
+                HttpUrl
+                    .Builder()
+                    .scheme("https")
+                    .host("api.trongrid.io")
+                    .addPathSegments("v1/accounts/$address/transactions")
+                    .addQueryParameter("limit", "200")
+                    .build()
 
-            val request = Request.Builder()
-                .url(http)
-                .addHeader("Content-Type", "application/json")
-                .build()
+            val request =
+                Request
+                    .Builder()
+                    .url(http)
+                    .addHeader("Content-Type", "application/json")
+                    .build()
 
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    continuation.resumeWith(Result.failure(e))
-                }
+            client.newCall(request).enqueue(
+                object : Callback {
+                    override fun onFailure(
+                        call: Call,
+                        e: IOException,
+                    ) {
+                        continuation.resumeWith(Result.failure(e))
+                    }
 
-                override fun onResponse(call: Call, response: Response) {
-                    response.use {
-                        if (!response.isSuccessful) {
-                            throw IOException("Error receiving TRX transactions")
-                        }
+                    override fun onResponse(
+                        call: Call,
+                        response: Response,
+                    ) {
+                        response.use {
+                            if (!response.isSuccessful) {
+                                throw IOException("Error receiving TRX transactions")
+                            }
 
-                        try {
-                            val obj = localJson
-                                .decodeFromString<TrxTransactionResponse>(response.body.string())
-                            continuation.resumeWith(Result.success(obj.data))
-                        } catch (e: Exception) {
-                            continuation.resumeWith(Result.failure(e))
+                            try {
+                                val obj =
+                                    localJson
+                                        .decodeFromString<TrxTransactionResponse>(response.body.string())
+                                continuation.resumeWith(Result.success(obj.data))
+                            } catch (e: Exception) {
+                                continuation.resumeWith(Result.failure(e))
+                            }
                         }
                     }
-                }
-        })
-    }
+                },
+            )
+        }
 }
 
 object TrxTransactionsApi {
-    val trxTransactionsService : TrxTransactionsService by lazy {
+    val trxTransactionsService: TrxTransactionsService by lazy {
         TrxTransactionsService()
     }
 }

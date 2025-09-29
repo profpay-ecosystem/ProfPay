@@ -13,32 +13,32 @@ import java.math.BigInteger
         Index(
             value = ["address"],
             name = "central_address_ind_address",
-            unique = true
+            unique = true,
         ),
         Index(
             value = ["public_key"],
             name = "central_address_ind_public_key",
-            unique = true
+            unique = true,
         ),
         Index(
             value = ["private_key"],
             name = "central_address_ind_private_key",
-            unique = true
+            unique = true,
         ),
-    ]
+    ],
 )
-class CentralAddressEntity (
+class CentralAddressEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "central_id") val centralId: Long,
     @ColumnInfo(name = "address") override val address: String,
     @ColumnInfo(name = "public_key") val publicKey: String,
     @ColumnInfo(name = "private_key") override val privateKey: String,
-    @ColumnInfo(name = "balance", defaultValue = "0") val balance: BigInteger
+    @ColumnInfo(name = "balance", defaultValue = "0") val balance: BigInteger,
 ) : HasTronCredentials {
     constructor(address: String, publicKey: String, privateKey: String) : this(
         centralId = 0L,
         address = address,
         publicKey = publicKey,
         privateKey = privateKey,
-        balance = BigInteger.ZERO
+        balance = BigInteger.ZERO,
     )
 }

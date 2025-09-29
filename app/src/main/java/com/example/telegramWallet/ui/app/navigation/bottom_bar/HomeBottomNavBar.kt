@@ -28,52 +28,63 @@ import com.example.telegramWallet.ui.app.theme.BackgroundIcon
 
 @Composable
 fun HomeBottomNavBar(navController: NavHostController) {
-    val screens = listOf(
-        BottomBarScreen.SmartContractList,
-        BottomBarScreen.Profile,
-        BottomBarScreen.Settings,
-    )
+    val screens =
+        listOf(
+            BottomBarScreen.SmartContractList,
+            BottomBarScreen.Profile,
+            BottomBarScreen.Settings,
+        )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val bottomBarDestination = screens.any { screen ->
-        screen.routes.stream().filter { it == currentDestination?.route }.findFirst().isPresent }
+    val bottomBarDestination =
+        screens.any { screen ->
+            screen.routes
+                .stream()
+                .filter { it == currentDestination?.route }
+                .findFirst()
+                .isPresent
+        }
     if (bottomBarDestination) {
+        BottomAppBar(
+            modifier = Modifier.padding(),
+            containerColor = MaterialTheme.colorScheme.surface,
+            tonalElevation = 8.dp,
+        ) {
+            screens.forEach { screen ->
+                Column(
+                    modifier = Modifier.weight(0.33f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Bottom,
+                ) {
+                    val color = MaterialTheme.colorScheme.onPrimary
 
-    BottomAppBar(
-        modifier = Modifier.padding(),
-        containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 8.dp,
-    ) {
-        screens.forEach { screen ->
-            Column(
-                modifier = Modifier.weight(0.33f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                val color = MaterialTheme.colorScheme.onPrimary
-
-                if (currentDestination?.hierarchy?.any { item ->
-                        screen.routes.stream().filter { it == item.route }.findFirst().isPresent
-                    } == true) {
-                    Canvas(modifier = Modifier.size(width = 70.dp, height = 0.dp)) {
-                        val canvasWidth = size.width
-                        drawLine(
-                            start = Offset(x = canvasWidth, y = -8f),
-                            end = Offset(x = 0f, y = -8f),
-                            strokeWidth = 10f,
-                            color = color
-                        )
+                    if (currentDestination?.hierarchy?.any { item ->
+                            screen.routes
+                                .stream()
+                                .filter { it == item.route }
+                                .findFirst()
+                                .isPresent
+                        } == true
+                    ) {
+                        Canvas(modifier = Modifier.size(width = 70.dp, height = 0.dp)) {
+                            val canvasWidth = size.width
+                            drawLine(
+                                start = Offset(x = canvasWidth, y = -8f),
+                                end = Offset(x = 0f, y = -8f),
+                                strokeWidth = 10f,
+                                color = color,
+                            )
+                        }
                     }
+                    this@BottomAppBar.AddItem(
+                        screen = screen,
+                        currentDestination = currentDestination,
+                        navController = navController,
+                    )
                 }
-                this@BottomAppBar.AddItem(
-                    screen = screen,
-                    currentDestination = currentDestination,
-                    navController = navController
-                )
             }
         }
-    }
     }
 }
 
@@ -81,32 +92,36 @@ fun HomeBottomNavBar(navController: NavHostController) {
 private fun RowScope.AddItem(
     screen: BottomBarScreen,
     currentDestination: NavDestination?,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
-
     NavigationBarItem(
         modifier = Modifier.align(Alignment.Top),
-        colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-            selectedTextColor = MaterialTheme.colorScheme.onPrimary,
-            unselectedIconColor = BackgroundIcon,
-            unselectedTextColor = BackgroundIcon,
-            indicatorColor = Color.Transparent
-        ),
+        colors =
+            NavigationBarItemDefaults.colors(
+                selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                selectedTextColor = MaterialTheme.colorScheme.onPrimary,
+                unselectedIconColor = BackgroundIcon,
+                unselectedTextColor = BackgroundIcon,
+                indicatorColor = Color.Transparent,
+            ),
         label = {
             Text(text = screen.title)
-
         },
         icon = {
             Icon(
                 modifier = Modifier.size(30.dp),
                 imageVector = screen.icon.invoke(),
-                contentDescription = "Navigation Icon"
+                contentDescription = "Navigation Icon",
             )
         },
-        selected = currentDestination?.hierarchy?.any { item ->
-            screen.routes.stream().filter { it == item.route }.findFirst().isPresent
-        } == true,
+        selected =
+            currentDestination?.hierarchy?.any { item ->
+                screen.routes
+                    .stream()
+                    .filter { it == item.route }
+                    .findFirst()
+                    .isPresent
+            } == true,
         onClick = {
             val isOnThisTab = currentDestination?.hierarchy?.any { it.route == screen.route } == true
             val isAtRootOfThisTab = currentDestination?.route == screen.routes[0]
@@ -136,4 +151,3 @@ private fun RowScope.AddItem(
         },
     )
 }
-

@@ -45,26 +45,25 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun bottomSheetCreateContract(
-    viewModel: GetSmartContractViewModel
-): Pair<Boolean, (Boolean) -> Unit> {
+fun bottomSheetCreateContract(viewModel: GetSmartContractViewModel): Pair<Boolean, (Boolean) -> Unit> {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { true }
-    )
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { true },
+        )
 
     var isButtonEnabled by remember { mutableStateOf(false) }
 
     val (isOpenSheet, setIsOpenSheet) = remember { mutableStateOf(false) }
     val deployEstimateCommission by viewModel.stateEstimateResourcePrice.collectAsStateWithLifecycle()
-    val (commission, setCommission) = remember {
-        mutableStateOf(BigDecimal(0.0))
-    }
+    val (commission, setCommission) =
+        remember {
+            mutableStateOf(BigDecimal(0.0))
+        }
 
     if (isOpenSheet) {
         LaunchedEffect(Unit) {
@@ -73,7 +72,7 @@ fun bottomSheetCreateContract(
                 viewModel.getResourceQuote(
                     address = address,
                     energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
-                    bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED
+                    bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
                 )
             }
         }
@@ -104,55 +103,63 @@ fun bottomSheetCreateContract(
                 Row(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp, bottom = 16.dp),
                     horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = "Создание контракта",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
 
                 Card(
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 16.dp),
                     elevation = CardDefaults.cardElevation(10.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
                 ) {
                     Row(
-                        modifier = Modifier
-                            .padding(vertical = 18.dp, horizontal = 16.dp)
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .padding(vertical = 18.dp, horizontal = 16.dp)
+                                .fillMaxWidth(),
                     ) {
                         Text(
-                            text = "Мы взымаем комиссию в TRX за выпуск смарт-контракта, чтобы компенсировать затраты, связанные с использованием ресурсов сети Tron, " +
+                            text =
+                                "Мы взымаем комиссию в TRX за выпуск смарт-контракта, чтобы компенсировать затраты, связанные с использованием ресурсов сети Tron, " +
                                     "таких как Bandwidth и Energy. Эти ресурсы необходимы для выполнения операций, " +
                                     "связанных с развертыванием и поддержкой смарт-контрактов. " +
                                     "Взымая комиссию в TRX, мы обеспечиваем возможность поддерживать стабильную работу сети и покрывать затраты на её использование.",
-                        fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
                 }
 
                 Card(
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp).padding(vertical = 8.dp),
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(vertical = 8.dp),
                     elevation = CardDefaults.cardElevation(10.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
                 ) {
                     Row(
-                        modifier = Modifier
-                            .padding(18.dp)
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .padding(18.dp)
+                                .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(text = "Комиссия:", fontWeight = FontWeight.SemiBold)
                         Row {
@@ -171,7 +178,7 @@ fun bottomSheetCreateContract(
                                     commission = commission,
                                     energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
                                     bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
-                                    context = context
+                                    context = context,
                                 )
                                 coroutineScope.launch {
                                     sheetState.hide()
@@ -182,23 +189,26 @@ fun bottomSheetCreateContract(
                             }
                         }
                     },
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp).padding(bottom = 8.dp)
-                        .height(IntrinsicSize.Max)
-                        .fillMaxWidth(), colors = ButtonDefaults.buttonColors(
-                        containerColor = GreenColor,
-                        contentColor = BackgroundContainerButtonLight
-                    ), shape = RoundedCornerShape(12.dp)
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 8.dp)
+                            .height(IntrinsicSize.Max)
+                            .fillMaxWidth(),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = GreenColor,
+                            contentColor = BackgroundContainerButtonLight,
+                        ),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
                         text = "Подтвердить",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
-
             }
-
         }
     }
     return isOpenSheet to { setIsOpenSheet(it) }

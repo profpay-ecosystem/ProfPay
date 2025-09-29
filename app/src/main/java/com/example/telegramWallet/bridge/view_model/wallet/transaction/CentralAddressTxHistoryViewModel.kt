@@ -13,42 +13,48 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class CentralAddressTxHistoryViewModel @Inject constructor(
-    private val transactionsRepo: TransactionsRepo,
-    private val centralAddressRepo: CentralAddressRepo,
-) : ViewModel() {
-    fun getTransactionsByAddressAndTokenLD(
-        walletId: Long,
-        address: String,
-        tokenName: String,
-        isSender: Boolean,
-        isCentralAddress: Boolean
-    ): LiveData<List<TransactionModel>> {
-        return liveData(Dispatchers.IO) {
-            emitSource(transactionsRepo.getTransactionsByAddressAndTokenLD(
-                walletId = walletId,
-                address = address,
-                tokenName = tokenName,
-                isSender = isSender,
-                isCentralAddress = isCentralAddress
-            ))
-        }
-    }
+class CentralAddressTxHistoryViewModel
+    @Inject
+    constructor(
+        private val transactionsRepo: TransactionsRepo,
+        private val centralAddressRepo: CentralAddressRepo,
+    ) : ViewModel() {
+        fun getTransactionsByAddressAndTokenLD(
+            walletId: Long,
+            address: String,
+            tokenName: String,
+            isSender: Boolean,
+            isCentralAddress: Boolean,
+        ): LiveData<List<TransactionModel>> =
+            liveData(Dispatchers.IO) {
+                emitSource(
+                    transactionsRepo.getTransactionsByAddressAndTokenLD(
+                        walletId = walletId,
+                        address = address,
+                        tokenName = tokenName,
+                        isSender = isSender,
+                        isCentralAddress = isCentralAddress,
+                    ),
+                )
+            }
 
-    suspend fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel?>> {
-        var listListTransactions: List<List<TransactionModel>> = listOf(emptyList())
+        suspend fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel?>> {
+            var listListTransactions: List<List<TransactionModel>> = listOf(emptyList())
 
-        withContext(Dispatchers.IO) {
-            if (listTransactions.isEmpty()) return@withContext
-            listListTransactions = listTransactions.sortedByDescending { it.timestamp }
-                .groupBy { it.transactionDate }.values.toList()
+            withContext(Dispatchers.IO) {
+                if (listTransactions.isEmpty()) return@withContext
+                listListTransactions =
+                    listTransactions
+                        .sortedByDescending { it.timestamp }
+                        .groupBy { it.transactionDate }
+                        .values
+                        .toList()
+            }
+            return listListTransactions
         }
-        return listListTransactions
-    }
 
-    fun getCentralAddressLiveData(): LiveData<CentralAddressEntity?> {
-        return liveData(Dispatchers.IO) {
-            emitSource(centralAddressRepo.getCentralAddressLiveData())
-        }
+        fun getCentralAddressLiveData(): LiveData<CentralAddressEntity?> =
+            liveData(Dispatchers.IO) {
+                emitSource(centralAddressRepo.getCentralAddressLiveData())
+            }
     }
-}

@@ -4,11 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TrxTransactionResponse(
-    val data: List<TrxTransactionDataResponse>
+    val data: List<TrxTransactionDataResponse>,
 )
 
 @Serializable
-data class TrxTransactionDataResponse (
+data class TrxTransactionDataResponse(
     val ret: List<TrxTransactionDataRetResponse>,
     val signature: List<String>,
     val txID: String,
@@ -20,39 +20,39 @@ data class TrxTransactionDataResponse (
     val block_timestamp: Long,
     val energy_fee: Long,
     val energy_usage_total: Long,
-    val raw_data: TrxTransactionDataRawDataResponse
+    val raw_data: TrxTransactionDataRawDataResponse,
 )
 
 @Serializable
-data class TrxTransactionDataRetResponse (
+data class TrxTransactionDataRetResponse(
     val contractRet: String,
-    val fee: Long
+    val fee: Long,
 )
 
 @Serializable
-data class TrxTransactionDataRawDataResponse (
+data class TrxTransactionDataRawDataResponse(
     val contract: List<TrxTransactionDataRawDataContractResponse>,
     val ref_block_bytes: String,
     val ref_block_hash: String,
     val expiration: Long,
-    val timestamp: Long? = null
+    val timestamp: Long? = null,
 )
 
 @Serializable
-data class TrxTransactionDataRawDataContractResponse (
+data class TrxTransactionDataRawDataContractResponse(
     val parameter: TrxTransactionDataRawDataContractParameterResponse,
-    val type: String
+    val type: String,
 )
 
 @Serializable
-data class TrxTransactionDataRawDataContractParameterResponse (
+data class TrxTransactionDataRawDataContractParameterResponse(
     val value: TrxTransactionDataRawDataContractParameterValueResponse,
-    val type_url: String
+    val type_url: String,
 )
 
 @Serializable
-data class TrxTransactionDataRawDataContractParameterValueResponse (
+data class TrxTransactionDataRawDataContractParameterValueResponse(
     val amount: Long? = null,
     val owner_address: String,
-    val to_address: String? = null
+    val to_address: String? = null,
 )

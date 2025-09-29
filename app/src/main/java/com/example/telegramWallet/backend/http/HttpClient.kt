@@ -10,8 +10,10 @@ class HttpClient {
     init {
         client.addInterceptor { chain: Interceptor.Chain ->
             val original = chain.request()
-            val requestBuilder = original.newBuilder()
-                .header("Authorization", "MY_API_KEY") // <-- this is the important line
+            val requestBuilder =
+                original
+                    .newBuilder()
+                    .header("Authorization", "MY_API_KEY") // <-- this is the important line
 
             val request = requestBuilder.build()
             chain.proceed(request)

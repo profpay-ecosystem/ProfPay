@@ -1,4 +1,5 @@
 import com.google.protobuf.gradle.id
+import dev.detekt.gradle.Detekt
 import io.sentry.android.gradle.instrumentation.logcat.LogcatLevel
 
 plugins {
@@ -11,6 +12,40 @@ plugins {
     kotlin("plugin.serialization") version "2.2.0"
     id("io.sentry.android.gradle") version "5.8.0"
     id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
+    id("dev.detekt") version "2.0.0-alpha.0"
+    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
+}
+
+ktlint {
+    version.set("1.3.1")
+    debug.set(false)
+    android.set(false)
+    outputToConsole.set(true)
+    ignoreFailures.set(false)
+
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+    }
+}
+
+tasks.withType<Detekt>().configureEach {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        sarif.required.set(false)
+        md.required.set(false)
+    }
+}
+
+detekt {
+    toolVersion = "2.0.0-alpha.0"
+
+    source.setFrom("src/main/java", "src/main/kotlin")
+
+    buildUponDefaultConfig = true
+    ignoreFailures = false
+    allRules = false
 }
 
 sentry {
@@ -34,10 +69,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file(project.property("KEYSTORE_FILE") as String)
-            storePassword = project.property("KEYSTORE_PASSWORD") as String
-            keyAlias = project.property("KEY_ALIAS") as String
-            keyPassword = project.property("KEY_PASSWORD") as String
+            storeFile = file(System.getenv("KEYSTORE_FILE") ?: project.findProperty("KEYSTORE_FILE") as String)
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: project.findProperty("KEYSTORE_PASSWORD") as String
+            keyAlias = System.getenv("KEY_ALIAS")  ?: project.findProperty("KEY_ALIAS") as String
+            keyPassword = System.getenv("KEY_PASSWORD") ?: project.findProperty("KEY_PASSWORD") as String
         }
     }
 
@@ -50,7 +85,7 @@ android {
 //        MAJOR: Внесение изменений, ломающих обратную совместимость.
 //        MINOR: Добавление новых функций без нарушения совместимости.
 //        PATCH: Исправление ошибок и незначительные улучшения без изменения функциональности.
-        versionName = "5.9.27" // MAJOR.MINOR.PATCH
+        versionName = "5.10.29" // MAJOR.MINOR.PATCH
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -73,7 +108,7 @@ android {
 
                 val tag = "beta"
 
-                val outputFileName = "profpay-${versionName}-${tag}${versionCode}.apk"
+                val outputFileName = "profpay-$versionName-${tag}$versionCode.apk"
                 output.outputFileName = outputFileName
             }
     }
@@ -84,7 +119,7 @@ android {
             isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
 
             signingConfig = signingConfigs.getByName("release")
@@ -185,6 +220,7 @@ buildscript {
         classpath("com.google.protobuf:protobuf-gradle-plugin:0.9.5")
         classpath("com.google.gms:google-services:4.4.3")
         classpath(kotlin("serialization", version = "1.9.21"))
+        classpath("dev.detekt:detekt-gradle-plugin:2.0.0-alpha.0")
     }
 }
 

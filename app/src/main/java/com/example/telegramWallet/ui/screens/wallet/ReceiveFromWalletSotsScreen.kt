@@ -55,9 +55,7 @@ import rememberStackedSnackbarHostState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReceiveFromWalletSotsScreen(
-    goToBack: () -> Unit,
-) {
+fun ReceiveFromWalletSotsScreen(goToBack: () -> Unit) {
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
 
@@ -71,30 +69,35 @@ fun ReceiveFromWalletSotsScreen(
     Scaffold(
         modifier = Modifier,
         snackbarHost = {
-        StackedSnackbarHost(
-            hostState = stackedSnackbarHostState,
-            modifier = Modifier
-                .padding(8.dp, 90.dp)
-        )
-    }) { padding ->
+            StackedSnackbarHost(
+                hostState = stackedSnackbarHostState,
+                modifier =
+                    Modifier
+                        .padding(8.dp, 90.dp),
+            )
+        },
+    ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ), verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             TopAppBar(
                 title = {
                     Text(
                         text = "Receive",
-                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
+                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
                     run {
                         IconButton(onClick = { goToBack() }) {
@@ -102,7 +105,7 @@ fun ReceiveFromWalletSotsScreen(
                                 modifier = Modifier.size(34.dp),
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
@@ -114,29 +117,34 @@ fun ReceiveFromWalletSotsScreen(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
             Card(
-                modifier = Modifier.verticalScroll(rememberScrollState())
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 0.dp, bottomEnd = 0.dp ))
-                    .weight(0.8f)
-                    .shadow(7.dp, RoundedCornerShape(16.dp)),
+                modifier =
+                    Modifier
+                        .verticalScroll(rememberScrollState())
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 0.dp, bottomEnd = 0.dp))
+                        .weight(0.8f)
+                        .shadow(7.dp, RoundedCornerShape(16.dp)),
             ) {
                 Column(
-                    modifier = Modifier.padding(bottom = bottomPadding.dp)
-                        .padding(vertical = 8.dp, horizontal = 16.dp)
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier
+                            .padding(bottom = bottomPadding.dp)
+                            .padding(vertical = 8.dp, horizontal = 16.dp)
+                            .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Row(
-                        modifier = Modifier
-                            .padding(top = 16.dp, start = 6.dp)
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .padding(top = 16.dp, start = 6.dp)
+                                .fillMaxWidth(),
                     ) {
                         Text(text = "Сеть", style = MaterialTheme.typography.titleMedium)
                     }
@@ -144,44 +152,46 @@ fun ReceiveFromWalletSotsScreen(
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier.padding(top = 12.dp, bottom = 20.dp),
                         elevation = CardDefaults.cardElevation(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                            ),
                     ) {
                         Row(
-                            modifier = Modifier
-                                .padding(vertical = 12.dp, horizontal = 16.dp)
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .padding(vertical = 12.dp, horizontal = 16.dp)
+                                    .fillMaxWidth(),
                         ) {
                             Text(text = "Tron", style = MaterialTheme.typography.bodyLarge)
                         }
                     }
                     Column(
-                        modifier = Modifier
-                            .padding()
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(MaterialTheme.colorScheme.onPrimary),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier =
+                            Modifier
+                                .padding()
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(MaterialTheme.colorScheme.onPrimary),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-
                         qrCodeBitmap?.asImageBitmap()?.let {
                             Image(
                                 bitmap = it,
                                 contentDescription = "",
-                                modifier = Modifier.size(300.dp)
+                                modifier = Modifier.size(300.dp),
                             )
                         }
                         Text(
                             text = "${addressForReceive.dropLast(10)}\n ${
                                 addressForReceive.takeLast(
-                                    10
+                                    10,
                                 )
                             }",
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(start = 0.dp, end = 0.dp, bottom = 16.dp),
                             style = MaterialTheme.typography.bodyLarge,
                             minLines = 2,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
                         )
                     }
                     if (addressForReceive.isNotEmpty()) {
@@ -196,19 +206,20 @@ fun ReceiveFromWalletSotsScreen(
                                     )
                                 },
                                 colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
-                                modifier = Modifier.size(50.dp)
+                                modifier = Modifier.size(50.dp),
                             ) {
                                 Icon(
                                     modifier = Modifier.size(24.dp),
                                     imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                     contentDescription = "",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
                             }
                             Spacer(modifier = Modifier.size(16.dp))
                             IconButton(
                                 onClick = {
-                                    val extraText = "Мой публичный адрес для получения USDT:\n" +
+                                    val extraText =
+                                        "Мой публичный адрес для получения USDT:\n" +
                                             "${addressForReceive}\n\n" +
                                             "Данное сообщение отправлено с помощью приложения ProfPay Wallet"
 
@@ -220,17 +231,17 @@ fun ReceiveFromWalletSotsScreen(
                                     ContextCompat.startActivity(
                                         context,
                                         Intent.createChooser(intent, "ShareWith"),
-                                        null
+                                        null,
                                     )
                                 },
                                 colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
-                                modifier = Modifier.size(50.dp)
+                                modifier = Modifier.size(50.dp),
                             ) {
                                 Icon(
                                     modifier = Modifier.size(24.dp),
                                     imageVector = ImageVector.vectorResource(id = R.drawable.icon_share),
                                     contentDescription = "",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
                             }
                         }

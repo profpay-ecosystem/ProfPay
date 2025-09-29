@@ -22,9 +22,9 @@ interface TransactionsDao {
     @Transaction
     @Query(
         "SELECT *, DATE(ROUND(transactions.timestamp / 1000), 'unixepoch') AS transaction_date " +
-                "FROM transactions " +
-                "WHERE wallet_id = :walletId " +
-                "ORDER BY timestamp DESC"
+            "FROM transactions " +
+            "WHERE wallet_id = :walletId " +
+            "ORDER BY timestamp DESC",
     )
     fun getAllRelatedTransactionsLD(walletId: Long): LiveData<List<TransactionModel>>
 
@@ -39,12 +39,13 @@ interface TransactionsDao {
 
     @Query("UPDATE transactions SET is_processed = 0 WHERE tx_id = :txId")
     fun transactionSetProcessedUpdateFalseByTxId(txId: String)
+
     @Query("UPDATE transactions SET is_processed = 1 WHERE tx_id = :txId")
     fun transactionSetProcessedUpdateTrueByTxId(txId: String)
 
     @Transaction
     @Query(
-            """
+        """
         SELECT *, DATE(ROUND(transactions.timestamp / 1000), 'unixepoch') AS transaction_date
         FROM transactions
         WHERE wallet_id = :walletId
@@ -58,23 +59,26 @@ interface TransactionsDao {
             :isCentralAddress = 0 OR type = 4
           )
         ORDER BY timestamp DESC
-        """
+        """,
     )
     fun getTransactionsByAddressAndTokenLD(
         walletId: Long,
         address: String,
         tokenName: String,
         isSender: Boolean,
-        isCentralAddress: Boolean
+        isCentralAddress: Boolean,
     ): LiveData<List<TransactionModel>>
 
     @Query("SELECT * FROM transactions WHERE tx_id = :txId")
     fun getTransactionByTxId(txId: String): TransactionEntity
 
     @Query("UPDATE transactions SET status_code = :statusCode, timestamp = :timestamp WHERE tx_id = :txid")
-    suspend fun updateStatusAndTimestampByTxId(statusCode: Int, timestamp: Long, txid: String)
+    suspend fun updateStatusAndTimestampByTxId(
+        statusCode: Int,
+        timestamp: Long,
+        txid: String,
+    )
 
     @Query("SELECT EXISTS(SELECT * FROM transactions WHERE tx_id = :txid AND status_code = 1)")
     suspend fun isTransactionSuccessful(txid: String): Boolean
 }
-

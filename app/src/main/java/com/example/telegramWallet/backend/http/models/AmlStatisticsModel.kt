@@ -16,5 +16,5 @@ data class CrystalMonitorTxAddRequest(
 data class AmlStatisticsModelResponse(
     val result: Boolean,
     val message: String,
-    val check_id: Long
+    val check_id: Long,
 )

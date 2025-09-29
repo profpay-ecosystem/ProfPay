@@ -69,7 +69,7 @@ import java.math.BigInteger
 fun WalletSystemTRXScreen(
     goToBack: () -> Unit,
     goToCentralAddressTxHistory: () -> Unit,
-    viewModel: WalletSystemTRXScreenViewModel = hiltViewModel()
+    viewModel: WalletSystemTRXScreenViewModel = hiltViewModel(),
 ) {
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
@@ -100,30 +100,35 @@ fun WalletSystemTRXScreen(
     Scaffold(
         modifier = Modifier,
         snackbarHost = {
-        StackedSnackbarHost(
-            hostState = stackedSnackbarHostState,
-            modifier = Modifier
-                .padding(8.dp, 90.dp)
-        )
-    }) { padding ->
+            StackedSnackbarHost(
+                hostState = stackedSnackbarHostState,
+                modifier =
+                    Modifier
+                        .padding(8.dp, 90.dp),
+            )
+        },
+    ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ), verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             TopAppBar(
                 title = {
                     Text(
                         text = "Wallet System",
-                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
+                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
                     run {
                         IconButton(onClick = { goToBack() }) {
@@ -131,7 +136,7 @@ fun WalletSystemTRXScreen(
                                 modifier = Modifier.size(34.dp),
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
@@ -143,48 +148,50 @@ fun WalletSystemTRXScreen(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomEnd = 0.dp,
-                            bottomStart = 0.dp
-                        )
-                    )
-                    .weight(0.8f)
-                    .verticalScroll(rememberScrollState()),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 0.dp,
+                            ),
+                        ).weight(0.8f)
+                        .verticalScroll(rememberScrollState()),
             ) {
-
                 Column(
                     modifier = Modifier.padding(bottom = bottomPadding.dp).padding(vertical = 8.dp, horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-
                     Card(
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .padding(top = 12.dp, bottom = 20.dp),
+                        modifier =
+                            Modifier
+                                .padding(top = 12.dp, bottom = 20.dp),
                         elevation = CardDefaults.cardElevation(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                            ),
                     ) {
                         Column(
-                            modifier = Modifier
-                                .padding(vertical = 16.dp, horizontal = 16.dp)
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .padding(vertical = 16.dp, horizontal = 16.dp)
+                                    .fillMaxWidth(),
                         ) {
                             Text(
-                                text = "Для удобства и безопасности, в нашем приложении все ваши " +
+                                text =
+                                    "Для удобства и безопасности, в нашем приложении все ваши " +
                                         "кошельки связаны с общим TRX-адресом. Этот адрес необходим " +
                                         "для следующих целей:\n" +
                                         "\n" +
@@ -198,11 +205,12 @@ fun WalletSystemTRXScreen(
                         }
                     }
                     Column(
-                        modifier = Modifier
-                            .padding()
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(MaterialTheme.colorScheme.onPrimary),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier =
+                            Modifier
+                                .padding()
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(MaterialTheme.colorScheme.onPrimary),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         if (address != "empty") {
                             val qrCodeBitmap = generateQRCode(address)
@@ -210,7 +218,7 @@ fun WalletSystemTRXScreen(
                                 Image(
                                     bitmap = it.asImageBitmap(),
                                     contentDescription = null,
-                                    modifier = Modifier.size(290.dp)
+                                    modifier = Modifier.size(290.dp),
                                 )
                             } ?: run {
                                 println("QR code generation failed for address: $address")
@@ -220,21 +228,21 @@ fun WalletSystemTRXScreen(
                         Text(
                             text = "${address.dropLast(10)}\n ${
                                 address.takeLast(
-                                    10
+                                    10,
                                 )
                             }",
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(start = 0.dp, end = 0.dp, bottom = 16.dp),
                             style = MaterialTheme.typography.bodyLarge,
                             minLines = 2,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
                         )
 
                         Text(
                             text = "Balance ${balanceTRX.toTokenAmount()} TRX",
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(start = 8.dp, end = 8.dp,bottom = 16.dp),
+                            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
                         )
                     }
                     if (address.isNotEmpty()) {
@@ -244,13 +252,13 @@ fun WalletSystemTRXScreen(
                                     setIsOpenRejectReceiptSheet(true)
                                 },
                                 colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
-                                modifier = Modifier.size(50.dp)
+                                modifier = Modifier.size(50.dp),
                             ) {
                                 Icon(
                                     modifier = Modifier.size(24.dp),
                                     imageVector = ImageVector.vectorResource(id = R.drawable.icon_restart),
                                     contentDescription = "",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
                             }
                             Spacer(modifier = Modifier.fillMaxWidth(0.05f))
@@ -264,19 +272,20 @@ fun WalletSystemTRXScreen(
                                     )
                                 },
                                 colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
-                                modifier = Modifier.size(50.dp)
+                                modifier = Modifier.size(50.dp),
                             ) {
                                 Icon(
                                     modifier = Modifier.size(24.dp),
                                     imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                     contentDescription = "",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
                             }
                             Spacer(modifier = Modifier.fillMaxWidth(0.05f))
                             IconButton(
                                 onClick = {
-                                    val extraText = "Мой публичный адрес для получения TRX:\n" +
+                                    val extraText =
+                                        "Мой публичный адрес для получения TRX:\n" +
                                             "${address}\n\n" +
                                             "Данное сообщение отправлено с помощью приложения ProfPay Wallet"
 
@@ -288,17 +297,17 @@ fun WalletSystemTRXScreen(
                                     ContextCompat.startActivity(
                                         context,
                                         Intent.createChooser(intent, "ShareWith"),
-                                        null
+                                        null,
                                     )
                                 },
                                 colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
-                                modifier = Modifier.size(50.dp)
+                                modifier = Modifier.size(50.dp),
                             ) {
                                 Icon(
                                     modifier = Modifier.size(24.dp),
                                     imageVector = ImageVector.vectorResource(id = R.drawable.icon_share),
                                     contentDescription = "",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
                             }
                             Spacer(modifier = Modifier.fillMaxWidth(0.05f))
@@ -307,13 +316,13 @@ fun WalletSystemTRXScreen(
                                     goToCentralAddressTxHistory()
                                 },
                                 colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
-                                modifier = Modifier.size(50.dp)
+                                modifier = Modifier.size(50.dp),
                             ) {
                                 Icon(
                                     modifier = Modifier.size(24.dp),
                                     painter = painterResource(id = R.drawable.tx_history),
                                     contentDescription = "",
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
                             }
                         }

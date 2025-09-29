@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UpdateUserRequest(
     val old_data: UpdateUserModel,
-    val new_data: UpdateUserModel
+    val new_data: UpdateUserModel,
 )
 
 @Serializable

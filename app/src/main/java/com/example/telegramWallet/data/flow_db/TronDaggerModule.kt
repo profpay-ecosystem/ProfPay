@@ -14,7 +14,7 @@ import javax.inject.Singleton
 object TronDaggerModule {
     @Provides
     @Singleton
-    fun provideTron(@ApplicationContext context: Context): Tron {
-        return Tron(context)
-    }
+    fun provideTron(
+        @ApplicationContext context: Context,
+    ): Tron = Tron(context)
 }

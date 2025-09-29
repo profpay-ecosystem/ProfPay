@@ -4,5 +4,5 @@ import com.example.telegramWallet.bridge.view_model.smart_contract.usecases.Deal
 
 data class CompleteReturnData(
     val status: CompleteStatusesEnum,
-    val result: DealActionResult? = null
-) {}
+    val result: DealActionResult? = null,
+)

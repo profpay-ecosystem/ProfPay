@@ -66,7 +66,7 @@ import java.math.BigInteger
 @Composable
 fun CentralAddressTxHistoryScreen(
     goToBack: () -> Unit,
-    viewModel: CentralAddressTxHistoryViewModel = hiltViewModel()
+    viewModel: CentralAddressTxHistoryViewModel = hiltViewModel(),
 ) {
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
     var address by remember { mutableStateOf("empty") }
@@ -75,30 +75,32 @@ fun CentralAddressTxHistoryScreen(
     val coroutineScope = rememberCoroutineScope()
     val stackedSnackbarHostState = rememberStackedSnackbarHostState()
 
-    val transactionsByAddressSender by viewModel.getTransactionsByAddressAndTokenLD(
-        walletId = 0,
-        address = address,
-        tokenName = "TRX",
-        isSender = true,
-        isCentralAddress = true
+    val transactionsByAddressSender by viewModel
+        .getTransactionsByAddressAndTokenLD(
+            walletId = 0,
+            address = address,
+            tokenName = "TRX",
+            isSender = true,
+            isCentralAddress = true,
+        ).observeAsState(emptyList())
 
-    ).observeAsState(emptyList())
-
-    val transactionsByAddressReceiver by viewModel.getTransactionsByAddressAndTokenLD(
-        walletId = 0,
-        address = address,
-        tokenName = "TRX",
-        isSender = false,
-        isCentralAddress = true
-    ).observeAsState(emptyList())
+    val transactionsByAddressReceiver by viewModel
+        .getTransactionsByAddressAndTokenLD(
+            walletId = 0,
+            address = address,
+            tokenName = "TRX",
+            isSender = false,
+            isCentralAddress = true,
+        ).observeAsState(emptyList())
 
     val centralAddress by viewModel.getCentralAddressLiveData().observeAsState()
 
     val allTransaction: List<TransactionModel> = transactionsByAddressSender + transactionsByAddressReceiver
 
-    val (groupedAllTransaction, setGroupedAllTransaction) = remember {
-        mutableStateOf<List<List<TransactionModel?>>>(listOf(listOf(null)))
-    }
+    val (groupedAllTransaction, setGroupedAllTransaction) =
+        remember {
+            mutableStateOf<List<List<TransactionModel?>>>(listOf(listOf(null)))
+        }
 
     LaunchedEffect(allTransaction) {
         withContext(Dispatchers.IO) {
@@ -118,30 +120,35 @@ fun CentralAddressTxHistoryScreen(
         snackbarHost = {
             StackedSnackbarHost(
                 hostState = stackedSnackbarHostState,
-                modifier = Modifier
-                    .padding(8.dp, (bottomPadding + 50).dp)
+                modifier =
+                    Modifier
+                        .padding(8.dp, (bottomPadding + 50).dp),
             )
-        }) { padding ->
+        },
+    ) { padding ->
 
         Column(
-            modifier = Modifier
-                .padding()
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ), verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .padding()
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             TopAppBar(
                 title = {
                     Text(
                         text = "Центральный адрес",
-                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
+                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
                     run {
                         IconButton(onClick = { goToBack() }) {
@@ -149,7 +156,7 @@ fun CentralAddressTxHistoryScreen(
                                 modifier = Modifier.size(34.dp),
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
@@ -161,45 +168,49 @@ fun CentralAddressTxHistoryScreen(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
 
             Card(
-                modifier = Modifier
-                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .clip(
-                        RoundedCornerShape(15.dp)
-                    )
+                modifier =
+                    Modifier
+                        .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .clip(
+                            RoundedCornerShape(15.dp),
+                        ),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Column(
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .fillMaxHeight(),
-                        verticalArrangement = Arrangement.Center
+                        modifier =
+                            Modifier
+                                .padding(horizontal = 10.dp)
+                                .fillMaxHeight(),
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
-                                modifier = Modifier
-                                    .padding(vertical = 8.dp)
-                                    .size(45.dp)
-                                    .fillMaxSize(0.1f)
-                                    .paint(
-                                        painterResource(id = R.drawable.trx_tron),
-                                        contentScale = ContentScale.FillBounds
-                                    ),
-                                contentAlignment = Alignment.Center
+                                modifier =
+                                    Modifier
+                                        .padding(vertical = 8.dp)
+                                        .size(45.dp)
+                                        .fillMaxSize(0.1f)
+                                        .paint(
+                                            painterResource(id = R.drawable.trx_tron),
+                                            contentScale = ContentScale.FillBounds,
+                                        ),
+                                contentAlignment = Alignment.Center,
                             ) {}
                             Column(modifier = Modifier.padding(horizontal = 12.dp, 0.dp)) {
                                 Text(
@@ -217,25 +228,26 @@ fun CentralAddressTxHistoryScreen(
             }
 
             Card(
-                modifier = Modifier
-                    .padding()
-                    .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomEnd = 0.dp,
-                            bottomStart = 0.dp
-                        )
-                    )
-                    .weight(0.8f),
+                modifier =
+                    Modifier
+                        .padding()
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 0.dp,
+                            ),
+                        ).weight(0.8f),
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(bottom = bottomPadding.dp)
-                        .padding(vertical = 4.dp, horizontal = 0.dp)
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier
+                            .padding(bottom = bottomPadding.dp)
+                            .padding(vertical = 4.dp, horizontal = 0.dp)
+                            .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     val titles = listOf("All", "Send", "Receive")
                     val pagerState = rememberPagerState(pageCount = { titles.size })
@@ -244,7 +256,7 @@ fun CentralAddressTxHistoryScreen(
                         selectedTabIndex = pagerState.currentPage,
                         containerColor = Color.Transparent,
                         divider = {},
-                        indicator = {}
+                        indicator = {},
                     ) {
                         titles.forEachIndexed { index, title ->
                             Tab(
@@ -262,47 +274,49 @@ fun CentralAddressTxHistoryScreen(
                                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
                                         maxLines = 2,
                                     )
-                                }
+                                },
                             )
                         }
-
                     }
                     HorizontalPager(
-                        state = pagerState, modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
+                        state = pagerState,
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(),
                     ) { page ->
                         when (page) {
                             0 -> {
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Top
+                                    verticalArrangement = Arrangement.Top,
                                 ) {
                                     CATransactionListHistoryFeature(
                                         address = address,
-                                        groupedTransaction = groupedAllTransaction
+                                        groupedTransaction = groupedAllTransaction,
                                     )
                                 }
                             }
 
                             1 -> {
-                                val (groupedTransaction, setGroupedTransaction) = remember {
-                                    mutableStateOf<List<List<TransactionModel?>>>(
-                                        listOf(
+                                val (groupedTransaction, setGroupedTransaction) =
+                                    remember {
+                                        mutableStateOf<List<List<TransactionModel?>>>(
                                             listOf(
-                                                null
-                                            )
+                                                listOf(
+                                                    null,
+                                                ),
+                                            ),
                                         )
-                                    )
-                                }
+                                    }
 
                                 LaunchedEffect(allTransaction) {
                                     withContext(Dispatchers.IO) {
                                         setGroupedTransaction(
                                             viewModel.getListTransactionToTimestamp(
-                                                transactionsByAddressSender
-                                            )
+                                                transactionsByAddressSender,
+                                            ),
                                         )
                                     }
                                 }
@@ -310,43 +324,44 @@ fun CentralAddressTxHistoryScreen(
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Top
+                                    verticalArrangement = Arrangement.Top,
                                 ) {
                                     CATransactionListHistoryFeature(
                                         address = address,
-                                        groupedTransaction = groupedTransaction
+                                        groupedTransaction = groupedTransaction,
                                     )
                                 }
                             }
 
                             2 -> {
-                                val (groupedTransaction, setGroupedTransaction) = remember {
-                                    mutableStateOf<List<List<TransactionModel?>>>(
-                                        listOf(
+                                val (groupedTransaction, setGroupedTransaction) =
+                                    remember {
+                                        mutableStateOf<List<List<TransactionModel?>>>(
                                             listOf(
-                                                null
-                                            )
+                                                listOf(
+                                                    null,
+                                                ),
+                                            ),
                                         )
-                                    )
-                                }
+                                    }
 
                                 LaunchedEffect(allTransaction) {
                                     withContext(Dispatchers.IO) {
                                         setGroupedTransaction(
                                             viewModel.getListTransactionToTimestamp(
-                                                transactionsByAddressReceiver
-                                            )
+                                                transactionsByAddressReceiver,
+                                            ),
                                         )
                                     }
                                 }
                                 Column(
                                     modifier = Modifier.fillMaxSize(),
                                     horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Top
+                                    verticalArrangement = Arrangement.Top,
                                 ) {
                                     CATransactionListHistoryFeature(
                                         address = address,
-                                        groupedTransaction = groupedTransaction
+                                        groupedTransaction = groupedTransaction,
                                     )
                                 }
                             }

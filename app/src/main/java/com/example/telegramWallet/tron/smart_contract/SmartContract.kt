@@ -3,7 +3,6 @@ package com.example.telegramWallet.tron.smart_contract
 import android.content.Context
 import android.content.res.AssetManager
 import com.example.telegramWallet.AppConstants
-import com.example.telegramWallet.BuildConfig
 import com.example.telegramWallet.utils.convertInputStreamToString
 import com.google.protobuf.ByteString
 import org.tron.trident.core.ApiWrapper
@@ -12,29 +11,34 @@ import org.tron.trident.core.transaction.TransactionBuilder
 import org.tron.trident.proto.Chain
 import org.tron.trident.utils.Numeric
 
-
-class SmartContract(val context: Context) {
+class SmartContract(
+    val context: Context,
+) {
     fun getSignedDeployMultiSigContract(
         ownerAddress: String,
         privateKey: String,
     ): ByteString? {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            privateKey
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                privateKey,
+            )
         val assetManager: AssetManager = context.assets
         val byteCode: String = convertInputStreamToString(assetManager.open("bytecode.txt")) // созданный байткод
         val abi: String = convertInputStreamToString(assetManager.open("abi.txt")) // созданный аби
 
-        val cntr: Contract = Contract.Builder()
-            .setName("MultiSigV3")
-            .setOwnerAddr(ApiWrapper.parseAddress(ownerAddress))
-            .setOriginAddr(ApiWrapper.parseAddress(ownerAddress))
-            .setBytecode(ByteString.copyFrom(Numeric.hexStringToByteArray(byteCode)))
-            .setAbi(abi)
-            .setOriginEnergyLimit(10000000)
-            .setConsumeUserResourcePercent(100)
-            .build()
+        val cntr: Contract =
+            Contract
+                .Builder()
+                .setName("MultiSigV3")
+                .setOwnerAddr(ApiWrapper.parseAddress(ownerAddress))
+                .setOriginAddr(ApiWrapper.parseAddress(ownerAddress))
+                .setBytecode(ByteString.copyFrom(Numeric.hexStringToByteArray(byteCode)))
+                .setAbi(abi)
+                .setOriginEnergyLimit(10000000)
+                .setConsumeUserResourcePercent(100)
+                .build()
         cntr.wrapper = wrapper
 
         val builder: TransactionBuilder = cntr.deploy().setFeeLimit(2000000000)
@@ -46,10 +50,12 @@ class SmartContract(val context: Context) {
     }
 
     suspend fun estimateDeployingContract(privateKey: String): Pair<Int, Int> {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            privateKey
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                privateKey,
+            )
 
         val energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED.toInt()
         val bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED.toInt()

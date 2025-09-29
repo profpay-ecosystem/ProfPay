@@ -21,33 +21,33 @@ import com.example.telegramWallet.bridge.view_model.create_or_recovery_wallet.Cr
 import com.example.telegramWallet.bridge.view_model.create_or_recovery_wallet.CreateNewWalletViewModel
 import com.example.telegramWallet.ui.widgets.CreateNewWalletWidget
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateNewWalletScreen(
     viewModel: CreateNewWalletViewModel = hiltViewModel(),
     goToSeedPhraseConfirmation: () -> Unit,
-    goToBack: () -> Unit
+    goToBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    Scaffold() { padding ->
+    Scaffold { padding ->
         Surface(modifier = Modifier.padding()) {
             when (state) {
                 is CreateNewWalletState.Loading ->
                     Box(
                         Modifier.fillMaxSize().paint(
                             painterResource(id = R.drawable.create_recovery_bg),
-                            contentScale = ContentScale.FillBounds
+                            contentScale = ContentScale.FillBounds,
                         ),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator()
                     }
-                is CreateNewWalletState.Success -> CreateNewWalletWidget(
-                    goToBack = goToBack,
-                    goToSeedPhraseConfirmation = goToSeedPhraseConfirmation,
-                    addressGenerateResult = (state as CreateNewWalletState.Success).addressGenerateResult
-                )
+                is CreateNewWalletState.Success ->
+                    CreateNewWalletWidget(
+                        goToBack = goToBack,
+                        goToSeedPhraseConfirmation = goToSeedPhraseConfirmation,
+                        addressGenerateResult = (state as CreateNewWalletState.Success).addressGenerateResult,
+                    )
                 else -> {}
             }
         }

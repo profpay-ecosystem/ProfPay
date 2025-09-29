@@ -15,7 +15,10 @@ interface ExchangeRatesDao {
     fun doesSymbolExist(symbol: String): Boolean
 
     @Query("UPDATE exchange_rates SET value = :value WHERE symbol = :symbol")
-    fun updateExchangeRate(symbol: String, value: Double)
+    fun updateExchangeRate(
+        symbol: String,
+        value: Double,
+    )
 
     @Query("SELECT value FROM exchange_rates WHERE symbol = :symbol")
     fun getExchangeRateValue(symbol: String): Double

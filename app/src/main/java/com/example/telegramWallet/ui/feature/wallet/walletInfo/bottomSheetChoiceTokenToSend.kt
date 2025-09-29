@@ -39,13 +39,14 @@ import java.math.BigInteger
 @Composable
 fun bottomSheetChoiceTokenToSend(
     listTokensWithTotalBalance: List<TokenEntity?>,
-    goToSendWalletInfo: (addressId: Long, tokenName: String) -> Unit
+    goToSendWalletInfo: (addressId: Long, tokenName: String) -> Unit,
 ): Pair<Boolean, (Boolean) -> Unit> {
     val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { true }
-    )
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { true },
+        )
     val (isOpenBottomSheet, setIsOpenBottomSheet) = remember { mutableStateOf(false) }
 
     if (isOpenBottomSheet) {
@@ -63,33 +64,35 @@ fun bottomSheetChoiceTokenToSend(
             sheetState = sheetState,
         ) {
             Row(
-                modifier = Modifier
-                    .padding(
-                        top = 16.dp
-                    )
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
+                modifier =
+                    Modifier
+                        .padding(
+                            top = 16.dp,
+                        ).fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = "Отправить",
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
                 )
             }
             if (listTokensWithTotalBalance.any { it!!.balance != BigInteger.ZERO }) {
                 LazyColumn(
-                    modifier = Modifier
-                        .padding(
-                            vertical = 4.dp,
-                            horizontal = 8.dp
-                        )
-                        .fillMaxSize()
+                    modifier =
+                        Modifier
+                            .padding(
+                                vertical = 4.dp,
+                                horizontal = 8.dp,
+                            ).fillMaxSize(),
                 ) {
                     itemsIndexed(listTokensWithTotalBalance) { _, tokenEntity ->
                         if (tokenEntity != null && tokenEntity.getBalanceWithoutFrozen() != BigInteger.ZERO) {
-                            val currentTokenName = TokenName.entries.stream()
-                                .filter { it.tokenName == tokenEntity.tokenName }
-                                .findFirst()
-                                .orElse(TokenName.USDT)
+                            val currentTokenName =
+                                TokenName.entries
+                                    .stream()
+                                    .filter { it.tokenName == tokenEntity.tokenName }
+                                    .findFirst()
+                                    .orElse(TokenName.USDT)
 
                             CardForWalletInfoSendFeature(
                                 onClick = {
@@ -102,7 +105,7 @@ fun bottomSheetChoiceTokenToSend(
                                     goToSendWalletInfo(tokenEntity.addressId, tokenEntity.tokenName)
                                 },
                                 paintIconId = currentTokenName.paintIconId,
-                                label = currentTokenName.tokenName
+                                label = currentTokenName.tokenName,
                             )
                         }
                     }
@@ -112,23 +115,22 @@ fun bottomSheetChoiceTokenToSend(
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     Icon(
                         modifier = Modifier.size(80.dp).padding(bottom = 16.dp),
                         imageVector = ImageVector.vectorResource(id = R.drawable.icon_search_to_file),
                         contentDescription = "NotSearch",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                     Text(
                         text = "Активы не найдены",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onPrimary
-                        )
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
                 }
             }
         }
-
     }
     return isOpenBottomSheet to { setIsOpenBottomSheet(it) }
 }

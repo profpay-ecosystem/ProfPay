@@ -16,7 +16,7 @@ import com.example.telegramWallet.ui.screens.createOrRecoveryWallet.SeedPhraseCo
 fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
     navigation( //
         route = Graph.FirstStart.route,
-        startDestination = OnboardingScreen.CreateOrRecoverWalletFS.route
+        startDestination = OnboardingScreen.CreateOrRecoverWalletFS.route,
     ) {
         composable(route = OnboardingScreen.CreateOrRecoverWalletFS.route) {
             CreateOrRecoverWalletScreen(
@@ -26,7 +26,7 @@ fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
                 goToRecoverWallet = {
                     navController.navigate(route = CreateOrRecoverWalletFS.RecoverWalletFS.route)
                 },
-                goToBack = {}
+                goToBack = {},
             )
             BackHandler {}
         }
@@ -37,7 +37,7 @@ fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
                 },
                 goToBack = {
                     navController.navigateUp()
-                }
+                },
             )
         }
         composable(route = CreateOrRecoverWalletFS.RecoverWalletFS.route) {
@@ -47,7 +47,7 @@ fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
                 },
                 goToBack = {
                     navController.navigateUp()
-                }
+                },
             )
         }
         composable(route = CreateNewWalletFS.SeedPhraseConfirmationFS.route) {
@@ -57,7 +57,7 @@ fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
                 },
                 goToBack = {
                     navController.navigateUp()
-                }
+                },
             )
         }
         composable(route = SeedPhraseConfirmationFS.WalletAddedFS.route) {
@@ -69,7 +69,7 @@ fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
                 },
                 goToBack = {
                     navController.navigateUp()
-                }
+                },
             )
         }
         composable(route = RecoverWalletFS.RecoveringWalletAddingFS.route) {
@@ -81,29 +81,40 @@ fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
                 },
                 goToBack = {
                     navController.navigateUp()
-                }
+                },
             )
         }
     }
 }
 
-sealed class OnboardingScreen(val route: String) {
+sealed class OnboardingScreen(
+    val route: String,
+) {
     data object CreateOrRecoverWalletFS : OnboardingScreen(route = "create_or_recover_wallet_fs")
 }
 
-sealed class CreateOrRecoverWalletFS(val route: String) {
+sealed class CreateOrRecoverWalletFS(
+    val route: String,
+) {
     data object CreateNewWalletFS : CreateOrRecoverWalletFS(route = "create_new_wallet_fs")
+
     data object RecoverWalletFS : CreateOrRecoverWalletFS(route = "recover_wallet_fs")
 }
 
-sealed class RecoverWalletFS(val route: String) {
+sealed class RecoverWalletFS(
+    val route: String,
+) {
     data object RecoveringWalletAddingFS : RecoverWalletFS(route = "recovering_wallet_adding_fs")
 }
 
-sealed class CreateNewWalletFS(val route: String) {
+sealed class CreateNewWalletFS(
+    val route: String,
+) {
     data object SeedPhraseConfirmationFS : CreateNewWalletFS(route = "seed_phrase_confirmation_fs")
 }
 
-sealed class SeedPhraseConfirmationFS(val route: String) {
+sealed class SeedPhraseConfirmationFS(
+    val route: String,
+) {
     data object WalletAddedFS : SeedPhraseConfirmationFS(route = "wallet_added_fs")
 }

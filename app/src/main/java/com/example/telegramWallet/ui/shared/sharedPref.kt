@@ -8,9 +8,8 @@ import androidx.core.content.ContextCompat
 import com.example.telegramWallet.R
 
 @Composable
-fun sharedPref(): SharedPreferences {
-    return LocalContext.current.getSharedPreferences(
+fun sharedPref(): SharedPreferences =
+    LocalContext.current.getSharedPreferences(
         ContextCompat.getString(LocalContext.current, R.string.preference_file_key),
-        Context.MODE_PRIVATE
+        Context.MODE_PRIVATE,
     )
-}

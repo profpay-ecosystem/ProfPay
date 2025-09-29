@@ -55,10 +55,11 @@ fun IsEmptyListSmartContract(viewModel: GetSmartContractViewModel = hiltViewMode
             animate(
                 initialValue = 1f,
                 targetValue = 1.15f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(durationMillis = 1000),
-                    repeatMode = RepeatMode.Reverse
-                )
+                animationSpec =
+                    infiniteRepeatable(
+                        animation = tween(durationMillis = 1000),
+                        repeatMode = RepeatMode.Reverse,
+                    ),
             ) { value, _ ->
                 scale = value
             }
@@ -66,11 +67,12 @@ fun IsEmptyListSmartContract(viewModel: GetSmartContractViewModel = hiltViewMode
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(),
+        modifier =
+            Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Card(
             shape = CircleShape,
@@ -79,32 +81,36 @@ fun IsEmptyListSmartContract(viewModel: GetSmartContractViewModel = hiltViewMode
             onClick = {
                 coroutineScope.launch {
                     val appId = viewModel.profileRepo.getProfileAppId()
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        data = "https://t.me/bb_list_bot?start=wallet_$appId".toUri()
-                    }
+                    val intent =
+                        Intent(Intent.ACTION_VIEW).apply {
+                            data = "https://t.me/bb_list_bot?start=wallet_$appId".toUri()
+                        }
                     context.startActivity(intent)
                 }
-            }
+            },
         ) {
             Box(
-                modifier = Modifier
-                    .padding(end = 30.dp)
-                    .clip(CircleShape)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .padding(end = 30.dp)
+                        .clip(CircleShape)
+                        .fillMaxSize(),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.icon_telegram),
                     contentDescription = "",
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier
-                        .size(150.dp)
-                        .scale(scale)
+                    modifier =
+                        Modifier
+                            .size(150.dp)
+                            .scale(scale),
                 )
             }
         }
         Text(
-            text = "Сделок пока нет.\n" +
+            text =
+                "Сделок пока нет.\n" +
                     "Их можно создать в телеграм-боте",
             fontSize = 30.sp,
             fontWeight = FontWeight.SemiBold,

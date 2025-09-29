@@ -2,9 +2,7 @@ package com.example.telegramWallet.data.scheduler.transfer.tron
 
 import com.example.telegramWallet.data.database.repositories.wallet.PendingTransactionRepo
 
-suspend fun rollbackFrozenTransactions(
-    pendingTransactionRepo: PendingTransactionRepo
-) {
+suspend fun rollbackFrozenTransactions(pendingTransactionRepo: PendingTransactionRepo) {
     val now = System.currentTimeMillis()
     val expiredTxs = pendingTransactionRepo.getExpiredTransactions(now)
 

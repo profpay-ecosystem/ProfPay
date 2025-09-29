@@ -9,4 +9,3 @@ fun getTextValueTheme(themeSharedInt: Int): String {
     }
     return colorTheme
 }
-

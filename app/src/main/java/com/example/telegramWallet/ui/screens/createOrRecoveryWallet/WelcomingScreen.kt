@@ -60,13 +60,15 @@ import kotlinx.coroutines.launch
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WelcomingScreen(toNavigate: (String) -> Unit,
-                    viewModel: WelcomingViewModel = hiltViewModel()
+fun WelcomingScreen(
+    toNavigate: (String) -> Unit,
+    viewModel: WelcomingViewModel = hiltViewModel(),
 ) {
     val sharedPref = sharedPref() //
     val isFirstStart = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
 
-    val text = "СОГЛАШЕНИЕ ДЛЯ ПОЛЬЗОВАТЕЛЕЙ " +
+    val text =
+        "СОГЛАШЕНИЕ ДЛЯ ПОЛЬЗОВАТЕЛЕЙ " +
             "КРИПТОКОШЕЛЬКА \n\n" +
             "Настоящее соглашение (далее - «Соглашение») " +
             "регулирует условия использования криптокошелька " +
@@ -151,94 +153,102 @@ fun WelcomingScreen(toNavigate: (String) -> Unit,
             "Используя Кошелёк, Пользователь подтверждает, что о ознакомился с настоящим Соглашением, понимает и " +
             "принимает его условия в полном объёме."
 
-        Scaffold(topBar = {
-        TopAppBar(
-            title = {},
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.Transparent
-            ),
-            navigationIcon = {
-                run {
-
-                }
-            }
-        )
-    }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {},
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
+                navigationIcon = {
+                    run {
+                    }
+                },
+            )
+        },
     ) { padding ->
         padding
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.create_recovery_bg),
-                    contentScale = ContentScale.FillBounds
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.create_recovery_bg),
+                        contentScale = ContentScale.FillBounds,
+                    ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.35f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.35f),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start
-
+                horizontalAlignment = Alignment.Start,
             ) {
                 Text(
                     text = "Добро пожаловать \n в ProfPay",
-                    modifier = Modifier
-                        .padding(start = 16.dp)
-                        .padding(vertical = 0.dp),
+                    modifier =
+                        Modifier
+                            .padding(start = 16.dp)
+                            .padding(vertical = 0.dp),
                     style = MaterialTheme.typography.headlineSmall,
-                    color = BackgroundLight
+                    color = BackgroundLight,
                 )
 //                Spacer(modifier = Modifier.height(48.dp))
             }
 
             Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Bottom
+                modifier =
+                    Modifier
+                        .fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     var isChecked by remember { mutableStateOf(false) }
                     AnimatedFadingTextList(splitTextIntoBlocks(text, 1)) {
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 0.dp)
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 0.dp),
                         ) {
                             // Текст с галочкой
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() }
-                                    ) { isChecked = !isChecked }
-                                    .padding(top = 24.dp)
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() },
+                                        ) { isChecked = !isChecked }
+                                        .padding(top = 24.dp),
                             ) {
                                 Checkbox(
                                     checked = isChecked,
-                                    onCheckedChange = { isChecked = it }
+                                    onCheckedChange = { isChecked = it },
                                 )
                                 Text(
                                     text = "Я принимаю условия соглашения",
                                     color = BackgroundDark,
-                                    modifier = Modifier.padding(start = 8.dp)
+                                    modifier = Modifier.padding(start = 8.dp),
                                 )
                             }
                         }
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp, bottom = 32.dp),
-                            horizontalArrangement = Arrangement.End
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 32.dp, bottom = 32.dp),
+                            horizontalArrangement = Arrangement.End,
                         ) {
                             Button(
                                 onClick = {
@@ -257,22 +267,25 @@ fun WelcomingScreen(toNavigate: (String) -> Unit,
                                     }
                                 },
                                 enabled = isChecked,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                                    contentColor = BackgroundDark,
-                                    disabledContainerColor = Color.LightGray,
-                                    disabledContentColor = BackgroundDark.copy(alpha = 0.5f)
-                                ),
+                                colors =
+                                    ButtonDefaults.buttonColors(
+                                        containerColor = Color.White,
+                                        contentColor = BackgroundDark,
+                                        disabledContainerColor = Color.LightGray,
+                                        disabledContentColor = BackgroundDark.copy(alpha = 0.5f),
+                                    ),
                                 shape = RoundedCornerShape(10.dp),
-                                elevation = ButtonDefaults.buttonElevation(
-                                    defaultElevation = 7.dp
-                                ),
-                                modifier = Modifier
-                                    .padding(horizontal = 8.dp)
-                                    .fillMaxWidth(0.5f)
-                                    .height(IntrinsicSize.Min)
+                                elevation =
+                                    ButtonDefaults.buttonElevation(
+                                        defaultElevation = 7.dp,
+                                    ),
+                                modifier =
+                                    Modifier
+                                        .padding(horizontal = 8.dp)
+                                        .fillMaxWidth(0.5f)
+                                        .height(IntrinsicSize.Min),
                             ) {
-                                Text(text = "Продолжить", style = MaterialTheme.typography.bodyLarge,)
+                                Text(text = "Продолжить", style = MaterialTheme.typography.bodyLarge)
                             }
                         }
                     }
@@ -283,35 +296,42 @@ fun WelcomingScreen(toNavigate: (String) -> Unit,
 }
 
 @Composable
-fun AnimatedFadingTextList(textBlocks: List<String>, itemContent: @Composable () -> Unit = {}) {
+fun AnimatedFadingTextList(
+    textBlocks: List<String>,
+    itemContent: @Composable () -> Unit = {},
+) {
     val listState = rememberLazyListState()
     val density = LocalDensity.current
 
     LazyColumn(
         state = listState,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
     ) {
         itemsIndexed(textBlocks) { index, block ->
-            val itemInfo = listState.layoutInfo.visibleItemsInfo
-                .find { it.index == index }
+            val itemInfo =
+                listState.layoutInfo.visibleItemsInfo
+                    .find { it.index == index }
 
             // Затухание начинается, когда элемент начинает уезжать вверх
             val fadeDistancePx = with(density) { 10.dp.toPx() }
 
-            val alpha = remember {
-                mutableFloatStateOf(1f)
-            }
+            val alpha =
+                remember {
+                    mutableFloatStateOf(1f)
+                }
 
             LaunchedEffect(itemInfo?.offset) {
                 if (itemInfo != null) {
                     val offset = itemInfo.offset.toFloat()
-                    alpha.floatValue = when {
-                        offset >= 0 -> 1f
-                        offset <= -fadeDistancePx -> 0f
-                        else -> 1f + (offset / fadeDistancePx)
-                    }.coerceIn(0f, 1f)
+                    alpha.floatValue =
+                        when {
+                            offset >= 0 -> 1f
+                            offset <= -fadeDistancePx -> 0f
+                            else -> 1f + (offset / fadeDistancePx)
+                        }.coerceIn(0f, 1f)
                 } else {
                     alpha.floatValue = 1f
                 }
@@ -320,18 +340,19 @@ fun AnimatedFadingTextList(textBlocks: List<String>, itemContent: @Composable ()
             val animatedAlpha by animateFloatAsState(
                 targetValue = alpha.floatValue,
                 animationSpec = tween(durationMillis = 400),
-                label = "fadeAlpha"
+                label = "fadeAlpha",
             )
 
             Text(
                 text = block,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .graphicsLayer { this.alpha = animatedAlpha }
-                    .padding(vertical = 0.dp),
-//                style = MaterialTheme.typography.titleMedium,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .graphicsLayer { this.alpha = animatedAlpha }
+                        .padding(vertical = 0.dp),
+                //                style = MaterialTheme.typography.titleMedium,
                 style = MaterialTheme.typography.bodyLarge,
-                color = BackgroundDark
+                color = BackgroundDark,
             )
         }
         item {
@@ -340,7 +361,10 @@ fun AnimatedFadingTextList(textBlocks: List<String>, itemContent: @Composable ()
     }
 }
 
-fun splitTextIntoBlocks(text: String, linesPerBlock: Int): List<String> {
+fun splitTextIntoBlocks(
+    text: String,
+    linesPerBlock: Int,
+): List<String> {
     val words = text.split(" ")
     val blocks = mutableListOf<String>()
     var current = StringBuilder()

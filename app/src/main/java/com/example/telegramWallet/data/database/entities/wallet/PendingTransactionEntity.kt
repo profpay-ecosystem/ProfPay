@@ -14,10 +14,10 @@ import java.math.BigInteger
             entity = TokenEntity::class,
             parentColumns = ["token_id"],
             childColumns = ["token_id"],
-            onDelete = ForeignKey.CASCADE
-        )
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
-    indices = [Index("token_id")]
+    indices = [Index("token_id")],
 )
 data class PendingTransactionEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Long? = null,
@@ -25,5 +25,5 @@ data class PendingTransactionEntity(
     @ColumnInfo(name = "tx_id") val txid: String,
     @ColumnInfo(name = "amount") val amount: BigInteger,
     @ColumnInfo(name = "timestamp") val timestamp: Long = System.currentTimeMillis(),
-    @ColumnInfo(name = "ttl_mills") val ttlMillis: Long = 15 * 60 * 1000 // TTL 15 минут
+    @ColumnInfo(name = "ttl_mills") val ttlMillis: Long = 15 * 60 * 1000, // TTL 15 минут
 )

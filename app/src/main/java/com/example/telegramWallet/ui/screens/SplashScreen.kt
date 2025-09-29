@@ -14,16 +14,16 @@ import androidx.compose.ui.Modifier
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SplashScreen() {
-    Scaffold(
-    ) { padding ->
+    Scaffold { padding ->
         padding
         Column(
-            modifier = Modifier.background(MaterialTheme.colorScheme.primary)
-                .fillMaxSize(),
+            modifier =
+                Modifier
+                    .background(MaterialTheme.colorScheme.primary)
+                    .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-
         }
     }
 }

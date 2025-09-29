@@ -10,24 +10,26 @@ import javax.inject.Inject
 
 interface ThemeAppRepo {
     val isDarkTheme: Flow<Int>
+
     suspend fun isDarkTheme(shared: SharedPreferences)
 }
 
-class ThemeAppRepoImpl @Inject constructor() : ThemeAppRepo {
-    private val _isDarkTheme = MutableSharedFlow<Int>(replay = 1)
-    // Получение числового значения текущей темы приложения
-    override val isDarkTheme: Flow<Int> =
-        _isDarkTheme.asSharedFlow()
-    // Триггер на обновление числового значения темы приложения
-    override suspend fun isDarkTheme(shared: SharedPreferences) {
-        withContext(Dispatchers.IO) {
-            val isDarkTheme = themeShared(shared)
-            _isDarkTheme.emit(isDarkTheme)
+class ThemeAppRepoImpl
+    @Inject
+    constructor() : ThemeAppRepo {
+        private val _isDarkTheme = MutableSharedFlow<Int>(replay = 1)
+
+        // Получение числового значения текущей темы приложения
+        override val isDarkTheme: Flow<Int> =
+            _isDarkTheme.asSharedFlow()
+
+        // Триггер на обновление числового значения темы приложения
+        override suspend fun isDarkTheme(shared: SharedPreferences) {
+            withContext(Dispatchers.IO) {
+                val isDarkTheme = themeShared(shared)
+                _isDarkTheme.emit(isDarkTheme)
+            }
         }
-    }
 
-    private fun themeShared(shared: SharedPreferences): Int {
-        return shared.getInt("valueTheme", 2)
+        private fun themeShared(shared: SharedPreferences): Int = shared.getInt("valueTheme", 2)
     }
-}
-

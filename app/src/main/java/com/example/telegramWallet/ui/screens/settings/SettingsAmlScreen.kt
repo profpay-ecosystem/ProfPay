@@ -44,33 +44,37 @@ import com.example.telegramWallet.ui.shared.sharedPref
 fun SettingsAmlScreen(goToBack: () -> Unit) {
     val sharedPref = sharedPref()
 
-    val (useAutoCheckAml, setUseAutoCheckAml) = remember {
-        mutableStateOf(
-            sharedPref.getBoolean(AUTO_CHECK_AML, true)
-        )
-    }
+    val (useAutoCheckAml, setUseAutoCheckAml) =
+        remember {
+            mutableStateOf(
+                sharedPref.getBoolean(AUTO_CHECK_AML, true),
+            )
+        }
 
     val bottomPadding = sharedPref.getFloat("bottomPadding", 54f)
 
-    Scaffold(modifier = Modifier,) { padding ->
+    Scaffold(modifier = Modifier) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ), verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             TopAppBar(
                 title = {
                     Text(
                         text = "AML",
-                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
+                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
                     run {
                         IconButton(onClick = { goToBack() }) {
@@ -78,7 +82,7 @@ fun SettingsAmlScreen(goToBack: () -> Unit) {
                                 modifier = Modifier.size(34.dp),
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
@@ -90,38 +94,40 @@ fun SettingsAmlScreen(goToBack: () -> Unit) {
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
 
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomEnd = 0.dp,
-                            bottomStart = 0.dp
-                        )
-                    )
-                    .weight(0.8f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 0.dp,
+                            ),
+                        ).weight(0.8f),
             ) {
                 Column(
-                    modifier = Modifier.padding(bottom = bottomPadding.dp)
-                        .padding(vertical = 0.dp, horizontal = 0.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier
+                            .padding(bottom = bottomPadding.dp)
+                            .padding(vertical = 0.dp, horizontal = 0.dp)
+                            .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Spacer(modifier = Modifier.size(16.dp))
                     CardWithText(label = "Авто. проверка AML") {
                         setUseAutoCheckAml(
                             switchForSettings(useAutoCheckAml) {
                                 sharedPref.edit { putBoolean(AUTO_CHECK_AML, it) }
-                            }
+                            },
                         )
                     }
                     Spacer(modifier = Modifier.size(20.dp))

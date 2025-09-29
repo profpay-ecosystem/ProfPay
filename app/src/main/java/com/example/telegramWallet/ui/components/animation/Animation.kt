@@ -15,53 +15,53 @@ internal const val animExitDuration = 350
 val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
     slideIntoContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
-        animationSpec = tween(animEnterDuration)
+        animationSpec = tween(animEnterDuration),
     )
 }
 
 val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
     slideOutOfContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
-        animationSpec = tween(animExitDuration)
+        animationSpec = tween(animExitDuration),
     )
 }
 
 val popEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
     slideIntoContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
-        animationSpec = tween(animEnterDuration)
+        animationSpec = tween(animEnterDuration),
     )
 }
 
 val popExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
     slideOutOfContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
-        animationSpec = tween(animExitDuration)
+        animationSpec = tween(animExitDuration),
     )
 }
 
 val enterTabScreenTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
     fadeIn(
         initialAlpha = 0.99f,
-        animationSpec = snap(animEnterDuration)
+        animationSpec = snap(animEnterDuration),
     )
 }
 
 val exitTabScreenTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
     fadeOut(
         targetAlpha = 0.99f,
-        animationSpec = snap(animExitDuration)
+        animationSpec = snap(animExitDuration),
     )
 }
 
 val popEnterTabScreenTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
     fadeIn(
-        animationSpec = tween(1)
+        animationSpec = tween(1),
     )
 }
 
 val popExitTabScreenTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
     fadeOut(
-        animationSpec = tween(1)
+        animationSpec = tween(1),
     )
 }

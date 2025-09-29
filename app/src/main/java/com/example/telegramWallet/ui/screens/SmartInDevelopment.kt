@@ -29,7 +29,10 @@ import com.example.telegramWallet.R
 @RequiresApi(Build.VERSION_CODES.S)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FAQScreen(goToAboutUs: () -> Unit, goToSecurity: () -> Unit) {
+fun FAQScreen(
+    goToAboutUs: () -> Unit,
+    goToSecurity: () -> Unit,
+) {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,12 +46,13 @@ fun SmartInDevelopment() {
                         text = "Smart",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.SemiBold,
-                        style = TextStyle(color = MaterialTheme.colorScheme.onPrimary)
+                        style = TextStyle(color = MaterialTheme.colorScheme.onPrimary),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
                 navigationIcon = {},
                 actions = {
                     run {
@@ -57,25 +61,28 @@ fun SmartInDevelopment() {
                                 modifier = Modifier.size(35.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_help_quation),
                                 contentDescription = "",
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                tint = MaterialTheme.colorScheme.onPrimary,
                             )
                         }
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         padding
         Column(
-            modifier = Modifier.background(MaterialTheme.colorScheme.primary)
-                .fillMaxSize(),
+            modifier =
+                Modifier
+                    .background(MaterialTheme.colorScheme.primary)
+                    .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-         Text(text = "Страница в разработке...",
-             fontSize = 20.sp,
-             fontWeight = FontWeight.SemiBold)
+            Text(
+                text = "Страница в разработке...",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
-
     }
 }

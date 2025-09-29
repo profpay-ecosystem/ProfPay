@@ -25,7 +25,7 @@ import java.security.NoSuchAlgorithmException
 // Сущность с данными нового адреса
 data class AddressGenerateResult(
     val addressesWithKeysForM: AddressesWithKeysForM,
-    val mnemonic: Mnemonics.MnemonicCode
+    val mnemonic: Mnemonics.MnemonicCode,
 )
 
 data class AddressesWithKeysForM(
@@ -33,7 +33,7 @@ data class AddressesWithKeysForM(
     val privKeyBytes: ByteArray,
     val chainCode: ByteArray,
     val entropy: ByteArray,
-    val derivedIndices: Iterable<Int>
+    val derivedIndices: Iterable<Int>,
 )
 
 data class AddressData(
@@ -41,12 +41,12 @@ data class AddressData(
     val privateKey: String,
     val publicKey: String,
     val indexDerivationSot: Int,
-    val indexSot: Byte
+    val indexSot: Byte,
 )
 
 // Сущность с данными восстановленного адреса по мнемонике(сид-фразе)
 data class AddressGenerateFromSeedPhr(
-    val addressesWithKeysForM: AddressesWithKeysForM
+    val addressesWithKeysForM: AddressesWithKeysForM,
 )
 
 class AddressUtilities {
@@ -79,32 +79,32 @@ class AddressUtilities {
                     privateKey = deterministicKeyForSots.privateKeyAsHex,
                     publicKey = deterministicKeyForSots.publicKeyAsHex,
                     indexDerivationSot = index,
-                    indexSot = index.toByte()
-                )
+                    indexSot = index.toByte(),
+                ),
             )
         }
 
         val masterKey = generateMasterPrivateKey(mnemonicCode.toSeed(validate = true))
-        val addressesWithKeysForM = AddressesWithKeysForM(
-            addresses = addressDataList,
-            privKeyBytes = masterKey.privKeyBytes,
-            chainCode = masterKey.chainCode,
-            entropy = entropy,
-            derivedIndices = (1..6)
-        )
+        val addressesWithKeysForM =
+            AddressesWithKeysForM(
+                addresses = addressDataList,
+                privKeyBytes = masterKey.privKeyBytes,
+                chainCode = masterKey.chainCode,
+                entropy = entropy,
+                derivedIndices = (1..6),
+            )
 
         return AddressGenerateResult(
             addressesWithKeysForM = addressesWithKeysForM,
-            mnemonic = mnemonicCode
+            mnemonic = mnemonicCode,
         )
-
     }
 
     // Данный метод используется для восстановления адреса и его публичного, приватного ключей по мнемонике(сид-фразе)
     // Если адрес найден на сервере
     fun recoveryKeysAndAddressBySeedPhrase(
         seed: String,
-        derivedIndices: List<Int>
+        derivedIndices: List<Int>,
     ): AddressGenerateFromSeedPhr {
         val charArray = seed.toCharArray()
         val mnemonicCode = Mnemonics.MnemonicCode(chars = charArray)
@@ -128,13 +128,14 @@ class AddressUtilities {
         }
 
         val masterKey = generateMasterPrivateKey(mnemonicCode.toSeed(validate = true))
-        val addressesWithKeysForM = AddressesWithKeysForM(
-            addresses = addressGenerateFromSeedPhrList,
-            privKeyBytes = masterKey.privKeyBytes,
-            chainCode = masterKey.chainCode,
-            entropy = mnemonicCode.toEntropy(),
-            derivedIndices = derivedIndicesWithZero.filter { it != 0 }
-        )
+        val addressesWithKeysForM =
+            AddressesWithKeysForM(
+                addresses = addressGenerateFromSeedPhrList,
+                privKeyBytes = masterKey.privKeyBytes,
+                chainCode = masterKey.chainCode,
+                entropy = mnemonicCode.toEntropy(),
+                derivedIndices = derivedIndicesWithZero.filter { it != 0 },
+            )
 
         return AddressGenerateFromSeedPhr(addressesWithKeysForM)
     }
@@ -149,7 +150,7 @@ class AddressUtilities {
         try {
             repeat(7) { item ->
                 addressGenerateFromSeedPhrList.add(
-                    generateAddressData(mnemonicCode, item, item.toByte())
+                    generateAddressData(mnemonicCode, item, item.toByte()),
                 )
             }
         } catch (_: Exception) {
@@ -157,13 +158,14 @@ class AddressUtilities {
         }
 
         val masterKey = generateMasterPrivateKey(mnemonicCode.toSeed(validate = true))
-        val addressesWithKeysForM = AddressesWithKeysForM(
-            addresses = addressGenerateFromSeedPhrList,
-            privKeyBytes = masterKey.privKeyBytes,
-            chainCode = masterKey.chainCode,
-            entropy = mnemonicCode.toEntropy(),
-            derivedIndices = (1..6)
-        )
+        val addressesWithKeysForM =
+            AddressesWithKeysForM(
+                addresses = addressGenerateFromSeedPhrList,
+                privKeyBytes = masterKey.privKeyBytes,
+                chainCode = masterKey.chainCode,
+                entropy = mnemonicCode.toEntropy(),
+                derivedIndices = (1..6),
+            )
 
         return AddressGenerateFromSeedPhr(addressesWithKeysForM)
     }
@@ -188,7 +190,12 @@ class AddressUtilities {
      */
     fun getUsdtBalance(accountAddr: String): BigInteger {
         try {
-            val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, KeyPair.generate().toPrivateKey())
+            val wrapper =
+                ApiWrapper(
+                    AppConstants.Network.TRON_GRPC_ENDPOINT,
+                    AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                    KeyPair.generate().toPrivateKey(),
+                )
 
             val contract: Contract = wrapper.getContract("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t")
             val token = Trc20Contract(contract, "TJJaVcRremausriMLkZeRedM95v7HW4j4D", wrapper)
@@ -207,7 +214,12 @@ class AddressUtilities {
      */
     fun getTrxBalance(accountAddr: String): BigInteger {
         try {
-            val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, KeyPair.generate().toPrivateKey())
+            val wrapper =
+                ApiWrapper(
+                    AppConstants.Network.TRON_GRPC_ENDPOINT,
+                    AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                    KeyPair.generate().toPrivateKey(),
+                )
             val balanceInSun: BigInteger = BigInteger.valueOf(wrapper.getAccountBalance(accountAddr))
             wrapper.close()
             return balanceInSun
@@ -217,16 +229,17 @@ class AddressUtilities {
         }
     }
 
-    private fun generateMasterPrivateKey(seed: ByteArray): DeterministicKey {
-        return HDKeyDerivation.createMasterPrivateKey(seed)
-    }
+    private fun generateMasterPrivateKey(seed: ByteArray): DeterministicKey = HDKeyDerivation.createMasterPrivateKey(seed)
 
     // Функция для генерации ключей по seed фразе.
-    private fun generateKeys(seed: ByteArray, index: Int): DeterministicKey {
+    private fun generateKeys(
+        seed: ByteArray,
+        index: Int,
+    ): DeterministicKey {
         val masterPrivateKey: DeterministicKey = generateMasterPrivateKey(seed)
         val dh = DeterministicHierarchy(masterPrivateKey)
 
-        val path: List<ChildNumber> = HDPath.parsePath("M/44H/195H/0H/$index")
+        val path: List<ChildNumber> = HDPath.parsePath("M/44H/195H/0H/0/$index")
 
         val startWallet: DeterministicKey =
             dh.deriveChild(path.subList(0, path.size - 1), false, true, path[path.size - 1])
@@ -237,13 +250,13 @@ class AddressUtilities {
     fun creationOfANewCell(
         privKeyBytes: ByteArray,
         chainCode: ByteArray,
-        index: Long
+        index: Long,
     ): DeterministicKey? {
         val masterPrivateKey: DeterministicKey =
             HDKeyDerivation.createMasterPrivKeyFromBytes(privKeyBytes, chainCode)
         val dh = DeterministicHierarchy(masterPrivateKey)
 
-        val path: List<ChildNumber> = HDPath.parsePath("M/44H/195H/0H/$index")
+        val path: List<ChildNumber> = HDPath.parsePath("M/44H/195H/0H/0/$index")
 
         val startWallet: DeterministicKey =
             dh.deriveChild(path.subList(0, path.size - 1), false, true, path[path.size - 1])
@@ -259,15 +272,14 @@ class AddressUtilities {
     }
 
     // Переводим массив байт в SHA256
-    private fun sha256(input: ByteArray): ByteArray {
-        return try {
+    private fun sha256(input: ByteArray): ByteArray =
+        try {
             val digest = MessageDigest.getInstance("SHA-256")
             digest.update(input)
             digest.digest()
         } catch (err: NoSuchAlgorithmException) {
             throw RuntimeException(err)
         }
-    }
 
     // Переводим массив байт в SHA3
     private fun sha3(input: ByteArray): ByteArray? {
@@ -289,9 +301,7 @@ class AddressUtilities {
         return data
     }
 
-    private fun ByteArray.toHexString(): String {
-        return joinToString("") { String.format("%02x", it) }
-    }
+    private fun ByteArray.toHexString(): String = joinToString("") { String.format("%02x", it) }
 
     // Этот код реализует функцию public2Address, которая принимает публичный ключ в виде массива байтов и преобразует его в адрес в формате Tron.
     fun public2Address(publicKey: ByteArray): String? {
@@ -341,8 +351,10 @@ class AddressUtilities {
             val decoded = Base58.decode(address)
             val checksum = decoded.copyOfRange(decoded.size - 4, decoded.size)
 
-            val sha256_1 = MessageDigest.getInstance("SHA-256")
-                .digest(decoded.copyOfRange(0, decoded.size - 4))
+            val sha256_1 =
+                MessageDigest
+                    .getInstance("SHA-256")
+                    .digest(decoded.copyOfRange(0, decoded.size - 4))
             val sha256_2 = MessageDigest.getInstance("SHA-256").digest(sha256_1)
 
             // Проверяем контрольную сумму
@@ -355,7 +367,12 @@ class AddressUtilities {
     }
 
     suspend fun isAddressActivated(address: String): Boolean {
-        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, KeyPair.generate().toPrivateKey())
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                KeyPair.generate().toPrivateKey(),
+            )
 
         return try {
             withTimeout(5000) {
@@ -371,7 +388,12 @@ class AddressUtilities {
     }
 
     fun getCreateNewAccountFeeInSystemContract(): BigInteger {
-        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, KeyPair.generate().toPrivateKey())
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                KeyPair.generate().toPrivateKey(),
+            )
 
         for (chainParameter in wrapper.chainParameters.chainParameterList) {
             if (chainParameter.key == "getCreateNewAccountFeeInSystemContract") {
@@ -388,18 +410,22 @@ class AddressUtilities {
         return (1 until maxIndex).filter { it !in indexSet }
     }
 
-    private fun generateAddressData(mnemonicCode: Mnemonics.MnemonicCode, index: Int, indexSot: Byte): AddressData {
+    private fun generateAddressData(
+        mnemonicCode: Mnemonics.MnemonicCode,
+        index: Int,
+        indexSot: Byte,
+    ): AddressData {
         val key = generateKeys(mnemonicCode.toSeed(validate = true), index)
-        val address = public2Address(key.pubKeyPoint.getEncoded(false))
-            ?: throw Exception("The public address has not been created!")
+        val address =
+            public2Address(key.pubKeyPoint.getEncoded(false))
+                ?: throw Exception("The public address has not been created!")
 
         return AddressData(
             address = address,
             privateKey = key.privateKeyAsHex,
             publicKey = key.publicKeyAsHex,
             indexDerivationSot = index,
-            indexSot = indexSot
+            indexSot = indexSot,
         )
     }
 }
-

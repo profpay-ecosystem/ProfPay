@@ -15,7 +15,7 @@ fun AlertDialogConfButtonWidget(
     dialogTitle: String,
     dialogText: String,
     icon: ImageVector,
-    textButton: String
+    textButton: String,
 ) {
     AlertDialog(
         icon = {
@@ -34,7 +34,7 @@ fun AlertDialogConfButtonWidget(
             TextButton(
                 onClick = {
                     onConfirmation()
-                }
+                },
             ) {
                 Text(textButton, color = MaterialTheme.colorScheme.onBackground)
             }

@@ -15,6 +15,7 @@ import java.io.IOException
 
 interface GetAmlStatisticsRequestCallback {
     fun onSuccess()
+
     fun onFailure(error: String)
 }
 
@@ -22,36 +23,50 @@ class CrystalMonitorTxAddService {
     private val client = OkHttpClient()
     private val localJson = Json { ignoreUnknownKeys = true }
 
-    fun makeRequest(callback: GetAmlStatisticsRequestCallback, amlData: CrystalMonitorTxAddRequest, appKey: String) {
+    fun makeRequest(
+        callback: GetAmlStatisticsRequestCallback,
+        amlData: CrystalMonitorTxAddRequest,
+        appKey: String,
+    ) {
         val jsonRequest = localJson.encodeToString(amlData)
         val json = "application/json".toMediaType()
 
         val body: RequestBody = jsonRequest.toRequestBody(json)
-        val request = Request.Builder()
-            .url("https://api.wallet-services-srv.com/api/crystal/monitor/tx/add")
-            .post(body)
-            .addHeader("X-Auth-Appkey", appKey)
-            .build()
+        val request =
+            Request
+                .Builder()
+                .url("https://api.wallet-services-srv.com/api/crystal/monitor/tx/add")
+                .post(body)
+                .addHeader("X-Auth-Appkey", appKey)
+                .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                callback.onFailure(e.toString())
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                response.use {
-                    if (!response.isSuccessful) {
-                        throw IOException(response.message)
-                    }
-                    callback.onSuccess()
+        client.newCall(request).enqueue(
+            object : Callback {
+                override fun onFailure(
+                    call: Call,
+                    e: IOException,
+                ) {
+                    callback.onFailure(e.toString())
                 }
-            }
-        })
+
+                override fun onResponse(
+                    call: Call,
+                    response: Response,
+                ) {
+                    response.use {
+                        if (!response.isSuccessful) {
+                            throw IOException(response.message)
+                        }
+                        callback.onSuccess()
+                    }
+                }
+            },
+        )
     }
 }
 
 object GetCrystalMonitorTxAddApi {
-    val getCrystalMonitorTxAddService : CrystalMonitorTxAddService by lazy {
+    val getCrystalMonitorTxAddService: CrystalMonitorTxAddService by lazy {
         CrystalMonitorTxAddService()
     }
 }

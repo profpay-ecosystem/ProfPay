@@ -48,13 +48,13 @@ import com.example.telegramWallet.ui.screens.createOrRecoveryWallet.TitleCreateO
 import com.example.telegramWallet.ui.shared.utils.checkingValuesInList
 import kotlin.random.Random
 
-//about erupt space can lumber noise clean air across timber easy ridge
+// about erupt space can lumber noise clean air across timber easy ridge
 
 @Composable
 fun SeedPhraseConfirmationWidget(
     addressGenerateResult: AddressGenerateResult,
     goToBack: () -> Unit,
-    goToWalletAdded: () -> Unit
+    goToWalletAdded: () -> Unit,
 ) {
     var allowGoToNext by remember { mutableStateOf(false) }
     val listCharArray = addressGenerateResult.mnemonic.words
@@ -68,9 +68,9 @@ fun SeedPhraseConfirmationWidget(
                 goToNext = { goToWalletAdded() },
                 allowGoToNext = allowGoToNext,
                 currentScreen = 2,
-                quantityScreens = 2
+                quantityScreens = 2,
             )
-        }
+        },
     ) {
         Spacer(modifier = Modifier.fillMaxHeight(0.02f))
         LazyColumn(modifier = Modifier.fillMaxHeight(0.75f)) {
@@ -81,8 +81,6 @@ fun SeedPhraseConfirmationWidget(
                 allowGoToNext = inputListCharAndIndex.all { it }
             }
         }
-
-
     }
 }
 
@@ -114,7 +112,7 @@ fun selectWordByIndex(group: Pair<Int, List<CharArray>>): Pair<Int, String> {
             text = "Выберите слово №${group.first + 1}",
             style = MaterialTheme.typography.titleSmall,
             color = BackgroundDark,
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier.padding(start = 8.dp),
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -122,29 +120,33 @@ fun selectWordByIndex(group: Pair<Int, List<CharArray>>): Pair<Int, String> {
         ) {
             group.second.forEachIndexed { index, item ->
                 var colorCont by remember { mutableStateOf(Color.White) }
-                colorCont = if (indexAllowClick == index) {
-                    PubAddressDark
-                } else {
-                    Color.White
-                }
+                colorCont =
+                    if (indexAllowClick == index) {
+                        PubAddressDark
+                    } else {
+                        Color.White
+                    }
                 Card(
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .weight(0.3f)
-                        .padding(4.dp),
+                    modifier =
+                        Modifier
+                            .weight(0.3f)
+                            .padding(4.dp),
                     elevation = CardDefaults.cardElevation(10.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = colorCont
-                    ),
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = colorCont,
+                        ),
                     onClick = {
                         indexAllowClick = index
                         selectWord = String(item)
-                    }
+                    },
                 ) {
                     Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .fillMaxSize(),
+                        contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = String(item),
@@ -161,12 +163,14 @@ fun selectWordByIndex(group: Pair<Int, List<CharArray>>): Pair<Int, String> {
     }
 
     return group.first to selectWord
-
 }
 
 @Deprecated("Система для выбора порядка всех 12 слов")
 @Composable
-fun SeedPhraseInputWidget(addressGenerateResult: AddressGenerateResult, allowGoToNext1: Boolean) {
+fun SeedPhraseInputWidget(
+    addressGenerateResult: AddressGenerateResult,
+    allowGoToNext1: Boolean,
+) {
     var allowGoToNext = allowGoToNext1
     var seedPhraseInput by remember { mutableStateOf("") }
     val seedPhrase = String(addressGenerateResult.mnemonic.chars).plus(" ")
@@ -175,61 +179,68 @@ fun SeedPhraseInputWidget(addressGenerateResult: AddressGenerateResult, allowGoT
     Column(
         modifier = Modifier.fillMaxHeight(1f),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Card(
             shape = RoundedCornerShape(10.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(90.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(90.dp),
             elevation = CardDefaults.cardElevation(10.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            )
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = Color.White,
+                ),
         ) {
             TextField(
                 value = seedPhraseInput,
-                modifier = Modifier
-                    .height(90.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .height(90.dp)
+                        .fillMaxWidth(),
                 readOnly = true,
                 shape = MaterialTheme.shapes.small.copy(),
                 onValueChange = { seedPhraseInput = it },
                 trailingIcon = {},
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = BackgroundDark,
-                    unfocusedTextColor = BackgroundDark,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    cursorColor = BackgroundDark,
-                    selectionColors = TextSelectionColors(
-                        handleColor = BackgroundDark,
-                        backgroundColor = Color.Transparent
-                    )
-                )
+                colors =
+                    TextFieldDefaults.colors(
+                        focusedTextColor = BackgroundDark,
+                        unfocusedTextColor = BackgroundDark,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        cursorColor = BackgroundDark,
+                        selectionColors =
+                            TextSelectionColors(
+                                handleColor = BackgroundDark,
+                                backgroundColor = Color.Transparent,
+                            ),
+                    ),
             )
         }
 
         Spacer(modifier = Modifier.size(20.dp))
         LazyVerticalGrid(
             columns = GridCells.Fixed(4),
-            modifier = Modifier.padding()
+            modifier = Modifier.padding(),
         ) {
             itemsIndexed(listCharArrayShuffled) { index, item ->
                 var colorCont by remember { mutableStateOf(Color.White) }
                 var isAllowClick by remember { mutableStateOf(true) }
                 Card(
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .width(IntrinsicSize.Max)
-                        .padding(4.dp),
+                    modifier =
+                        Modifier
+                            .width(IntrinsicSize.Max)
+                            .padding(4.dp),
                     elevation = CardDefaults.cardElevation(10.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = colorCont
-                    ),
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = colorCont,
+                        ),
                     onClick = {
                         if (isAllowClick) {
                             colorCont = PubAddressDark
@@ -240,13 +251,14 @@ fun SeedPhraseInputWidget(addressGenerateResult: AddressGenerateResult, allowGoT
                             isAllowClick = true
                             colorCont = Color.White
                         }
-                    }
+                    },
                 ) {
                     Box(
-                        modifier = Modifier
-                            .width(IntrinsicSize.Max)
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .width(IntrinsicSize.Max)
+                                .fillMaxSize(),
+                        contentAlignment = Alignment.Center,
                     ) {
                         Text(
                             text = String(item),
@@ -262,9 +274,10 @@ fun SeedPhraseInputWidget(addressGenerateResult: AddressGenerateResult, allowGoT
         }
         if (seedPhrase.equals(seedPhraseInput)) {
             allowGoToNext = true
-        } else allowGoToNext = false
+        } else {
+            allowGoToNext = false
+        }
     }
-
 }
 
 @Deprecated("")
@@ -272,34 +285,34 @@ fun SeedPhraseInputWidget(addressGenerateResult: AddressGenerateResult, allowGoT
 fun CheckingTheUsersSeedPhrase(
     listMnemonic: List<Any>,
     listIndex: List<Int>,
-    goToWalletAdded: () -> Unit
+    goToWalletAdded: () -> Unit,
 ) {
-
     var value0 by remember { mutableStateOf("") }
     var value1 by remember { mutableStateOf("") }
     var value2 by remember { mutableStateOf("") }
 
     // Получаем remember по индексу
-    fun getValueFromIndex(current: Int): String {
-        return when (current) {
+    fun getValueFromIndex(current: Int): String =
+        when (current) {
             0 -> value0
             1 -> value1
             else -> value2
         }
-    }
     // Поля ввода элемментов сид-фразы
     LazyVerticalGrid(
         columns = GridCells.Fixed(1),
-        modifier = Modifier
-            .alpha(0.8f)
+        modifier =
+            Modifier
+                .alpha(0.8f),
     ) {
         itemsIndexed(listIndex) { index, item ->
             Row {
                 OutlinedTextField(
                     value = getValueFromIndex(index),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 5.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 5.dp),
                     label = { Text(text = "# ${item + 1}") },
                     onValueChange = {
                         // Устанавливаем значение каждому TextField-у
@@ -308,8 +321,8 @@ fun CheckingTheUsersSeedPhrase(
                             1 -> value1 = it
                             else -> value2 = it
                         }
-                    })
-
+                    },
+                )
             }
         }
     }
@@ -322,12 +335,12 @@ fun CheckingTheUsersSeedPhrase(
         Row {
             Button(
                 onClick = { goToWalletAdded() },
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .fillMaxWidth(fraction = 1f),
+                modifier =
+                    Modifier
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth(fraction = 1f),
                 shape = RoundedCornerShape(6.dp),
-
-                ) {
+            ) {
                 Text(text = "Продолжить")
             }
         }

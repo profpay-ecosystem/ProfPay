@@ -46,13 +46,12 @@ import com.example.telegramWallet.ui.app.theme.RedColor
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
-
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun confirmationSmartModalFeature(
     smartModalState: SmartContractModalData,
     snackbar: StackedSnakbarHostState,
-    viewModel: GetSmartContractViewModel = hiltViewModel()
+    viewModel: GetSmartContractViewModel = hiltViewModel(),
 ): Boolean {
     val (confirm, setConfirm) = remember { mutableStateOf(false) }
     if (smartModalState.deal != null) {
@@ -64,21 +63,26 @@ fun confirmationSmartModalFeature(
         val estimateResourcePrice by viewModel.stateEstimateResourcePrice.collectAsStateWithLifecycle()
 
         LaunchedEffect(Unit) {
-            var transactionEstimatorResult = if (smartModalState.buttonType == SmartContractButtonType.ACCEPT) {
-                viewModel.estimateCompleteContract(smartModalState.deal)
-            } else if (smartModalState.buttonType == SmartContractButtonType.REJECT) {
-                viewModel.estimateRejectContract(smartModalState.deal)
-            } else return@LaunchedEffect
+            var transactionEstimatorResult =
+                if (smartModalState.buttonType == SmartContractButtonType.ACCEPT) {
+                    viewModel.estimateCompleteContract(smartModalState.deal)
+                } else if (smartModalState.buttonType == SmartContractButtonType.REJECT) {
+                    viewModel.estimateRejectContract(smartModalState.deal)
+                } else {
+                    return@LaunchedEffect
+                }
 
             if (transactionEstimatorResult != null) {
                 viewModel.getResourceQuote(
                     address = transactionEstimatorResult.executorAddress!!,
                     energy = transactionEstimatorResult.requiredEnergy!!,
-                    bandwidth = transactionEstimatorResult.requiredBandwidth!!
+                    bandwidth = transactionEstimatorResult.requiredBandwidth!!,
                 )
 
                 if (transactionEstimatorResult.estimateType == EstimateType.APPROVE) {
-                    setFunctionMessage("\n\nДля работы данной функции необходим approve, сначала выполнится он, после повторите вызов еще раз.")
+                    setFunctionMessage(
+                        "\n\nДля работы данной функции необходим approve, сначала выполнится он, после повторите вызов еще раз.",
+                    )
                 }
             }
         }
@@ -92,65 +96,73 @@ fun confirmationSmartModalFeature(
 
         Column(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.fillMaxHeight(0.05f))
 
             Row(
-                modifier = Modifier
-                    .padding()
-                    .fillMaxWidth(0.9f),
+                modifier =
+                    Modifier
+                        .padding()
+                        .fillMaxWidth(0.9f),
                 horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "Комиссия",
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
             Spacer(modifier = Modifier.fillMaxHeight(0.02f))
 
             Card(
                 shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 16.dp),
                 elevation = CardDefaults.cardElevation(10.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
             ) {
                 Row(
-                    modifier = Modifier
-                        .padding(vertical = 18.dp, horizontal = 16.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .padding(vertical = 18.dp, horizontal = 16.dp)
+                            .fillMaxWidth(),
                 ) {
                     Text(
-                        text = "Мы взымаем комиссию в TRX за выполнение функций контракта, чтобы компенсировать затраты, связанные с использованием ресурсов сети Tron, " +
+                        text =
+                            "Мы взымаем комиссию в TRX за выполнение функций контракта, чтобы компенсировать затраты, связанные с использованием ресурсов сети Tron, " +
                                 "таких как Bandwidth и Energy. Эти ресурсы необходимы для выполнения операций, " +
                                 "связанных с развертыванием и поддержкой смарт-контрактов." +
                                 functionMessage,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
             }
 
             Card(
                 shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .padding(vertical = 8.dp, horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .padding(vertical = 8.dp, horizontal = 16.dp),
                 elevation = CardDefaults.cardElevation(10.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                colors =
+                    CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
             ) {
                 Row(
-                    modifier = Modifier
-                        .padding(18.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .padding(18.dp)
+                            .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(text = "Комиссия:", fontWeight = FontWeight.SemiBold)
                     Row {
@@ -160,30 +172,33 @@ fun confirmationSmartModalFeature(
                 }
             }
             Row(
-                modifier = Modifier
-                    .height(IntrinsicSize.Min)
-                    .padding(bottom = 16.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier
+                        .height(IntrinsicSize.Min)
+                        .padding(bottom = 16.dp)
+                        .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Button(
                     onClick = {
                         viewModel.setSmartContractModalActive(false, null, null)
                     },
-                    modifier = Modifier
-                        .padding(start = 16.dp, end = 4.dp)
-                        .height(IntrinsicSize.Max)
-                        .weight(0.5f),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = RedColor,
-                        contentColor = BackgroundContainerButtonLight
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    modifier =
+                        Modifier
+                            .padding(start = 16.dp, end = 4.dp)
+                            .height(IntrinsicSize.Max)
+                            .weight(0.5f),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = RedColor,
+                            contentColor = BackgroundContainerButtonLight,
+                        ),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
                         text = "Закрыть",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
                 Button(
@@ -210,18 +225,22 @@ fun confirmationSmartModalFeature(
                             isButtonEnabled = true
                         }
                     },
-                    modifier = Modifier
-                        .padding(start = 4.dp, end = 16.dp)
-                        .height(IntrinsicSize.Max)
-                        .weight(0.5f), colors = ButtonDefaults.buttonColors(
-                        containerColor = GreenColor,
-                        contentColor = BackgroundContainerButtonLight
-                    ), shape = RoundedCornerShape(12.dp)
+                    modifier =
+                        Modifier
+                            .padding(start = 4.dp, end = 16.dp)
+                            .height(IntrinsicSize.Max)
+                            .weight(0.5f),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = GreenColor,
+                            contentColor = BackgroundContainerButtonLight,
+                        ),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
                         text = "Продолжить",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
             }

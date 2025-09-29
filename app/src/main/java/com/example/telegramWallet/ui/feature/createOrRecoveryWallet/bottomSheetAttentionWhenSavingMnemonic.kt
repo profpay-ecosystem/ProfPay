@@ -42,15 +42,14 @@ import com.example.telegramWallet.ui.app.theme.BackgroundLight
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun bottomSheetAttentionWhenSavingMnemonic(
-): Pair<Boolean, (Boolean) -> Unit> {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { true }
-    )
+fun bottomSheetAttentionWhenSavingMnemonic(): Pair<Boolean, (Boolean) -> Unit> {
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { true },
+        )
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -71,38 +70,40 @@ fun bottomSheetAttentionWhenSavingMnemonic(
             sheetState = sheetState,
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = BackgroundDark),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(color = BackgroundDark),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.icon_lockpad),
                     contentDescription = "",
                     tint = BackgroundLight,
-                    modifier = Modifier.fillMaxSize(0.3f)
+                    modifier = Modifier.fillMaxSize(0.3f),
                 )
                 Row(
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        bottom = 16.dp,
-                        end = 16.dp
-                    ),
+                    modifier =
+                        Modifier.padding(
+                            start = 16.dp,
+                            bottom = 16.dp,
+                            end = 16.dp,
+                        ),
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = "Никому не сообщайте вашу seed-фразу",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = BackgroundLight,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                 }
 
                 CardForAttentionWhenSavingMnemonic(1, "Мы не получаем доступа к вашей seed-фразе")
-                CardForAttentionWhenSavingMnemonic(2,"Сохранять копию seed-фразы в виде скриншота небезопасно")
-                CardForAttentionWhenSavingMnemonic(3,"Храните вашу seed-фразу в безопасном, доступном тоько Вам месте")
+                CardForAttentionWhenSavingMnemonic(2, "Сохранять копию seed-фразы в виде скриншота небезопасно")
+                CardForAttentionWhenSavingMnemonic(3, "Храните вашу seed-фразу в безопасном, доступном тоько Вам месте")
 
                 Button(
                     onClick = {
@@ -112,23 +113,24 @@ fun bottomSheetAttentionWhenSavingMnemonic(
                             setIsOpenSheet(false)
                         }
                     },
-                    modifier = Modifier
-                        .padding(vertical = 10.dp, horizontal = 16.dp)
-                        .fillMaxWidth()
-                        .height(120.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = BackgroundLight,
-                        contentColor = BackgroundDark
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    modifier =
+                        Modifier
+                            .padding(vertical = 10.dp, horizontal = 16.dp)
+                            .fillMaxWidth()
+                            .height(120.dp),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = BackgroundLight,
+                            contentColor = BackgroundDark,
+                        ),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
                         text = "Продолжить",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
-
             }
         }
     }
@@ -136,37 +138,44 @@ fun bottomSheetAttentionWhenSavingMnemonic(
 }
 
 @Composable
-fun CardForAttentionWhenSavingMnemonic(index: Int, text: String) {
+fun CardForAttentionWhenSavingMnemonic(
+    index: Int,
+    text: String,
+) {
     Card(
         shape = RoundedCornerShape(10.dp),
-        modifier = Modifier
-            .padding(vertical = 4.dp, horizontal = 16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = BackgroundDark,
-            contentColor = BackgroundLight
-        ),
-        border = BorderStroke(1.dp, color = BackgroundLight)
+        modifier =
+            Modifier
+                .padding(vertical = 4.dp, horizontal = 16.dp),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = BackgroundDark,
+                contentColor = BackgroundLight,
+            ),
+        border = BorderStroke(1.dp, color = BackgroundLight),
     ) {
         Row(
-            modifier = Modifier
-                .padding(vertical = 18.dp, horizontal = 16.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(vertical = 18.dp, horizontal = 16.dp)
+                    .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(90f))
-                    .padding(end = 16.dp)
-                    .size(40.dp)
-                    .border(1.dp, color = BackgroundLight, shape = RoundedCornerShape(90f)),
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .clip(RoundedCornerShape(90f))
+                        .padding(end = 16.dp)
+                        .size(40.dp)
+                        .border(1.dp, color = BackgroundLight, shape = RoundedCornerShape(90f)),
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     modifier = Modifier.padding(),
                     text = "$index",
                     fontSize = 14.sp,
-                    color = BackgroundLight
+                    color = BackgroundLight,
                 )
             }
 
@@ -174,9 +183,8 @@ fun CardForAttentionWhenSavingMnemonic(index: Int, text: String) {
                 text = text,
                 fontSize = 14.sp,
                 color = BackgroundLight,
-                modifier = Modifier
+                modifier = Modifier,
             )
         }
     }
-
 }

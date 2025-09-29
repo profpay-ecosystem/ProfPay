@@ -22,21 +22,22 @@ fun NumberButton(
     modifier: Modifier = Modifier,
     number: String = "1",
     onClick: (number: String) -> Unit = {},
-    onClickBiom: () -> Unit = {}
+    onClickBiom: () -> Unit = {},
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .aspectRatio(2f)
-            .clip(shape = RoundedCornerShape(200.dp))
-            .clickable(onClick = { onClick(number) })
+        modifier =
+            Modifier
+                .aspectRatio(2f)
+                .clip(shape = RoundedCornerShape(200.dp))
+                .clickable(onClick = { onClick(number) }),
     ) {
         when (number) {
             "-1" -> {
                 FaceIDAuthentication(
                     toNavigate = {
                         onClickBiom()
-                    }
+                    },
                 )
             }
             else -> {
@@ -44,13 +45,11 @@ fun NumberButton(
                     text = number,
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 22.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
                 )
             }
         }
-
     }
-
 }
 //    Button(
 //        shape = RoundedCornerShape(200.dp),

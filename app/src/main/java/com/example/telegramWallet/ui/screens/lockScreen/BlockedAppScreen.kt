@@ -1,6 +1,5 @@
 package com.example.telegramWallet.ui.screens.lockScreen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,25 +19,27 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.telegramWallet.R
-import com.example.telegramWallet.bridge.view_model.BlockingAppState
 import com.example.telegramWallet.bridge.view_model.BlockingAppViewModel
 import com.example.telegramWallet.ui.app.theme.LocalFontSize
 
 @Composable
-fun BlockedAppScreen(toNavigate: () -> Unit, viewModel: BlockingAppViewModel = hiltViewModel()) {
+fun BlockedAppScreen(
+    toNavigate: () -> Unit,
+    viewModel: BlockingAppViewModel = hiltViewModel(),
+) {
 //    val state by viewModel.state.collectAsStateWithLifecycle()
     Scaffold {
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(it),
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 IsEthDisableBASFeature()
 //                when (state) {
@@ -61,21 +62,20 @@ fun IsEthDisableBASFeature() {
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             modifier = Modifier.size(120.dp).padding(bottom = 20.dp),
             imageVector = ImageVector.vectorResource(id = R.drawable.icon_eth_disable),
             contentDescription = "Back",
-            tint = MaterialTheme.colorScheme.onPrimary
+            tint = MaterialTheme.colorScheme.onPrimary,
         )
         Text(
             text = "Доступ закрыт",
             fontSize = LocalFontSize.Large.fS,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(bottom = 10.dp)
+            modifier = Modifier.padding(bottom = 10.dp),
         )
         Text(text = "В данный момент Ваш аккаунт не входит в группу тестировщиков. Ожидайте уведомления.")
-
     }
 }

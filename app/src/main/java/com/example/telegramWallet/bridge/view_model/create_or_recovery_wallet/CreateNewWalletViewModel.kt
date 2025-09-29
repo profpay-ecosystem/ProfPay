@@ -12,37 +12,40 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CreateNewWalletViewModel @Inject constructor(
-    private val addressAndMnemonicRepo: AddressAndMnemonicRepo
-) : ViewModel() {
-    // Создание нового кошелька
-    private fun createNewWallet() {
-        viewModelScope.launch {
-            addressAndMnemonicRepo.generateNewAddressAndMnemonic()
+class CreateNewWalletViewModel
+    @Inject
+    constructor(
+        private val addressAndMnemonicRepo: AddressAndMnemonicRepo,
+    ) : ViewModel() {
+        // Создание нового кошелька
+        private fun createNewWallet() {
+            viewModelScope.launch {
+                addressAndMnemonicRepo.generateNewAddressAndMnemonic()
+            }
         }
-    }
-    private val _state: MutableStateFlow<CreateNewWalletState> =
-        MutableStateFlow(CreateNewWalletState.Loading)
 
-    // Получаем данные нового кошелька
-    val state: StateFlow<CreateNewWalletState> =
-        _state.asStateFlow()
+        private val _state: MutableStateFlow<CreateNewWalletState> =
+            MutableStateFlow(CreateNewWalletState.Loading)
 
-    init {
-        createNewWallet()
-        viewModelScope.launch {
-            addressAndMnemonicRepo.addressAndMnemonic.collect {
-                _state.value = CreateNewWalletState.Success(it)
+        // Получаем данные нового кошелька
+        val state: StateFlow<CreateNewWalletState> =
+            _state.asStateFlow()
+
+        init {
+            createNewWallet()
+            viewModelScope.launch {
+                addressAndMnemonicRepo.addressAndMnemonic.collect {
+                    _state.value = CreateNewWalletState.Success(it)
+                }
             }
         }
     }
-}
 
 sealed interface CreateNewWalletState {
     data object Loading : CreateNewWalletState
-    data class Success(
-        val addressGenerateResult: AddressGenerateResult
-    ) : CreateNewWalletState
 
+    data class Success(
+        val addressGenerateResult: AddressGenerateResult,
+    ) : CreateNewWalletState
 }
 // blue hood bus tone fall modify public affair olive talent rude lend

@@ -25,7 +25,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,14 +51,12 @@ import com.example.telegramWallet.bridge.view_model.settings.SettingsAccountView
 import com.example.telegramWallet.ui.shared.sharedPref
 import com.example.telegramWallet.ui.widgets.SettingsBotWidget
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsAccountScreen(
     goToBack: () -> Unit,
-    viewModel: SettingsAccountViewModel = hiltViewModel()
+    viewModel: SettingsAccountViewModel = hiltViewModel(),
 ) {
     val tgId by viewModel.profileTelegramId.observeAsState()
     val tgUsername by viewModel.profileTelegramUsername.observeAsState()
@@ -76,14 +76,16 @@ fun SettingsAccountScreen(
     }
 
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
-    Scaffold() { padding ->
+    Scaffold { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ), verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             TopAppBar(
                 title = {
@@ -92,9 +94,10 @@ fun SettingsAccountScreen(
                         style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
                     run {
                         IconButton(onClick = { goToBack() }) {
@@ -102,7 +105,7 @@ fun SettingsAccountScreen(
                                 modifier = Modifier.size(34.dp),
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
@@ -114,50 +117,54 @@ fun SettingsAccountScreen(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
 
             Card(
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomEnd = 0.dp,
-                            bottomStart = 0.dp
-                        )
-                    )
-                    .weight(0.8f),
+                modifier =
+                    Modifier
+                        .padding(bottom = 8.dp)
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 0.dp,
+                            ),
+                        ).weight(0.8f),
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(bottom = bottomPadding.dp)
-                        .padding(vertical = 0.dp, horizontal = 0.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier
+                            .padding(bottom = bottomPadding.dp)
+                            .padding(vertical = 0.dp, horizontal = 0.dp)
+                            .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Spacer(modifier = Modifier.size(16.dp))
                     Card(
-                        modifier = Modifier
-                            .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
-                            .fillMaxWidth()
-                            .shadow(7.dp, RoundedCornerShape(10.dp)),
+                        modifier =
+                            Modifier
+                                .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
+                                .fillMaxWidth()
+                                .shadow(7.dp, RoundedCornerShape(10.dp)),
                     ) {
                         Row(
-                            modifier = Modifier
-                                .padding(vertical = 8.dp)
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .padding(vertical = 8.dp)
+                                    .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text(
-                                text = "Данный раздел настроек необходим для привязки Telegram " +
+                                text =
+                                    "Данный раздел настроек необходим для привязки Telegram " +
                                         "Account и получения информации о привязанных аккаунтах",
                                 modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp),
                                 style = MaterialTheme.typography.bodyMedium,
@@ -166,44 +173,49 @@ fun SettingsAccountScreen(
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp, horizontal = 18.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp, horizontal = 18.dp),
                     ) {
-                        Text(text = "Telegram", style = MaterialTheme.typography.titleMedium,)
+                        Text(text = "Telegram", style = MaterialTheme.typography.titleMedium)
                     }
                     Card(
-                        modifier = Modifier
-                            .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
-                            .fillMaxWidth()
-                            .shadow(7.dp, RoundedCornerShape(10.dp)),
+                        modifier =
+                            Modifier
+                                .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
+                                .fillMaxWidth()
+                                .shadow(7.dp, RoundedCornerShape(10.dp)),
                     ) {
                         Column(
-                            modifier = Modifier
-                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp)
+                            modifier =
+                                Modifier
+                                    .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
                         ) {
                             if (tgId != null && tgId != 0L) {
                                 RowSettingsAccountFeature(
                                     label = "Telegram ID:",
-                                    info = "$tgId"
+                                    info = "$tgId",
                                 )
                                 RowSettingsAccountFeature(
                                     label = "Username:",
-                                    info = "@${tgUsername}"
+                                    info = "@$tgUsername",
                                 )
                             } else {
                                 Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 0.dp, top = 10.dp),
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 0.dp, top = 10.dp),
                                     text = "Вы не авторизовались через Telegram",
                                     fontSize = 17.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.SemiBold,
                                 )
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 0.dp, top = 12.dp, bottom = 6.dp)
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 0.dp, top = 12.dp, bottom = 6.dp),
                                 ) {
                                     SettingsBotWidget()
                                 }
@@ -212,27 +224,30 @@ fun SettingsAccountScreen(
                     }
                     Spacer(modifier = Modifier.size(20.dp))
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp, horizontal = 18.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp, horizontal = 18.dp),
                     ) {
                         Text(text = "ProfPay", fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
                     }
                     Card(
-                        modifier = Modifier
-                            .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
-                            .fillMaxWidth()
-                            .shadow(7.dp, RoundedCornerShape(10.dp)),
+                        modifier =
+                            Modifier
+                                .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
+                                .fillMaxWidth()
+                                .shadow(7.dp, RoundedCornerShape(10.dp)),
                     ) {
                         Column(
-                            modifier = Modifier
-                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp)
+                            modifier =
+                                Modifier
+                                    .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 16.dp),
                         ) {
                             RowSettingsAccountFeature(label = "UNID:", info = "$userId")
                             RowSettingsAccountFeature(
                                 label = "APP ID:",
                                 info = appId ?: "",
-                                byInfoShorted = true
+                                byInfoShorted = true,
                             )
                             RowSettingsAccountFeature(label = "Status:", info = "User")
                         }
@@ -248,45 +263,55 @@ fun SettingsAccountScreen(
 fun RowSettingsAccountFeature(
     label: String,
     info: String,
-    byInfoShorted: Boolean = false
+    byInfoShorted: Boolean = false,
 ) {
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
 
-    val infoForUI = if (byInfoShorted) {
-        if (info.length > 12) {
-            "${info.take(6)}...${info.takeLast(6)}"
-        } else info
-    } else info
+    val infoForUI =
+        if (byInfoShorted) {
+            if (info.length > 12) {
+                "${info.take(6)}...${info.takeLast(6)}"
+            } else {
+                info
+            }
+        } else {
+            info
+        }
 
     Row(
         modifier = Modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(0.45f),
-            text = label, style = MaterialTheme.typography.bodyLarge,
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
         )
 
         Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(5.dp))
-                .clickable { clipboardManager.setText(AnnotatedString(info)) },
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .clip(RoundedCornerShape(5.dp))
+                    .clickable { clipboardManager.setText(AnnotatedString(info)) },
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp, vertical = 8.dp)
-                    .weight(0.4f),
-                text = infoForUI, style = MaterialTheme.typography.bodySmall,
+                modifier =
+                    Modifier
+                        .padding(horizontal = 4.dp, vertical = 8.dp)
+                        .weight(0.4f),
+                text = infoForUI,
+                style = MaterialTheme.typography.bodySmall,
             )
             Icon(
-                modifier = Modifier
-                    .padding(4.dp)
-                    .weight(0.05f),
+                modifier =
+                    Modifier
+                        .padding(4.dp)
+                        .weight(0.05f),
                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                 contentDescription = "",
-                tint = MaterialTheme.colorScheme.onSecondaryContainer
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
             )
         }
     }

@@ -105,7 +105,7 @@ fun SendFromWalletInfoScreen(
     tokenName: String,
     viewModel: SendFromWalletViewModel = hiltViewModel(),
     goToBack: () -> Unit,
-    goToSystemTRX: () -> Unit
+    goToSystemTRX: () -> Unit,
 ) {
     val stackedSnackbarHostState = rememberStackedSnackbarHostState()
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -123,7 +123,7 @@ fun SendFromWalletInfoScreen(
         viewModel.loadAddressWithTokens(
             addressId,
             tokenNameModel.blockchainName,
-            currentTokenName.tokenName
+            currentTokenName.tokenName,
         )
     }
 
@@ -133,7 +133,7 @@ fun SendFromWalletInfoScreen(
                 title = "Перевод валюты невозможен",
                 description = "Для активации необходимо перейти в «Системный TRX»",
                 actionTitle = "Перейти",
-                action = { goToSystemTRX() }
+                action = { goToSystemTRX() },
             )
         }
     }
@@ -146,19 +146,22 @@ fun SendFromWalletInfoScreen(
         viewModel.onCommissionResult(viewModel.stateCommission.value)
     }
 
-    val (_, setIsOpenTransferProcessingSheet) = bottomSheetTransferConfirmation(
-        modelTransferFromBS = ModelTransferFromBS(
-            amount = sumSending.takeIf { it.isNotBlank() }?.toBigDecimalOrNull()
-                ?: BigDecimal.ZERO,
-            tokenName = tokenNameModel,
-            addressReceiver = addressSending,
-            addressSender = uiState.addressWithTokens?.addressEntity?.address ?: "",
-            commission = uiState.commission,
-            addressWithTokens = uiState.addressWithTokens,
-            commissionResult = uiState.commissionResult
-        ),
-        snackbar = stackedSnackbarHostState
-    )
+    val (_, setIsOpenTransferProcessingSheet) =
+        bottomSheetTransferConfirmation(
+            modelTransferFromBS =
+                ModelTransferFromBS(
+                    amount =
+                        sumSending.takeIf { it.isNotBlank() }?.toBigDecimalOrNull()
+                            ?: BigDecimal.ZERO,
+                    tokenName = tokenNameModel,
+                    addressReceiver = addressSending,
+                    addressSender = uiState.addressWithTokens?.addressEntity?.address ?: "",
+                    commission = uiState.commission,
+                    addressWithTokens = uiState.addressWithTokens,
+                    commissionResult = uiState.commissionResult,
+                ),
+            snackbar = stackedSnackbarHostState,
+        )
 
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
 
@@ -167,40 +170,45 @@ fun SendFromWalletInfoScreen(
         snackbarHost = {
             StackedSnackbarHost(
                 hostState = stackedSnackbarHostState,
-                modifier = Modifier
-                    .padding(8.dp, 90.dp)
+                modifier =
+                    Modifier
+                        .padding(8.dp, 90.dp),
             )
         },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                }) {}
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    },
+        ) {}
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                )
-                .clickable {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                }, verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ).clickable {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    },
+            verticalArrangement = Arrangement.Bottom,
         ) {
             TopAppBar(
                 title = {
                     Text(
                         text = "Transfer",
-                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
+                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
                     run {
                         IconButton(onClick = { goToBack() }) {
@@ -208,7 +216,7 @@ fun SendFromWalletInfoScreen(
                                 modifier = Modifier.size(34.dp),
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
@@ -220,40 +228,42 @@ fun SendFromWalletInfoScreen(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                    .weight(0.8f)
-                    .shadow(7.dp, RoundedCornerShape(16.dp))
-                    .verticalScroll(rememberScrollState()),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                        .weight(0.8f)
+                        .shadow(7.dp, RoundedCornerShape(16.dp))
+                        .verticalScroll(rememberScrollState()),
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = bottomPadding.dp)
-                        .padding(vertical = 8.dp, horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(bottom = bottomPadding.dp)
+                            .padding(vertical = 8.dp, horizontal = 16.dp),
                 ) {
                     CardWithAddressForSendFromWallet(
                         title = "Адрес получения",
                         addressSending = addressSending,
                         onAddressChange = { addressSending = it },
-                        warningAddress = !uiState.isValidRecipientAddress && addressSending != ""
+                        warningAddress = !uiState.isValidRecipientAddress && addressSending != "",
                     )
                     Row(
-                        modifier = Modifier
-                            .padding(
-                                top = 20.dp
-                            )
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .padding(
+                                    top = 20.dp,
+                                ).fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             modifier = Modifier.padding(bottom = 8.dp),
@@ -264,14 +274,14 @@ fun SendFromWalletInfoScreen(
                             Text(
                                 modifier = Modifier.padding(end = 4.dp),
                                 text = uiState.tokenBalance.toTokenAmount().toString(),
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyLarge,
 //                                color = PubAddressDark
                             )
                             Text(
                                 text = currentTokenName.shortName,
                                 style = MaterialTheme.typography.bodySmall,
 //                                color = PubAddressDark,
-                                modifier = Modifier.padding(end = 8.dp)
+                                modifier = Modifier.padding(end = 8.dp),
                             )
                         }
                     }
@@ -279,20 +289,22 @@ fun SendFromWalletInfoScreen(
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier.padding(vertical = 4.dp),
                         elevation = CardDefaults.cardElevation(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                            ),
                     ) {
                         TextField(
                             value = sumSending,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth(),
                             placeholder = {
                                 Text(
                                     text = "Введите кол-во ${currentTokenName.shortName}",
                                     style = MaterialTheme.typography.bodyLarge,
-                                    color = PubAddressDark
+                                    color = PubAddressDark,
                                 )
                             },
                             shape = MaterialTheme.shapes.small.copy(),
@@ -303,7 +315,7 @@ fun SendFromWalletInfoScreen(
                                         text = currentTokenName.shortName,
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = PubAddressDark,
-                                        modifier = Modifier.padding(end = 8.dp)
+                                        modifier = Modifier.padding(end = 8.dp),
                                     )
 
                                     Card(
@@ -313,80 +325,87 @@ fun SendFromWalletInfoScreen(
                                         onClick = {
                                             sumSending =
                                                 uiState.tokenBalance.toTokenAmount().toString()
-                                        }
+                                        },
                                     ) {
                                         Text(
                                             "MAX",
                                             style = MaterialTheme.typography.bodyLarge,
-                                            modifier = Modifier.padding(
-                                                horizontal = 12.dp,
-                                                vertical = 8.dp
-                                            ),
+                                            modifier =
+                                                Modifier.padding(
+                                                    horizontal = 12.dp,
+                                                    vertical = 8.dp,
+                                                ),
                                         )
                                     }
                                 }
                             },
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                cursorColor = MaterialTheme.colorScheme.onBackground,
-                                selectionColors = TextSelectionColors(
-                                    handleColor = MaterialTheme.colorScheme.onBackground,
-                                    backgroundColor = Color.Transparent
-                                )
-                            )
+                            colors =
+                                TextFieldDefaults.colors(
+                                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    cursorColor = MaterialTheme.colorScheme.onBackground,
+                                    selectionColors =
+                                        TextSelectionColors(
+                                            handleColor = MaterialTheme.colorScheme.onBackground,
+                                            backgroundColor = Color.Transparent,
+                                        ),
+                                ),
                         )
                     }
 
                     if (uiState.warning != null) {
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth(),
                             verticalArrangement = Arrangement.Center,
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
+                                horizontalArrangement = Arrangement.End,
                             ) {
                                 Text(
                                     modifier = Modifier,
                                     text = uiState.warning!!,
-                                    color = RedColor
+                                    color = RedColor,
                                 )
                             }
                         }
                     }
 
                     Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(bottom = 20.dp),
-                        verticalArrangement = Arrangement.Bottom
+                        modifier =
+                            Modifier
+                                .fillMaxHeight()
+                                .padding(bottom = 20.dp),
+                        verticalArrangement = Arrangement.Bottom,
                     ) {
                         Button(
                             onClick = {
                                 if (viewModel.tron.addressUtilities.isValidTronAddress(
-                                        addressSending
+                                        addressSending,
                                     )
                                 ) {
                                     setIsOpenTransferProcessingSheet(true)
                                 }
                             },
                             enabled = uiState.isButtonEnabled,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(IntrinsicSize.Min)
-                                .padding(vertical = 8.dp, horizontal = 4.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = GreenColor,
-                                contentColor = BackgroundContainerButtonLight
-                            ),
-                            shape = RoundedCornerShape(12.dp)
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(IntrinsicSize.Min)
+                                    .padding(vertical = 8.dp, horizontal = 4.dp),
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    containerColor = GreenColor,
+                                    contentColor = BackgroundContainerButtonLight,
+                                ),
+                            shape = RoundedCornerShape(12.dp),
                         ) {
                             Text(
                                 text = "Перевести",
@@ -407,7 +426,7 @@ data class ModelTransferFromBS(
     val addressSender: String,
     val commission: BigDecimal,
     val addressWithTokens: AddressWithTokens?,
-    val commissionResult: TransferProto.EstimateCommissionResponse
+    val commissionResult: TransferProto.EstimateCommissionResponse,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -415,12 +434,13 @@ data class ModelTransferFromBS(
 fun bottomSheetTransferConfirmation(
     viewModel: SendFromWalletViewModel = hiltViewModel(),
     modelTransferFromBS: ModelTransferFromBS,
-    snackbar: StackedSnakbarHostState
+    snackbar: StackedSnakbarHostState,
 ): Pair<Boolean, (Boolean) -> Unit> {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { false }
-    )
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { false },
+        )
     val coroutineScope = rememberCoroutineScope()
     val (isOpenSheet, setIsOpenSheet) = remember { mutableStateOf(false) }
 
@@ -441,22 +461,23 @@ fun bottomSheetTransferConfirmation(
             },
             sheetState = sheetState,
         ) {
-
             Column {
                 Box(
                     modifier = Modifier,
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
                     ) {
                         Text(text = "Перевод", fontWeight = FontWeight.SemiBold)
                     }
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
                     ) {
                         IconButton(onClick = {
@@ -469,10 +490,9 @@ fun bottomSheetTransferConfirmation(
                             Icon(
                                 imageVector = Icons.Filled.Clear,
                                 contentDescription = "",
-                                modifier = Modifier.size(22.dp)
+                                modifier = Modifier.size(22.dp),
                             )
                         }
-
                     }
                 }
 
@@ -483,15 +503,16 @@ fun bottomSheetTransferConfirmation(
                         confirmTransaction = {
                             viewModel.viewModelScope.launch {
                                 val tokenName = modelTransferFromBS.tokenName.tokenName
-                                val tokenEntity = modelTransferFromBS.addressWithTokens
-                                    ?.tokens
-                                    ?.firstOrNull { it.token.tokenName == tokenName }
+                                val tokenEntity =
+                                    modelTransferFromBS.addressWithTokens
+                                        ?.tokens
+                                        ?.firstOrNull { it.token.tokenName == tokenName }
 
                                 if (tokenEntity == null) {
                                     snackbar.showErrorSnackbar(
                                         title = "Ошибка перевода",
                                         description = "Не удалось найти токен",
-                                        actionTitle = "Закрыть"
+                                        actionTitle = "Закрыть",
                                     )
 
                                     coroutineScope.launch {
@@ -502,14 +523,15 @@ fun bottomSheetTransferConfirmation(
                                     return@launch
                                 }
 
-                                val result = viewModel.transferProcess(
-                                    senderAddress = modelTransferFromBS.addressSender,
-                                    receiverAddress = modelTransferFromBS.addressReceiver,
-                                    amount = modelTransferFromBS.amount.toSunAmount(),
-                                    commission = modelTransferFromBS.commission.toSunAmount(),
-                                    tokenEntity = tokenEntity,
-                                    commissionResult = modelTransferFromBS.commissionResult
-                                )
+                                val result =
+                                    viewModel.transferProcess(
+                                        senderAddress = modelTransferFromBS.addressSender,
+                                        receiverAddress = modelTransferFromBS.addressReceiver,
+                                        amount = modelTransferFromBS.amount.toSunAmount(),
+                                        commission = modelTransferFromBS.commission.toSunAmount(),
+                                        tokenEntity = tokenEntity,
+                                        commissionResult = modelTransferFromBS.commissionResult,
+                                    )
 
                                 when (result) {
                                     is TransferResult.Success -> {
@@ -520,7 +542,7 @@ fun bottomSheetTransferConfirmation(
                                         snackbar.showErrorSnackbar(
                                             title = "Ошибка перевода",
                                             description = result.error.message!!,
-                                            actionTitle = "Закрыть"
+                                            actionTitle = "Закрыть",
                                         )
 
                                         coroutineScope.launch {
@@ -531,7 +553,7 @@ fun bottomSheetTransferConfirmation(
                                     }
                                 }
                             }
-                        }
+                        },
                     )
                 } else {
                     ContentBottomSheetTransferProcessing(onClick = {
@@ -558,18 +580,20 @@ fun CardWithAddressForSendFromWallet(
         transitionSpec = {
             spring(
                 dampingRatio = Spring.DampingRatioLowBouncy,
-                stiffness = Spring.StiffnessVeryLow
+                stiffness = Spring.StiffnessVeryLow,
             )
-        }, label = "borderColor"
+        },
+        label = "borderColor",
     ) { if (it) RedColor else Color.Transparent }
 
     val animatedContainerColor by transition.animateColor(
         transitionSpec = {
             spring(
                 dampingRatio = Spring.DampingRatioNoBouncy,
-                stiffness = Spring.StiffnessLow
+                stiffness = Spring.StiffnessLow,
             )
-        }, label = "containerColor"
+        },
+        label = "containerColor",
     ) { if (it) RedColor.copy(alpha = 0.3f) else MaterialTheme.colorScheme.primary }
 
     Text(
@@ -582,10 +606,11 @@ fun CardWithAddressForSendFromWallet(
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier.padding(vertical = 4.dp),
         elevation = CardDefaults.cardElevation(10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
-        ),
-        border = BorderStroke(2.dp, animatedBorderColor)
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+            ),
+        border = BorderStroke(2.dp, animatedBorderColor),
     ) {
         TextField(
             value = addressSending,
@@ -594,58 +619,61 @@ fun CardWithAddressForSendFromWallet(
                 Text(
                     text = "Введите адрес",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = PubAddressDark
+                    color = PubAddressDark,
                 )
             },
             shape = MaterialTheme.shapes.small.copy(),
             onValueChange = { onAddressChange(it) },
             trailingIcon = {},
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                unfocusedTextColor = PubAddressDark,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-                focusedContainerColor = animatedContainerColor,
-                unfocusedContainerColor = animatedContainerColor,
-                cursorColor = MaterialTheme.colorScheme.onBackground,
-                selectionColors = TextSelectionColors(
-                    handleColor = MaterialTheme.colorScheme.onBackground,
-                    backgroundColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
-                )
-            )
+            colors =
+                TextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = PubAddressDark,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    focusedContainerColor = animatedContainerColor,
+                    unfocusedContainerColor = animatedContainerColor,
+                    cursorColor = MaterialTheme.colorScheme.onBackground,
+                    selectionColors =
+                        TextSelectionColors(
+                            handleColor = MaterialTheme.colorScheme.onBackground,
+                            backgroundColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                        ),
+                ),
         )
     }
 }
-
 
 @Composable
 fun ContentBottomSheetTransferConfirmation(
     viewModel: SendFromWalletViewModel = hiltViewModel(),
     isDetails: Boolean,
     modelTransferFromBS: ModelTransferFromBS,
-    confirmTransaction: () -> Unit
+    confirmTransaction: () -> Unit,
 ) {
     val tokenNameModel = modelTransferFromBS.tokenName
 
     val (trxToUsdtRate, setTrxToUsdtRate) = remember { mutableStateOf(BigDecimal.valueOf(1.0)) }
     val isConfirmButtonEnabled = remember { mutableStateOf(true) }
     val (isNeedActivationAddress, setIsNeedActivationAddress) = remember { mutableStateOf(false) }
-    val (createNewAccountFeeInSystemContract, setCreateNewAccountFeeInSystemContract) = remember {
-        mutableStateOf(
-            BigInteger.ZERO
-        )
-    }
+    val (createNewAccountFeeInSystemContract, setCreateNewAccountFeeInSystemContract) =
+        remember {
+            mutableStateOf(
+                BigInteger.ZERO,
+            )
+        }
 
     LaunchedEffect(Unit) {
-        val isAddressActivated = withContext(Dispatchers.IO) {
-            viewModel.tron.addressUtilities.isAddressActivated(modelTransferFromBS.addressReceiver)
-        }
+        val isAddressActivated =
+            withContext(Dispatchers.IO) {
+                viewModel.tron.addressUtilities.isAddressActivated(modelTransferFromBS.addressReceiver)
+            }
         if (!isAddressActivated) {
             setCreateNewAccountFeeInSystemContract(
                 withContext(Dispatchers.IO) {
                     viewModel.tron.addressUtilities.getCreateNewAccountFeeInSystemContract()
-                }
+                },
             )
             setIsNeedActivationAddress(true)
         }
@@ -654,74 +682,81 @@ fun ContentBottomSheetTransferConfirmation(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 0.dp, horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(vertical = 0.dp, horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(
-            modifier = Modifier
-                .padding(vertical = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier =
+                Modifier
+                    .padding(vertical = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = "-${modelTransferFromBS.amount} ${tokenNameModel.shortName}",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
-                modifier = Modifier.padding(bottom = 4.dp)
+                modifier = Modifier.padding(bottom = 4.dp),
             )
             if (tokenNameModel.shortName == "TRX") {
                 Text(
                     text = "≈ ${decimalFormat(modelTransferFromBS.amount * trxToUsdtRate)} $",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = PubAddressDark
+                    color = PubAddressDark,
                 )
             } else {
                 Text(
                     text = "≈ ${decimalFormat(modelTransferFromBS.amount)} $",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = PubAddressDark
+                    color = PubAddressDark,
                 )
             }
         }
         Card(
             shape = RoundedCornerShape(10.dp),
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(bottom = 16.dp)
+                    .fillMaxWidth(),
             elevation = CardDefaults.cardElevation(10.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
         ) {
             Column(
-                modifier = Modifier
-                    .padding(vertical = 16.dp, horizontal = 8.dp)
+                modifier =
+                    Modifier
+                        .padding(vertical = 16.dp, horizontal = 8.dp),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = "Сеть",
                         style = MaterialTheme.typography.bodyMedium,
                         color = PubAddressDark,
-                        modifier = Modifier
+                        modifier = Modifier,
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Box(
-                            modifier = Modifier
-                                .padding(end = 4.dp)
-                                .size(20.dp)
-                                .paint(
-                                    painterResource(id = tokenNameModel.paintIconId),
-                                    contentScale = ContentScale.FillBounds
-                                )
+                            modifier =
+                                Modifier
+                                    .padding(end = 4.dp)
+                                    .size(20.dp)
+                                    .paint(
+                                        painterResource(id = tokenNameModel.paintIconId),
+                                        contentScale = ContentScale.FillBounds,
+                                    ),
                         )
                         Text(
                             text = "${tokenNameModel.blockchainName} (${tokenNameModel.shortName})",
@@ -730,149 +765,153 @@ fun ContentBottomSheetTransferConfirmation(
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = "Откуда",
                         color = PubAddressDark,
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
+                        modifier = Modifier,
                     )
                     Text(
                         text = "${modelTransferFromBS.addressSender.take(7)}...${
                             modelTransferFromBS.addressSender.takeLast(
-                                7
+                                7,
                             )
                         }",
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
+                        modifier = Modifier,
                     )
-
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = "Куда",
                         color = PubAddressDark,
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
+                        modifier = Modifier,
                     )
                     Text(
                         text = "${modelTransferFromBS.addressReceiver.take(7)}...${
                             modelTransferFromBS.addressReceiver.takeLast(
-                                7
+                                7,
                             )
                         }",
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier
+                        modifier = Modifier,
                     )
                 }
-
             }
         }
         Card(
             shape = RoundedCornerShape(10.dp),
-            modifier = Modifier
-                .padding(bottom = 16.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(bottom = 16.dp)
+                    .fillMaxWidth(),
             elevation = CardDefaults.cardElevation(10.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                ),
         ) {
             Column(
-                modifier = Modifier
-                    .padding(vertical = 16.dp, horizontal = 8.dp)
+                modifier =
+                    Modifier
+                        .padding(vertical = 16.dp, horizontal = 8.dp),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = "Комиссия",
                         style = MaterialTheme.typography.bodyMedium,
                         color = PubAddressDark,
-                        modifier = Modifier
+                        modifier = Modifier,
                     )
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = "${modelTransferFromBS.commission} TRX",
                             style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(bottom = 4.dp)
+                            modifier = Modifier.padding(bottom = 4.dp),
                         )
                         Text(
                             text = "≈ ${decimalFormat(modelTransferFromBS.commission * trxToUsdtRate)} $",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = PubAddressDark
+                            color = PubAddressDark,
                         )
                     }
                 }
                 if (isNeedActivationAddress) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
-
                         Text(
                             text = "Активация адреса",
                             color = PubAddressDark,
                             style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier
+                            modifier = Modifier,
                         )
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
                                 text = "${createNewAccountFeeInSystemContract.toTokenAmount()} TRX",
                                 style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(bottom = 4.dp)
+                                modifier = Modifier.padding(bottom = 4.dp),
                             )
                             Text(
                                 text = "≈ ${
                                     decimalFormat(
-                                        createNewAccountFeeInSystemContract.toTokenAmount() * trxToUsdtRate
+                                        createNewAccountFeeInSystemContract.toTokenAmount() * trxToUsdtRate,
                                     )
                                 } $",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = PubAddressDark
+                                color = PubAddressDark,
                             )
                         }
-
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-
                     Text(
                         text = "Итого",
                         style = MaterialTheme.typography.bodySmall,
                         color = PubAddressDark,
-                        modifier = Modifier
+                        modifier = Modifier,
                     )
                     Text(
-                        text = "${decimalFormat((createNewAccountFeeInSystemContract.toTokenAmount() + modelTransferFromBS.commission) * trxToUsdtRate + modelTransferFromBS.amount)} $",
+                        text = "${decimalFormat(
+                            (createNewAccountFeeInSystemContract.toTokenAmount() + modelTransferFromBS.commission) * trxToUsdtRate + modelTransferFromBS.amount,
+                        )} $",
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier
+                        modifier = Modifier,
                     )
-
                 }
             }
         }
@@ -885,15 +924,17 @@ fun ContentBottomSheetTransferConfirmation(
                     isConfirmButtonEnabled.value = false
                     confirmTransaction()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .padding(horizontal = 4.dp, vertical = 16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = GreenColor,
-                    contentColor = BackgroundLight
-                ),
-                shape = RoundedCornerShape(12.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .padding(horizontal = 4.dp, vertical = 16.dp),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = GreenColor,
+                        contentColor = BackgroundLight,
+                    ),
+                shape = RoundedCornerShape(12.dp),
             ) {
                 Text(
                     text = "Подтвердить",
@@ -907,42 +948,49 @@ fun ContentBottomSheetTransferConfirmation(
 @Composable
 fun ContentBottomSheetTransferProcessing(onClick: () -> Unit) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 0.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(vertical = 0.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         CircularProgressIndicator(
-            modifier = Modifier
-                .padding(top = 40.dp, bottom = 20.dp)
-                .size(50.dp),
-            color = ProgressIndicator
+            modifier =
+                Modifier
+                    .padding(top = 40.dp, bottom = 20.dp)
+                    .size(50.dp),
+            color = ProgressIndicator,
         )
 
         Text(
             "Перевод обрабатывается",
             style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
 
         Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(top = 40.dp)
-                .padding(vertical = 8.dp, horizontal = 8.dp),
-            verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .fillMaxHeight()
+                    .padding(top = 40.dp)
+                    .padding(vertical = 8.dp, horizontal = 8.dp),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             Button(
                 onClick = {
                     onClick()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .padding(horizontal = 4.dp), colors = ButtonDefaults.buttonColors(
-                    containerColor = GreenColor,
-                    contentColor = BackgroundLight
-                ), shape = RoundedCornerShape(12.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                        .padding(horizontal = 4.dp),
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = GreenColor,
+                        contentColor = BackgroundLight,
+                    ),
+                shape = RoundedCornerShape(12.dp),
             ) {
                 Text(
                     text = "Детали Перевода",
@@ -950,7 +998,5 @@ fun ContentBottomSheetTransferProcessing(onClick: () -> Unit) {
                 )
             }
         }
-
     }
-
 }

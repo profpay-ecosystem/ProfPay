@@ -1,6 +1,5 @@
 package com.example.telegramWallet.tron
 
-import android.util.Log
 import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.data.utils.toTokenAmount
 import com.google.protobuf.ByteString
@@ -24,13 +23,18 @@ import java.security.MessageDigest
 
 data class SignedTransactionData(
     val txid: String,
-    val signedTxn: ByteString?
+    val signedTxn: ByteString?,
 )
 
 // Обработка Tron API касаемо раздела транзакций.
-class Transactions() {
+class Transactions {
     // Перевод USDT валюты на другой адрес.
-    fun trc20Transfer(fromAddress: String?, toAddress: String?, privateKey: String, amount: Long): String {
+    fun trc20Transfer(
+        fromAddress: String?,
+        toAddress: String?,
+        privateKey: String,
+        amount: Long,
+    ): String {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
@@ -40,12 +44,20 @@ class Transactions() {
     }
 
     // Перевод TRX валюты на другой адрес.
-    fun trxTransfer(fromAddress: String?, toAddress: String?, privateKey: String, amount: Long): String {
+    fun trxTransfer(
+        fromAddress: String?,
+        toAddress: String?,
+        privateKey: String,
+        amount: Long,
+    ): String {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
-        val txnExt: TransactionExtention = wrapper.transfer(
-            fromAddress, toAddress, amount
-        )
+        val txnExt: TransactionExtention =
+            wrapper.transfer(
+                fromAddress,
+                toAddress,
+                amount,
+            )
         if (Response.TransactionReturn.response_code.SUCCESS !== txnExt.result.code) {
             throw IllegalException(txnExt.result.message.toStringUtf8())
         }
@@ -61,27 +73,34 @@ class Transactions() {
         fromAddress: String?,
         toAddress: String?,
         privateKey: String,
-        amount: BigInteger
+        amount: BigInteger,
     ): EstimateEnergyData {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
-        val transfer = Function(
-            "transfer", listOf<Type<*>>(
-                Address(toAddress), Uint256(amount)
-            ), listOf<TypeReference<*>>(object : TypeReference<Bool?>() {})
-        )
+        val transfer =
+            Function(
+                "transfer",
+                listOf<Type<*>>(
+                    Address(toAddress),
+                    Uint256(amount),
+                ),
+                listOf<TypeReference<*>>(object : TypeReference<Bool?>() {}),
+            )
 
-        val energyRequired = wrapper.estimateEnergy(
-            fromAddress,
-            contractAddress,
-            transfer
-        ).energyRequired
+        val energyRequired =
+            wrapper
+                .estimateEnergy(
+                    fromAddress,
+                    contractAddress,
+                    transfer,
+                ).energyRequired
 
-        val estimateEnergyData = EstimateEnergyData(
-            energyRequired,
-            ((energyRequired.toBigInteger() * getEnergyFee(wrapper)).toTokenAmount()).toBigInteger() + BigInteger.ONE
-        )
+        val estimateEnergyData =
+            EstimateEnergyData(
+                energyRequired,
+                ((energyRequired.toBigInteger() * getEnergyFee(wrapper)).toTokenAmount()).toBigInteger() + BigInteger.ONE,
+            )
 
         wrapper.close()
         return estimateEnergyData
@@ -91,7 +110,7 @@ class Transactions() {
         fromAddress: String,
         toAddress: String,
         privateKey: String,
-        amount: BigInteger
+        amount: BigInteger,
     ): SignedTransactionData {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
@@ -108,7 +127,7 @@ class Transactions() {
         wrapper.close()
         return SignedTransactionData(
             txid = txidHex,
-            signedTxn = signedTransaction.toByteString()
+            signedTxn = signedTransaction.toByteString(),
         )
     }
 
@@ -116,19 +135,26 @@ class Transactions() {
         fromAddress: String,
         toAddress: String,
         privateKey: String,
-        amount: BigInteger
+        amount: BigInteger,
     ): SignedTransactionData {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
-        val transfer = Function(
-            "transfer", listOf<Type<*>>(
-                Address(toAddress), Uint256(amount)
-            ), listOf<TypeReference<*>>(object : TypeReference<Bool?>() {})
-        )
-        val builder: TransactionBuilder = wrapper.triggerCall(
-            fromAddress, contractAddress, transfer
-        )
+        val transfer =
+            Function(
+                "transfer",
+                listOf<Type<*>>(
+                    Address(toAddress),
+                    Uint256(amount),
+                ),
+                listOf<TypeReference<*>>(object : TypeReference<Bool?>() {}),
+            )
+        val builder: TransactionBuilder =
+            wrapper.triggerCall(
+                fromAddress,
+                contractAddress,
+                transfer,
+            )
         builder.setFeeLimit(45_000_000)
         builder.setMemo("")
 
@@ -141,7 +167,7 @@ class Transactions() {
         wrapper.close()
         return SignedTransactionData(
             txid = txidHex,
-            signedTxn = signedTxn.toByteString()
+            signedTxn = signedTxn.toByteString(),
         )
     }
 
@@ -149,20 +175,23 @@ class Transactions() {
         fromAddress: String,
         toAddress: String,
         privateKey: String,
-        amount: BigInteger
+        amount: BigInteger,
     ): EstimateBandwidthData {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
-        val txnExt: TransactionExtention = wrapper.transfer(
-            fromAddress, toAddress, amount.toLong()
-        )
+        val txnExt: TransactionExtention =
+            wrapper.transfer(
+                fromAddress,
+                toAddress,
+                amount.toLong(),
+            )
         val bandwidthRequired = wrapper.estimateBandwidth(txnExt.transaction)
         val costPerByteInTrx = 0.001 // Стоимость одного байта в TRX
 
         wrapper.close()
         return EstimateBandwidthData(
             bandwidthRequired + 50,
-            (bandwidthRequired + 50) * costPerByteInTrx
+            (bandwidthRequired + 50) * costPerByteInTrx,
         )
     }
 
@@ -170,19 +199,26 @@ class Transactions() {
         fromAddress: String,
         toAddress: String,
         privateKey: String,
-        amount: BigInteger
+        amount: BigInteger,
     ): EstimateBandwidthData {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
-        val transfer = Function(
-            "transfer", listOf<Type<*>>(
-                Address(toAddress), Uint256(amount)
-            ), listOf<TypeReference<*>>(object : TypeReference<Bool?>() {})
-        )
-        val builder: TransactionBuilder = wrapper.triggerCall(
-            fromAddress, contractAddress, transfer
-        )
+        val transfer =
+            Function(
+                "transfer",
+                listOf<Type<*>>(
+                    Address(toAddress),
+                    Uint256(amount),
+                ),
+                listOf<TypeReference<*>>(object : TypeReference<Bool?>() {}),
+            )
+        val builder: TransactionBuilder =
+            wrapper.triggerCall(
+                fromAddress,
+                contractAddress,
+                transfer,
+            )
         builder.setFeeLimit(45_000_000)
         builder.setMemo("")
 
@@ -193,7 +229,7 @@ class Transactions() {
         wrapper.close()
         return EstimateBandwidthData(
             bandwidthRequired + 50,
-            (bandwidthRequired + 50) * costPerByteInTrx
+            (bandwidthRequired + 50) * costPerByteInTrx,
         )
     }
 
@@ -201,15 +237,18 @@ class Transactions() {
         function: Function,
         contractAddress: String,
         address: String,
-        privateKey: String
+        privateKey: String,
     ): EstimateBandwidthData {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val func = FunctionEncoder.encode(function)
 
-        val builder: TransactionBuilder = wrapper.triggerCallV2(
-            address, contractAddress, func
-        )
+        val builder: TransactionBuilder =
+            wrapper.triggerCallV2(
+                address,
+                contractAddress,
+                func,
+            )
         builder.setFeeLimit(45_000_000)
         builder.setMemo("")
 
@@ -220,24 +259,31 @@ class Transactions() {
         wrapper.close()
         return EstimateBandwidthData(
             bandwidthRequired + 50,
-            (bandwidthRequired + 50) * costPerByteInTrx
+            (bandwidthRequired + 50) * costPerByteInTrx,
         )
     }
 
-    fun estimateEnergy(function: Function, contractAddress: String, address: String, privateKey: String): EstimateEnergyData {
+    fun estimateEnergy(
+        function: Function,
+        contractAddress: String,
+        address: String,
+        privateKey: String,
+    ): EstimateEnergyData {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val func = FunctionEncoder.encode(function)
-        val energyRequired = wrapper.estimateEnergyV2(
-            address,
-            contractAddress,
-            func
-        )
+        val energyRequired =
+            wrapper.estimateEnergyV2(
+                address,
+                contractAddress,
+                func,
+            )
 
-        val estimateEnergyData = EstimateEnergyData(
-            energyRequired.energyRequired,
-            energyRequired.energyRequired.toBigInteger() * getEnergyFee(wrapper)
-        )
+        val estimateEnergyData =
+            EstimateEnergyData(
+                energyRequired.energyRequired,
+                energyRequired.energyRequired.toBigInteger() * getEnergyFee(wrapper),
+            )
 
         wrapper.close()
         return estimateEnergyData
@@ -256,10 +302,10 @@ class Transactions() {
 
 data class EstimateEnergyData(
     val energy: Long,
-    val energyInTrx: BigInteger
+    val energyInTrx: BigInteger,
 )
 
 data class EstimateBandwidthData(
     val bandwidth: Long,
-    val bandwidthInTrx: Double
+    val bandwidthInTrx: Double,
 )

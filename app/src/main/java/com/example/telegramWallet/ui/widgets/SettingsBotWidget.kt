@@ -25,35 +25,36 @@ import com.example.telegramWallet.bridge.view_model.settings.SettingsViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun SettingsBotWidget(
-    viewModel: SettingsViewModel = hiltViewModel(),
-) {
+fun SettingsBotWidget(viewModel: SettingsViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    Row(modifier = Modifier
-        .clip(RoundedCornerShape(8.dp))
-        .clickable {
-            coroutineScope.launch {
-                val appId = viewModel.profileRepo.getProfileAppId()
-                val intent = Intent(Intent.ACTION_VIEW).apply {
-                    data = "https://t.me/bb_list_bot?start=wallet_$appId".toUri()
-                }
-                context.startActivity(intent)
-            }
-        },
-        verticalAlignment = Alignment.CenterVertically
+    Row(
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .clickable {
+                    coroutineScope.launch {
+                        val appId = viewModel.profileRepo.getProfileAppId()
+                        val intent =
+                            Intent(Intent.ACTION_VIEW).apply {
+                                data = "https://t.me/bb_list_bot?start=wallet_$appId".toUri()
+                            }
+                        context.startActivity(intent)
+                    }
+                },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "Привязать Telegram аккаунт",
             fontWeight = FontWeight.SemiBold,
             fontSize = 15.sp,
-            modifier = Modifier.padding( top = 4.dp, bottom = 4.dp, end = 2.dp)
+            modifier = Modifier.padding(top = 4.dp, bottom = 4.dp, end = 2.dp),
         )
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = "",
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(20.dp),
         )
     }
 }

@@ -13,27 +13,35 @@ import javax.inject.Inject
 
 interface BlockingAppRepo {
     val isBlockedApp: Flow<BlockingAppRepoState>
+
     suspend fun getBlockedAppState()
 }
 
-class BlockingAppRepoImpl @Inject constructor(@ApplicationContext val appContext: Context) :
-    BlockingAppRepo {
-    private val _isBlockedApp = MutableSharedFlow<BlockingAppRepoState>(replay = 1)
-    // Получение текущего состояния статуса блокировки приложения
-    override val isBlockedApp: Flow<BlockingAppRepoState> =
-        _isBlockedApp.asSharedFlow()
-    // Триггер обновления статуса
-    override suspend fun getBlockedAppState() {
-        withContext(Dispatchers.IO) {
-            val sharedPref = appContext.getSharedPreferences(
-                ContextCompat.getString(appContext, R.string.preference_file_key),
-                Context.MODE_PRIVATE
-            )
-            val isBlockedApp = sharedPref.getBoolean("is_blocked_app", false)
-            _isBlockedApp.emit(BlockingAppRepoState(isBlockedApp))
+class BlockingAppRepoImpl
+    @Inject
+    constructor(
+        @ApplicationContext val appContext: Context,
+    ) : BlockingAppRepo {
+        private val _isBlockedApp = MutableSharedFlow<BlockingAppRepoState>(replay = 1)
+
+        // Получение текущего состояния статуса блокировки приложения
+        override val isBlockedApp: Flow<BlockingAppRepoState> =
+            _isBlockedApp.asSharedFlow()
+
+        // Триггер обновления статуса
+        override suspend fun getBlockedAppState() {
+            withContext(Dispatchers.IO) {
+                val sharedPref =
+                    appContext.getSharedPreferences(
+                        ContextCompat.getString(appContext, R.string.preference_file_key),
+                        Context.MODE_PRIVATE,
+                    )
+                val isBlockedApp = sharedPref.getBoolean("is_blocked_app", false)
+                _isBlockedApp.emit(BlockingAppRepoState(isBlockedApp))
+            }
         }
     }
-}
+
 data class BlockingAppRepoState(
-    val isBlockedApp: Boolean
+    val isBlockedApp: Boolean,
 )

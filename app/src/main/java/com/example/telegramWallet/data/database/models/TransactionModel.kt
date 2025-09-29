@@ -3,7 +3,6 @@ import androidx.room.ColumnInfo
 import com.example.telegramWallet.data.database.entities.wallet.TransactionEntity
 import java.math.BigInteger
 
-
 data class TransactionModel(
     @ColumnInfo(name = "transaction_id") val transactionId: Long? = null,
     @ColumnInfo(name = "tx_id") val txId: String,
@@ -21,9 +20,9 @@ data class TransactionModel(
     @ColumnInfo(name = "transaction_date") val transactionDate: String,
     @ColumnInfo(name = "type") val type: Int,
     @ColumnInfo(name = "status_code") val statusCode: Int,
-){
-    fun toEntity(): TransactionEntity {
-        return TransactionEntity(
+) {
+    fun toEntity(): TransactionEntity =
+        TransactionEntity(
             transactionId = transactionId,
             txId = txId,
             senderAddressId = senderAddressId,
@@ -37,7 +36,6 @@ data class TransactionModel(
             status = status,
             isProcessed = isProcessed,
             type = type,
-            statusCode = statusCode
+            statusCode = statusCode,
         )
-    }
 }

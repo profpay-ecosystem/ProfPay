@@ -97,9 +97,8 @@ fun WalletSystemScreen(
     goToBack: () -> Unit,
     goToWalletInfo: () -> Unit,
     goToCoRA: () -> Unit,
-    viewModel: WalletSystemViewModel = hiltViewModel()
+    viewModel: WalletSystemViewModel = hiltViewModel(),
 ) {
-
     val sharedPref = sharedPref()
 
     val walletList by viewModel.getListAllWallets().observeAsState(emptyList())
@@ -108,23 +107,26 @@ fun WalletSystemScreen(
 
     Scaffold(modifier = Modifier) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ), verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             TopAppBar(
                 title = {
                     Text(
                         text = "Wallet System",
-                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
+                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
                     run {
                         IconButton(onClick = { goToBack() }) {
@@ -132,7 +134,7 @@ fun WalletSystemScreen(
                                 modifier = Modifier.size(34.dp),
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
@@ -144,42 +146,44 @@ fun WalletSystemScreen(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomEnd = 0.dp,
-                            bottomStart = 0.dp
-                        )
-                    )
-                    .weight(0.8f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 0.dp,
+                            ),
+                        ).weight(0.8f),
             ) {
                 Column(
-                    modifier = Modifier
-                        .padding(bottom = bottomPadding.dp)
-                        .padding(vertical = 8.dp, horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier
+                            .padding(bottom = bottomPadding.dp)
+                            .padding(vertical = 8.dp, horizontal = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
                         text = "Выберите кошелёк:",
-                        modifier = Modifier
-                            .padding(top = 16.dp, bottom = 8.dp)
-                            .fillMaxWidth(),
-                        style = MaterialTheme.typography.titleMedium
+                        modifier =
+                            Modifier
+                                .padding(top = 16.dp, bottom = 8.dp)
+                                .fillMaxWidth(),
+                        style = MaterialTheme.typography.titleMedium,
                     )
 
                     LazyColumn(
                         modifier = Modifier.padding(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         if (walletList.isNotEmpty()) {
                             items(walletList) { wallet ->
@@ -190,7 +194,7 @@ fun WalletSystemScreen(
                                         sharedPref.edit { putLong("wallet_id", wallet.id!!) }
                                         goToWalletInfo()
                                     },
-                                    selected = wallet.id == currentWalletId
+                                    selected = wallet.id == currentWalletId,
                                 )
                             }
                         }
@@ -200,15 +204,16 @@ fun WalletSystemScreen(
                     }
 
                     Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(30.dp))
-                            .background(MaterialTheme.colorScheme.surfaceContainer)
-                            .clickable { goToCoRA() }
+                        modifier =
+                            Modifier
+                                .clip(RoundedCornerShape(30.dp))
+                                .background(MaterialTheme.colorScheme.surfaceContainer)
+                                .clickable { goToCoRA() },
                     ) {
                         Row(
                             modifier = Modifier.padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.Center,
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.AddCircle,
@@ -220,7 +225,7 @@ fun WalletSystemScreen(
                             Text(
                                 modifier = Modifier.padding(),
                                 text = "Добавить кошелёк",
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyLarge,
                             )
                         }
                     }
@@ -234,7 +239,7 @@ fun WalletSystemScreen(
 fun CardForWalletSystemFeature(
     wallet: WalletProfileModel,
     onClick: () -> Unit = {},
-    selected: Boolean = false
+    selected: Boolean = false,
 ) {
     val color =
         if (selected) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.primary
@@ -243,24 +248,26 @@ fun CardForWalletSystemFeature(
     val (openControlWallet, setOpenControlWallet) = bottomSheetControlOfTheWallet(wallet = wallet)
 
     Card(
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .fillMaxWidth()
-            .shadow(7.dp, RoundedCornerShape(10.dp)),
+        modifier =
+            Modifier
+                .padding(vertical = 4.dp)
+                .fillMaxWidth()
+                .shadow(7.dp, RoundedCornerShape(10.dp)),
         onClick = { onClick() },
-        colors = CardDefaults.cardColors(containerColor = color)
+        colors = CardDefaults.cardColors(containerColor = color),
     ) {
         Row(
-            modifier = Modifier
-                .padding(vertical = 6.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(vertical = 6.dp)
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = wallet.name,
                 Modifier.padding(start = 16.dp),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
             )
             Column {
                 IconButton(onClick = {
@@ -270,12 +277,12 @@ fun CardForWalletSystemFeature(
                         modifier = Modifier.size(25.dp),
                         imageVector = ImageVector.vectorResource(id = R.drawable.icon_more_vert),
                         contentDescription = "",
-                        tint = BackgroundIcon2
+                        tint = BackgroundIcon2,
                     )
                 }
                 DropdownMenu(
                     expanded = expandedDropdownMenu,
-                    onDismissRequest = { expandedDropdownMenu = false }
+                    onDismissRequest = { expandedDropdownMenu = false },
                 ) {
                     DropdownMenuItem(
                         onClick = {
@@ -285,9 +292,9 @@ fun CardForWalletSystemFeature(
                         text = {
                             Text(
                                 "Перейти",
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
                             )
-                        }
+                        },
                     )
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
                     DropdownMenuItem(
@@ -301,9 +308,8 @@ fun CardForWalletSystemFeature(
                                 "Управлять",
                                 style = MaterialTheme.typography.labelLarge,
                             )
-                        }
+                        },
                     )
-
                 }
             }
         }
@@ -316,10 +322,11 @@ fun bottomSheetControlOfTheWallet(
     viewModel: WalletSystemViewModel = hiltViewModel(),
     wallet: WalletProfileModel,
 ): Pair<Boolean, (Boolean) -> Unit> {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { true }
-    )
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { true },
+        )
     val coroutineScope = rememberCoroutineScope()
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val (isOpenSheet, setIsOpenSheet) = remember { mutableStateOf(false) }
@@ -332,7 +339,7 @@ fun bottomSheetControlOfTheWallet(
     LaunchedEffect(Unit) {
         viewModel.viewModelScope.launch {
             setSeedPhr(
-                viewModel.getSeedPhrase(walletId = wallet.id!!) ?: ""
+                viewModel.getSeedPhrase(walletId = wallet.id!!) ?: "",
             )
         }
     }
@@ -352,28 +359,32 @@ fun bottomSheetControlOfTheWallet(
             sheetState = sheetState,
         ) {
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxSize()
+                modifier =
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize(),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 8.dp),
                         text = "Кошелёк",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp)
+                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
                     )
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
                 ) {
                     Text(
                         modifier = Modifier.padding(top = 8.dp),
-                        text = "Название", style = MaterialTheme.typography.bodyLarge
+                        text = "Название",
+                        style = MaterialTheme.typography.bodyLarge,
                     )
                 }
                 RenamingWalletFeature(
@@ -382,30 +393,33 @@ fun bottomSheetControlOfTheWallet(
                         viewModel.viewModelScope.launch {
                             viewModel.updateNameWalletById(wallet.id!!, newName)
                         }
-                    })
+                    },
+                )
 
                 Spacer(modifier = Modifier.height(20.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     TextButton(
                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimary),
-                        onClick = { setIsOpenSeedPhrase(!isOpenSeedPhrase) }) {
+                        onClick = { setIsOpenSeedPhrase(!isOpenSeedPhrase) },
+                    ) {
                         Text(
                             text = "${if (isOpenSeedPhrase) "Скрыть" else "Посмотреть"} сид-фразу",
-                            style = MaterialTheme.typography.titleSmall
+                            style = MaterialTheme.typography.titleSmall,
                         )
                     }
                     if (isOpenSeedPhrase && seedPhr.isNotEmpty()) {
                         IconButton(onClick = { clipboardManager.setText(AnnotatedString(seedPhr)) }) {
                             Icon(
-                                modifier = Modifier
-                                    .size(18.dp),
+                                modifier =
+                                    Modifier
+                                        .size(18.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                 contentDescription = "",
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                tint = MaterialTheme.colorScheme.onPrimary,
                             )
                         }
                     }
@@ -420,7 +434,8 @@ fun bottomSheetControlOfTheWallet(
                     onClick = {
                         setIsOpenConfDeleteWallet(!isOpenConfDeleteWallet)
 //                            viewModel.deleteWalletProfile(walletId = wallet.id!!)
-                    }) {
+                    },
+                ) {
                     Text(text = "Удалить кошелёк", style = MaterialTheme.typography.titleSmall)
                 }
                 if (isOpenConfDeleteWallet) {
@@ -436,10 +451,11 @@ fun bottomSheetControlOfTheWallet(
                         },
                         dialogTitle = "Удалить кошелёк",
                         isSmallDialogTitle = true,
-                        dialogText = "Вы действительно уверены, что хотите удалить кошелек?\n\n" +
-                                    "Данные и привязанные к нему смарт-контракты будут уничтожены.",
+                        dialogText =
+                            "Вы действительно уверены, что хотите удалить кошелек?\n\n" +
+                                "Данные и привязанные к нему смарт-контракты будут уничтожены.",
                         textDismissButton = "Назад",
-                        textConfirmButton = "Подтвердить"
+                        textConfirmButton = "Подтвердить",
                     )
                 }
                 Spacer(modifier = Modifier.height(20.dp))
@@ -454,41 +470,42 @@ fun SeedPhraseCardAnimated(
     seedPhrase: String,
     isExpanded: Boolean,
 ) {
-
     val words = seedPhrase.trim().split(" ")
 
     Card(
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(8.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(8.dp),
     ) {
         AnimatedVisibility(
             visible = isExpanded,
             enter = fadeIn(tween(500)) + expandVertically(tween(500)),
-            exit = fadeOut(tween(500)) + shrinkVertically(tween(500))
+            exit = fadeOut(tween(500)) + shrinkVertically(tween(500)),
         ) {
             Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
                 Column {
                     if (seedPhrase.isNotEmpty()) {
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(3),
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth(),
                             contentPadding = PaddingValues(4.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             itemsIndexed(words) { index, word ->
                                 Text(
                                     text = "${index + 1}. $word",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier
-                                        .background(
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                            RoundedCornerShape(8.dp)
-                                        )
-                                        .padding(8.dp)
+                                    modifier =
+                                        Modifier
+                                            .background(
+                                                MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                                RoundedCornerShape(8.dp),
+                                            ).padding(8.dp),
                                 )
                             }
                         }
@@ -496,12 +513,12 @@ fun SeedPhraseCardAnimated(
                         Text(
                             text = "Удалите и восстановите данный кошелёк, для работы этой функции",
                             style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier
-                                .background(
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .padding(8.dp)
+                            modifier =
+                                Modifier
+                                    .background(
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                        RoundedCornerShape(8.dp),
+                                    ).padding(8.dp),
                         )
                     }
                 }
@@ -511,59 +528,69 @@ fun SeedPhraseCardAnimated(
     Spacer(modifier = Modifier.height(20.dp))
 }
 
-
 @Composable
-fun RenamingWalletFeature(walletName: String, onClick: (newName: String) -> Unit) {
+fun RenamingWalletFeature(
+    walletName: String,
+    onClick: (newName: String) -> Unit,
+) {
     val maxNameLength = 20
     val disallowedChars = Regex("[\"'\\\\<>;{}()]")
 
     var newName by remember { mutableStateOf(walletName) }
 
     Card(
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .fillMaxWidth()
-            .shadow(7.dp, RoundedCornerShape(10.dp)),
+        modifier =
+            Modifier
+                .padding(vertical = 4.dp)
+                .fillMaxWidth()
+                .shadow(7.dp, RoundedCornerShape(10.dp)),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TextField(
                 value = newName,
                 onValueChange = { input ->
                     // Убираем запрещённые символы и ограничиваем длину
-                    val cleaned = input
-                        .replace(disallowedChars, "")
-                        .take(maxNameLength)
+                    val cleaned =
+                        input
+                            .replace(disallowedChars, "")
+                            .take(maxNameLength)
                     newName = cleaned
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min),
                 placeholder = {
                     Text(
                         text = "Введите новое имя",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = PubAddressDark
+                        color = PubAddressDark,
                     )
                 },
                 textStyle = MaterialTheme.typography.bodyLarge,
                 trailingIcon = {
                     Row(
-                        modifier = Modifier
-                            .padding(end = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier
+                                .padding(end = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         IconButton(
                             modifier = Modifier.size(25.dp),
-                            colors = IconButtonDefaults.iconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.onPrimary,
-                                contentColor = MaterialTheme.colorScheme.primary
-                            ), onClick = {
+                            colors =
+                                IconButtonDefaults.iconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.onPrimary,
+                                    contentColor = MaterialTheme.colorScheme.primary,
+                                ),
+                            onClick = {
                                 newName = ""
-                            }) {
+                            },
+                        ) {
                             Icon(
                                 modifier = Modifier.fillMaxSize(0.6f),
                                 imageVector = Icons.Filled.Clear,
@@ -574,12 +601,15 @@ fun RenamingWalletFeature(walletName: String, onClick: (newName: String) -> Unit
                             Spacer(modifier = Modifier.size(6.dp))
                             IconButton(
                                 modifier = Modifier.size(25.dp),
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.onPrimary,
-                                    contentColor = MaterialTheme.colorScheme.primary
-                                ), onClick = {
+                                colors =
+                                    IconButtonDefaults.iconButtonColors(
+                                        containerColor = MaterialTheme.colorScheme.onPrimary,
+                                        contentColor = MaterialTheme.colorScheme.primary,
+                                    ),
+                                onClick = {
                                     onClick(newName)
-                                }) {
+                                },
+                            ) {
                                 Icon(
                                     modifier = Modifier.fillMaxSize(0.6f),
                                     imageVector = Icons.Filled.Done,
@@ -589,24 +619,25 @@ fun RenamingWalletFeature(walletName: String, onClick: (newName: String) -> Unit
                         }
                     }
                 },
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                    unfocusedTextColor = PubAddressDark,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    cursorColor = MaterialTheme.colorScheme.onBackground,
-                    selectionColors = TextSelectionColors(
-                        handleColor = MaterialTheme.colorScheme.onBackground,
-                        backgroundColor = Color.Transparent
-                    )
-                )
+                colors =
+                    TextFieldDefaults.colors(
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = PubAddressDark,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        cursorColor = MaterialTheme.colorScheme.onBackground,
+                        selectionColors =
+                            TextSelectionColors(
+                                handleColor = MaterialTheme.colorScheme.onBackground,
+                                backgroundColor = Color.Transparent,
+                            ),
+                    ),
             )
         }
     }
-
 }
 
 @Deprecated("")
@@ -615,56 +646,60 @@ fun CardForWalletSystemFeatureDeprecated(
     paintIconId: Int,
     label: String,
     balance: Double,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     Card(
-        modifier = Modifier
-            .padding(vertical = 8.dp)
-            .fillMaxWidth()
-            .height(65.dp)
-            .shadow(7.dp, RoundedCornerShape(10.dp))
+        modifier =
+            Modifier
+                .padding(vertical = 8.dp)
+                .fillMaxWidth()
+                .height(65.dp)
+                .shadow(7.dp, RoundedCornerShape(10.dp)),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .weight(0.5f)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.Center
+                modifier =
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .weight(0.5f)
+                        .fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .size(45.dp)
-                            .paint(
-                                painterResource(id = paintIconId),
-                                contentScale = ContentScale.FillBounds
-                            ),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .size(45.dp)
+                                .paint(
+                                    painterResource(id = paintIconId),
+                                    contentScale = ContentScale.FillBounds,
+                                ),
+                        contentAlignment = Alignment.Center,
                     ) {}
                     Column(modifier = Modifier.padding(horizontal = 12.dp, 8.dp)) {
                         Text(
                             text = label,
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
-
                     }
                 }
             }
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .weight(0.5f)
-                    .fillMaxHeight(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .weight(0.5f)
+                        .fillMaxHeight(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End
+                horizontalAlignment = Alignment.End,
             ) {
-                Text(text = "${balance}", fontWeight = FontWeight.SemiBold)
+                Text(text = "$balance", fontWeight = FontWeight.SemiBold)
             }
         }
     }

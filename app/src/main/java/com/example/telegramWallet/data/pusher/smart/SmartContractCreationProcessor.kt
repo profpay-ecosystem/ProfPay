@@ -3,7 +3,6 @@ package com.example.telegramWallet.data.pusher.smart
 import android.util.Log
 import com.example.telegramWallet.data.pusher.PusherDI
 import com.example.telegramWallet.data.pusher.PusherEventProcessor
-import com.example.telegramWallet.data.utils.toTokenAmount
 import com.pusher.client.channel.PusherEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +12,7 @@ class SmartContractCreationProcessor : PusherEventProcessor {
     override fun processEvent(
         eventData: PusherEvent,
         notificationFunction: (String, String) -> Unit,
-        di: PusherDI
+        di: PusherDI,
     ) {
 //        try {
 //            val gson = Gson()

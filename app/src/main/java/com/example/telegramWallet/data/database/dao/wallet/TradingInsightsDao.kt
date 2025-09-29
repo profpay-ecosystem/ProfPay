@@ -15,7 +15,10 @@ interface TradingInsightsDao {
     fun doesSymbolExist(symbol: String): Boolean
 
     @Query("UPDATE trading_insights SET price_change_percentage_24h = :priceChangePercentage24h WHERE symbol = :symbol")
-    fun updatePriceChangePercentage24h(symbol: String, priceChangePercentage24h: Double)
+    fun updatePriceChangePercentage24h(
+        symbol: String,
+        priceChangePercentage24h: Double,
+    )
 
     @Query("SELECT price_change_percentage_24h FROM trading_insights WHERE symbol = :symbol")
     fun getPriceChangePercentage24h(symbol: String): Double

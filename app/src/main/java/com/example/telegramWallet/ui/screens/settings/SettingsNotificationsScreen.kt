@@ -51,32 +51,36 @@ import com.example.telegramWallet.ui.shared.sharedPref
 fun SettingsNotificationsScreen(goToBack: () -> Unit) {
     var checkIsTest by remember { mutableStateOf(false) }
 
-    val (checkNotificationsInWallet, setCheckNotificationsInWallet) = remember {
-        mutableStateOf(
-            false
-        )
-    }
+    val (checkNotificationsInWallet, setCheckNotificationsInWallet) =
+        remember {
+            mutableStateOf(
+                false,
+            )
+        }
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
 
-    Scaffold(modifier = Modifier,) { padding ->
+    Scaffold(modifier = Modifier) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ), verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             TopAppBar(
                 title = {
                     Text(
                         text = "Settings notifications",
-                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
+                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
                     run {
                         IconButton(onClick = { goToBack() }) {
@@ -84,7 +88,7 @@ fun SettingsNotificationsScreen(goToBack: () -> Unit) {
                                 modifier = Modifier.size(34.dp),
                                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
@@ -96,31 +100,33 @@ fun SettingsNotificationsScreen(goToBack: () -> Unit) {
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
 
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomEnd = 0.dp,
-                            bottomStart = 0.dp
-                        )
-                    )
-                    .weight(0.8f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 0.dp,
+                            ),
+                        ).weight(0.8f),
             ) {
                 Column(
-                    modifier = Modifier.padding(bottom = bottomPadding.dp)
-                        .padding(vertical = 0.dp, horizontal = 0.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier
+                            .padding(bottom = bottomPadding.dp)
+                            .padding(vertical = 0.dp, horizontal = 0.dp)
+                            .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Spacer(modifier = Modifier.size(16.dp))
                     CardWithText(label = "Уведомления в Telegram") {
@@ -128,7 +134,7 @@ fun SettingsNotificationsScreen(goToBack: () -> Unit) {
                             switchForSettings(checkNotificationsInWallet) {
                                 // Todo: переменные для изменеия
                                 checkIsTest = it
-                            }
+                            },
                         )
                     }
                     CardWithText(label = "Уведомления в приложении") {
@@ -136,7 +142,7 @@ fun SettingsNotificationsScreen(goToBack: () -> Unit) {
                             switchForSettings(checkNotificationsInWallet) {
                                 // Todo: переменные для изменеия
                                 checkIsTest = it
-                            }
+                            },
                         )
                     }
                     Spacer(modifier = Modifier.size(20.dp))
@@ -147,7 +153,10 @@ fun SettingsNotificationsScreen(goToBack: () -> Unit) {
 }
 
 @Composable
-fun switchForSettings(checked: Boolean, onCheckedChange: (Boolean) -> Unit): Boolean {
+fun switchForSettings(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+): Boolean {
     var checkIs by remember { mutableStateOf(checked) }
     Switch(
         modifier = Modifier.padding(end = 8.dp),
@@ -156,14 +165,15 @@ fun switchForSettings(checked: Boolean, onCheckedChange: (Boolean) -> Unit): Boo
             checkIs = it
             onCheckedChange(it)
         },
-        colors = SwitchDefaults.colors(
-            checkedThumbColor = DarkBlue,
-            checkedTrackColor = SwitchColor,
-            checkedBorderColor = MaterialTheme.colorScheme.primary,
-            uncheckedThumbColor = MaterialTheme.colorScheme.primary,
-            uncheckedTrackColor = BackgroundIcon,
-            uncheckedBorderColor = MaterialTheme.colorScheme.primary
-        )
+        colors =
+            SwitchDefaults.colors(
+                checkedThumbColor = DarkBlue,
+                checkedTrackColor = SwitchColor,
+                checkedBorderColor = MaterialTheme.colorScheme.primary,
+                uncheckedThumbColor = MaterialTheme.colorScheme.primary,
+                uncheckedTrackColor = BackgroundIcon,
+                uncheckedBorderColor = MaterialTheme.colorScheme.primary,
+            ),
     )
     return checkIs
 }
@@ -173,16 +183,17 @@ fun CardWithText(
     label: String,
     noClick: Boolean = true,
     onClick: () -> Unit = {},
-    content: @Composable () -> Unit = {}
+    content: @Composable () -> Unit = {},
 ) {
     @Composable
     fun contentThis() {
         Row(
-            modifier = Modifier
-                .padding(vertical = 4.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(vertical = 4.dp)
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -195,23 +206,24 @@ fun CardWithText(
 
     if (noClick) {
         Card(
-            modifier = Modifier
-                .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
-                .fillMaxWidth()
-                .shadow(7.dp, RoundedCornerShape(10.dp)),
+            modifier =
+                Modifier
+                    .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
+                    .shadow(7.dp, RoundedCornerShape(10.dp)),
         ) {
             contentThis()
         }
     } else {
         Card(
-            modifier = Modifier
-                .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
-                .fillMaxWidth()
-                .shadow(7.dp, RoundedCornerShape(10.dp)),
-            onClick = { onClick() }
+            modifier =
+                Modifier
+                    .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
+                    .shadow(7.dp, RoundedCornerShape(10.dp)),
+            onClick = { onClick() },
         ) {
             contentThis()
         }
     }
-
 }

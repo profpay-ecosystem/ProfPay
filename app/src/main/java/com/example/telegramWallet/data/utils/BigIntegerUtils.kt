@@ -7,6 +7,4 @@ fun ByteString.toBigInteger(): BigInteger {
     return BigInteger(1, this.toByteArray()) // 1 означает положительное число
 }
 
-fun BigInteger.toByteString(): ByteString {
-    return ByteString.copyFrom(this.toByteArray())
-}
+fun BigInteger.toByteString(): ByteString = ByteString.copyFrom(this.toByteArray())

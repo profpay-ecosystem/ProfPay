@@ -51,7 +51,7 @@ import com.example.telegramWallet.ui.screens.createOrRecoveryWallet.TitleCreateO
 fun CreateNewWalletWidget(
     addressGenerateResult: AddressGenerateResult,
     goToBack: () -> Unit,
-    goToSeedPhraseConfirmation: () -> Unit
+    goToSeedPhraseConfirmation: () -> Unit,
 ) {
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val charMnemonic: CharArray = addressGenerateResult.mnemonic.chars
@@ -69,34 +69,36 @@ fun CreateNewWalletWidget(
                 goToNext = { goToSeedPhraseConfirmation() },
                 allowGoToNext = allowGoToNext,
                 currentScreen = 1,
-                quantityScreens = 2
+                quantityScreens = 2,
             )
-        }
+        },
     ) {
         Column(
             modifier = Modifier.fillMaxHeight(0.75f),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             val listCharArray = addressGenerateResult.mnemonic.words
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                modifier = Modifier.weight(5f)
+                modifier = Modifier.weight(5f),
             ) {
                 itemsIndexed(listCharArray) { index, item ->
                     Card(
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .padding(4.dp),
+                        modifier =
+                            Modifier
+                                .padding(4.dp),
                         elevation = CardDefaults.cardElevation(6.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = Color.White,
+                            ),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxSize(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Text(
                                 text = String(item),
@@ -109,76 +111,81 @@ fun CreateNewWalletWidget(
                             Text(
                                 text = "${index + 1}",
                                 style = MaterialTheme.typography.labelMedium,
-                                modifier = Modifier.padding(top = 16.dp, end = 4.dp, bottom = 2.dp)
+                                modifier = Modifier.padding(top = 16.dp, end = 4.dp, bottom = 2.dp),
                             )
                         }
-
                     }
                 }
                 item { Spacer(modifier = Modifier.size(10.dp)) }
             }
             Column(
                 verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier){
+                modifier = Modifier,
+            ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable { clipboardManager.setText(AnnotatedString(String(charMnemonic))) },
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .clickable { clipboardManager.setText(AnnotatedString(String(charMnemonic))) },
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
                 ) {
                     Text(
                         text = "Скопировать в буфер обмена ",
-                        style = MaterialTheme.typography.bodyLarge.copy(color = DarkBlue)
+                        style = MaterialTheme.typography.bodyLarge.copy(color = DarkBlue),
                     )
                     Icon(
-                        modifier = Modifier
-                            .size(18.dp),
+                        modifier =
+                            Modifier
+                                .size(18.dp),
                         imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                         contentDescription = "",
-                        tint = DarkBlue
+                        tint = DarkBlue,
                     )
-
                 }
                 Card(
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min)
-                        .padding(top = 4.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min)
+                            .padding(top = 4.dp),
                     elevation = CardDefaults.cardElevation(10.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White
-                    ),
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = Color.White,
+                        ),
                     onClick = {
                         setIsOpenAttentionWhenSavingMnemonicSheet(true)
-                    }) {
+                    },
+                ) {
                     Row(
-                        modifier = Modifier
-                            .padding(vertical = 10.dp),
+                        modifier =
+                            Modifier
+                                .padding(vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(0.9f),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start
+                            horizontalArrangement = Arrangement.Start,
                         ) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_exclamation_mark_in_circle),
                                 contentDescription = "",
                                 tint = RedColor,
-                                modifier = Modifier
-                                    .fillMaxSize(0.5f)
-                                    .weight(1f)
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize(0.5f)
+                                        .weight(1f),
                             )
                             Text(
                                 text = "На что стоит обратить внимание при сохранении сид-фразы",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = RedColor,
-                                modifier = Modifier.weight(5f)
-
+                                modifier = Modifier.weight(5f),
                             )
                         }
                         Icon(

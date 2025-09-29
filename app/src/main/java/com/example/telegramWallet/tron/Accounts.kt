@@ -11,19 +11,29 @@ import java.math.BigInteger
 // Обработка Tron API раздела Accounts.
 class Accounts {
     // Получаем ресурсы аккаунта.
-    fun getAccountResource(ownerAddress: String, privateKey: String): Response.AccountResourceMessage {
+    fun getAccountResource(
+        ownerAddress: String,
+        privateKey: String,
+    ): Response.AccountResourceMessage {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
         return wrapper.getAccountResource(ownerAddress)
     }
 
     // Информация об учетной записи, включая баланс TRX, балансы TRC-10, информацию о ставках,
     // информация о голосовании и разрешениях и т. д.
-    fun getAccount(ownerAddress: String, privateKey: String): Response.Account {
+    fun getAccount(
+        ownerAddress: String,
+        privateKey: String,
+    ): Response.Account {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
         return wrapper.getAccount(ownerAddress)
     }
 
-    fun allowance(spender: String, ownerAddress: String, privateKey: String): BigInteger? {
+    fun allowance(
+        spender: String,
+        ownerAddress: String,
+        privateKey: String,
+    ): BigInteger? {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
         val contract: Contract = wrapper.getContract("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t")
@@ -51,8 +61,16 @@ class Accounts {
         return result >= max
     }
 
-    fun hasEnoughBandwidth(address: String?, requiredBandwidth: Long): Boolean {
-        val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, KeyPair.generate().toPrivateKey())
+    fun hasEnoughBandwidth(
+        address: String?,
+        requiredBandwidth: Long,
+    ): Boolean {
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                KeyPair.generate().toPrivateKey(),
+            )
         val resources = wrapper.getAccountResource(address)
 
         val freeNetRemaining: Long = resources.freeNetLimit - resources.freeNetUsed

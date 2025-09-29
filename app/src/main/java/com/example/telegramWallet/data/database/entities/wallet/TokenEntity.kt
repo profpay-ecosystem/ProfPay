@@ -13,9 +13,9 @@ import java.math.BigInteger
             entity = AddressEntity::class,
             parentColumns = ["address_id"],
             childColumns = ["address_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
-    ]
+    ],
 )
 data class TokenEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "token_id") val tokenId: Long? = null,
@@ -25,7 +25,5 @@ data class TokenEntity(
     @ColumnInfo(name = "frozen_balance", defaultValue = "0") val frozenBalance: BigInteger? = BigInteger.ZERO,
 ) {
     // Баланс с учётом замороженных средств
-    fun getBalanceWithoutFrozen(): BigInteger {
-        return balance - frozenBalance!!
-    }
+    fun getBalanceWithoutFrozen(): BigInteger = balance - frozenBalance!!
 }

@@ -13,7 +13,5 @@ import javax.inject.Singleton
 abstract class TokenDaggerModule {
     @Binds
     @Singleton
-    abstract fun bindTokenProvider(
-        impl: SharedPrefsTokenProvider
-    ): TokenProvider
+    abstract fun bindTokenProvider(impl: SharedPrefsTokenProvider): TokenProvider
 }

@@ -19,6 +19,7 @@ import java.io.IOException
 
 interface AuthRequestCallback {
     fun onSuccess(data: AuthUserResponse)
+
     fun onFailure(error: UserErrorResponse)
 }
 
@@ -27,52 +28,67 @@ class AuthService {
     private val client = OkHttpClient()
     private val localJson = Json { ignoreUnknownKeys = false }
 
-    fun makeRequest(callback: AuthRequestCallback, userData: AuthUserRequest) {
+    fun makeRequest(
+        callback: AuthRequestCallback,
+        userData: AuthUserRequest,
+    ) {
         val jsonRequest = localJson.encodeToString(userData)
         val json = "application/json; charset=utf-8".toMediaType()
 
         val body: RequestBody = jsonRequest.toRequestBody(json)
         // TODO: Rebase to https
-        val request = Request.Builder()
-            .url("http://38.180.97.72:59153/user/auth")
-            .post(body)
-            .addHeader("Authorization", userData.access_token)
-            .build()
+        val request =
+            Request
+                .Builder()
+                .url("http://38.180.97.72:59153/user/auth")
+                .post(body)
+                .addHeader("Authorization", userData.access_token)
+                .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                callback.onFailure(UserErrorResponse(false, e.toString()))
-            }
+        client.newCall(request).enqueue(
+            object : Callback {
+                override fun onFailure(
+                    call: Call,
+                    e: IOException,
+                ) {
+                    callback.onFailure(UserErrorResponse(false, e.toString()))
+                }
 
-            override fun onResponse(call: Call, response: Response) {
-                response.use {
-                    if (!response.isSuccessful) {
-                        throw IOException("что то другое")
-                    }
+                override fun onResponse(
+                    call: Call,
+                    response: Response,
+                ) {
+                    response.use {
+                        if (!response.isSuccessful) {
+                            throw IOException("что то другое")
+                        }
 
-                    val responseBody = response.body!!.string()
+                        val responseBody = response.body!!.string()
 
-                    try {
-                        val obj = localJson
-                            .decodeFromString<AuthUserResponse>(responseBody)
-                        callback.onSuccess(obj)
-                    } catch (e: SerializationException) {
-                        val obj = localJson
-                            .decodeFromString<UserErrorResponse>(responseBody)
-                        Sentry.captureException(e)
-                        callback.onFailure(obj)
-                    } catch (e: Exception) {
-                        Sentry.captureException(e)
-                        callback.onFailure(UserErrorResponse(false, e.toString()))
+                        try {
+                            val obj =
+                                localJson
+                                    .decodeFromString<AuthUserResponse>(responseBody)
+                            callback.onSuccess(obj)
+                        } catch (e: SerializationException) {
+                            val obj =
+                                localJson
+                                    .decodeFromString<UserErrorResponse>(responseBody)
+                            Sentry.captureException(e)
+                            callback.onFailure(obj)
+                        } catch (e: Exception) {
+                            Sentry.captureException(e)
+                            callback.onFailure(UserErrorResponse(false, e.toString()))
+                        }
                     }
                 }
-            }
-        })
+            },
+        )
     }
 }
 
 object AuthApi {
-    val authService : AuthService by lazy {
+    val authService: AuthService by lazy {
         AuthService()
     }
 }

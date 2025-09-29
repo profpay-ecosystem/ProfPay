@@ -34,13 +34,12 @@ import com.example.telegramWallet.ui.feature.lockScreen.InputDots
 import com.example.telegramWallet.ui.feature.lockScreen.NumberBoard
 import kotlinx.coroutines.delay
 
-
 @Composable
 fun LockScreen(
     toNavigate: () -> Unit,
     viewModel: PinLockViewModel = hiltViewModel(),
     goToBack: () -> Unit = {},
-    goingBack: Boolean = false
+    goingBack: Boolean = false,
 ) {
     val inputPinCode = remember { mutableStateListOf<Int>() }
     var isError by remember { mutableStateOf(false) }
@@ -56,28 +55,31 @@ fun LockScreen(
                         containerColor = Color(0xFFff2a00),
                         contentColor = Color.White,
                     )
-                }
+                },
             )
         },
     ) { padding ->
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding()
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(),
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Spacer(modifier = Modifier.fillMaxWidth(0.1f))
 
                 Icon(
-                    painter = painterResource(id = R.drawable.icon_smart), contentDescription = "",
-                    modifier = Modifier
-                        .fillMaxSize(0.5f)
-                        .clip(CircleShape)
-                        .weight(1f)
+                    painter = painterResource(id = R.drawable.icon_smart),
+                    contentDescription = "",
+                    modifier =
+                        Modifier
+                            .fillMaxSize(0.5f)
+                            .clip(CircleShape)
+                            .weight(1f),
                 )
                 Spacer(modifier = Modifier.fillMaxHeight(0.02f))
                 Text(text = "Hii, User!")
@@ -88,7 +90,7 @@ fun LockScreen(
                 InputDots(
                     inputPinCode,
                     isError,
-                    onErrorReset = { isError = false }
+                    onErrorReset = { isError = false },
                 )
 
                 NumberBoard(
@@ -108,15 +110,16 @@ fun LockScreen(
                             else -> {
                                 if (inputPinCode.size == 1) isError = false
 
-                                if (inputPinCode.size < 4)
+                                if (inputPinCode.size < 4) {
                                     inputPinCode.add(enterNumber.toInt())
+                                }
                             }
                         }
                     },
                     onClickBiom = {
                         viewModel.unlockSession()
                         toNavigate()
-                    }
+                    },
                 )
 
                 Spacer(modifier = Modifier.weight(0.1f))

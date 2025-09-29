@@ -25,11 +25,22 @@ interface CentralAddressDao {
             existingEntity
         } else {
             val address = tron.addressUtilities.generateAddressAndMnemonic()
-            insertNewCentralAddress(CentralAddressEntity(
-                address = address.addressesWithKeysForM.addresses.get(0).address,
-                publicKey = address.addressesWithKeysForM.addresses.get(0).publicKey,
-                privateKey = address.addressesWithKeysForM.addresses.get(0).privateKey,
-            ))
+            insertNewCentralAddress(
+                CentralAddressEntity(
+                    address =
+                        address.addressesWithKeysForM.addresses
+                            .get(0)
+                            .address,
+                    publicKey =
+                        address.addressesWithKeysForM.addresses
+                            .get(0)
+                            .publicKey,
+                    privateKey =
+                        address.addressesWithKeysForM.addresses
+                            .get(0)
+                            .privateKey,
+                ),
+            )
             getCentralAddress()
         }
     }
@@ -38,7 +49,11 @@ interface CentralAddressDao {
     fun updateTrxBalance(value: BigInteger)
 
     @Query("UPDATE central_address SET address = :address, public_key = :publicKey, private_key = :privateKey, balance = 0")
-    fun changeCentralAddress(address: String, publicKey: String, privateKey: String)
+    fun changeCentralAddress(
+        address: String,
+        publicKey: String,
+        privateKey: String,
+    )
 
     @Query("SELECT * FROM central_address LIMIT 1")
     fun getCentralAddressLiveData(): LiveData<CentralAddressEntity?>

@@ -12,9 +12,9 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
-
 interface StatusRequestCallback {
     fun onSuccess(data: StatusJwtResponse)
+
     fun onFailure(error: UserErrorResponse)
 }
 
@@ -25,58 +25,72 @@ class StatusService {
 
     fun makeRequest(
         callback: StatusRequestCallback,
-        accessToken: String
+        accessToken: String,
     ) {
         // TODO: Rebase to https
-        val http = HttpUrl.Builder()
-            .scheme("http")
-            .host("38.180.97.72")
-            .port(59153)
-            .addPathSegments("user/status")
-            .build()
+        val http =
+            HttpUrl
+                .Builder()
+                .scheme("http")
+                .host("38.180.97.72")
+                .port(59153)
+                .addPathSegments("user/status")
+                .build()
 
-        val request = Request.Builder()
-            .url(http)
-            .addHeader("Authorization", accessToken)
-            .build()
+        val request =
+            Request
+                .Builder()
+                .url(http)
+                .addHeader("Authorization", accessToken)
+                .build()
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                callback.onFailure(UserErrorResponse(false, e.toString()))
-            }
+        client.newCall(request).enqueue(
+            object : Callback {
+                override fun onFailure(
+                    call: Call,
+                    e: IOException,
+                ) {
+                    callback.onFailure(UserErrorResponse(false, e.toString()))
+                }
 
-            override fun onResponse(call: Call, response: Response) {
-                response.use {
-                    if (!response.isSuccessful) {
-                        throw IOException("что то другое")
-                    }
-
-                    val responseBody = response.body!!.string()
-
-                    try {
-                        val obj = localJson
-                            .decodeFromString<StatusJwtResponse>(responseBody)
-
-                        if (obj.jwtData.message == "Timing is everything") {
-                            callback.onFailure(
-                                UserErrorResponse(
-                                status = false,
-                                message = obj.jwtData.message
-                            )
-                            )
-                        } else {
-                            callback.onSuccess(obj)
+                override fun onResponse(
+                    call: Call,
+                    response: Response,
+                ) {
+                    response.use {
+                        if (!response.isSuccessful) {
+                            throw IOException("что то другое")
                         }
-                    } catch (e: SerializationException) {
-                        val obj = localJson
-                            .decodeFromString<UserErrorResponse>(responseBody)
-                        callback.onFailure(obj)
-                    } catch (e: Exception) {
-                        callback.onFailure(UserErrorResponse(false, e.toString()))
+
+                        val responseBody = response.body!!.string()
+
+                        try {
+                            val obj =
+                                localJson
+                                    .decodeFromString<StatusJwtResponse>(responseBody)
+
+                            if (obj.jwtData.message == "Timing is everything") {
+                                callback.onFailure(
+                                    UserErrorResponse(
+                                        status = false,
+                                        message = obj.jwtData.message,
+                                    ),
+                                )
+                            } else {
+                                callback.onSuccess(obj)
+                            }
+                        } catch (e: SerializationException) {
+                            val obj =
+                                localJson
+                                    .decodeFromString<UserErrorResponse>(responseBody)
+                            callback.onFailure(obj)
+                        } catch (e: Exception) {
+                            callback.onFailure(UserErrorResponse(false, e.toString()))
+                        }
                     }
                 }
-            }
-        })
+            },
+        )
     }
 }
 

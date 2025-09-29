@@ -23,7 +23,7 @@ fun MyApp(
             viewModel.getBlockedAppState()
             RootNavigationGraph(
                 navController = navController,
-                networkMonitor = networkMonitor
+                networkMonitor = networkMonitor,
             )
         }
     }

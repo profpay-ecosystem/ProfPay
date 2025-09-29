@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class PushyDeployContractSuccessfullyMessage(
     val address: String,
     val contractAddress: String,
-    val transactionId: String
+    val transactionId: String,
 )

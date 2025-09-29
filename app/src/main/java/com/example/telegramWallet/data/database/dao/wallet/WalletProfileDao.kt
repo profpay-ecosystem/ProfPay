@@ -25,7 +25,10 @@ interface WalletProfileDao {
     fun getWalletPrivateKeyAndChainCodeById(id: Long): WalletPrivateKeyAndChainCodeModel
 
     @Query("UPDATE wallet_profile SET name = :newName WHERE id = :id")
-    suspend fun updateNameById(id: Long, newName: String)
+    suspend fun updateNameById(
+        id: Long,
+        newName: String,
+    )
 
     @Query("DELETE FROM wallet_profile WHERE id = :id")
     suspend fun deleteWalletProfile(id: Long)
@@ -39,10 +42,10 @@ interface WalletProfileDao {
 
 data class WalletProfileModel(
     @ColumnInfo(name = "id") val id: Long? = null,
-    @ColumnInfo(name = "name") val name: String
+    @ColumnInfo(name = "name") val name: String,
 )
 
 data class WalletPrivateKeyAndChainCodeModel(
     @ColumnInfo(name = "priv_key_bytes") val privKeyBytes: ByteArray,
-    @ColumnInfo(name = "chain_code") val chainCode: ByteArray
+    @ColumnInfo(name = "chain_code") val chainCode: ByteArray,
 )

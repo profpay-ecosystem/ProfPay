@@ -10,13 +10,13 @@ import androidx.room.PrimaryKey
     indices = [
         Index(
             value = ["telegram_id"],
-            unique = true
+            unique = true,
         ),
         Index(
             value = ["device_token"],
-            unique = true
-        )
-    ]
+            unique = true,
+        ),
+    ],
 )
 data class ProfileEntity(
     @PrimaryKey(autoGenerate = true) val id: Long? = null,
@@ -27,5 +27,5 @@ data class ProfileEntity(
     @ColumnInfo(name = "username") val username: String? = null,
     @ColumnInfo(name = "active_tg_id") val activeTgId: Boolean = false,
     @ColumnInfo(name = "access_token") var accessToken: String? = null,
-    @ColumnInfo(name = "expires_at") var expiresAt: Long? = null
+    @ColumnInfo(name = "expires_at") var expiresAt: Long? = null,
 )

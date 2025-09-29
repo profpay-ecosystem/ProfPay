@@ -14,7 +14,7 @@ sealed class BottomBarScreen(
     val route: String,
     val title: String,
     val icon: @Composable () -> ImageVector,
-    val routes: List<String>
+    val routes: List<String>,
 ) {
     data object SmartContractList : BottomBarScreen(
         route = "SMART",
@@ -22,7 +22,7 @@ sealed class BottomBarScreen(
         icon = {
             ImageVector.Companion.vectorResource(id = R.drawable.icon_smart)
         },
-        routes = listOf("SMART")
+        routes = listOf("SMART"),
     )
 
     data object Profile : BottomBarScreen(
@@ -31,19 +31,20 @@ sealed class BottomBarScreen(
         icon = {
             ImageVector.Companion.vectorResource(id = R.drawable.icon_wallet)
         },
-        routes = listOf(
-            "WALLET",
-            WalletInfo.WalletSots.route,
-            WalletInfo.Send.route,
-            WalletSots.WalletAddress.route,
-            WalletAddress.Receive.route,
-            WalletInfo.TXDetails.route,
-            WalletInfo.WalletSystem.route,
-            WalletAddress.Send.route,
-            WalletInfo.WalletSystemTRX.route,
-            WalletSots.WalletArchivalSots.route,
-            WalletInfo.CentralAddressTxHistory.route
-        )
+        routes =
+            listOf(
+                "WALLET",
+                WalletInfo.WalletSots.route,
+                WalletInfo.Send.route,
+                WalletSots.WalletAddress.route,
+                WalletAddress.Receive.route,
+                WalletInfo.TXDetails.route,
+                WalletInfo.WalletSystem.route,
+                WalletAddress.Send.route,
+                WalletInfo.WalletSystemTRX.route,
+                WalletSots.WalletArchivalSots.route,
+                WalletInfo.CentralAddressTxHistory.route,
+            ),
     )
 
     data object Settings : BottomBarScreen(
@@ -52,12 +53,13 @@ sealed class BottomBarScreen(
         icon = {
             ImageVector.Companion.vectorResource(id = R.drawable.icon_settings)
         },
-        routes = listOf(
-            "SETTINGS",
-            SettingsS.SettingsNotifications.route,
-            SettingsS.SettingsSecurity.route,
-            SettingsS.SettingsAccount.route,
-            SettingsS.SettingsAml.route
-        )
+        routes =
+            listOf(
+                "SETTINGS",
+                SettingsS.SettingsNotifications.route,
+                SettingsS.SettingsSecurity.route,
+                SettingsS.SettingsAccount.route,
+                SettingsS.SettingsAml.route,
+            ),
     )
 }

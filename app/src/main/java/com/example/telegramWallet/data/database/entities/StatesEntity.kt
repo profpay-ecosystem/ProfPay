@@ -8,5 +8,5 @@ import androidx.room.PrimaryKey
 data class StatesEntity(
     @PrimaryKey(autoGenerate = true) val id: Long? = null,
     @ColumnInfo(name = "channel") val channel: Long,
-    @ColumnInfo(name = "data") val data: String
+    @ColumnInfo(name = "data") val data: String,
 )

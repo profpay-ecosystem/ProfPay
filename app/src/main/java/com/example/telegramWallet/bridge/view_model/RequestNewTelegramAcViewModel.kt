@@ -10,25 +10,33 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RequestNewTelegramAcViewModel @Inject constructor(private val profileRepo: ProfileRepo ): ViewModel() {
-    // Получаем Flow с данными неподтверждённого Telegram-профиля
-    suspend fun inactiveProfile(): Flow<ProfileDto> {
-        return profileRepo.getInactiveProfileFromVM()
-    }
-    // Получаем Flow с данными подтверждённого Telegram-профиль
-    suspend fun activeProfile(): Flow<ProfileDto> {
-        return profileRepo.getActiveProfileFromVM()
-    }
-    // Удаляем Telegram-профиль по Telegram-ID
-    fun deleteProfileById(tgId: Long) {
-        viewModelScope.launch {
-            profileRepo.deleteProfileByTgId(tgId)
+class RequestNewTelegramAcViewModel
+    @Inject
+    constructor(
+        private val profileRepo: ProfileRepo,
+    ) : ViewModel() {
+        // Получаем Flow с данными неподтверждённого Telegram-профиля
+        suspend fun inactiveProfile(): Flow<ProfileDto> = profileRepo.getInactiveProfileFromVM()
+
+        // Получаем Flow с данными подтверждённого Telegram-профиль
+        suspend fun activeProfile(): Flow<ProfileDto> = profileRepo.getActiveProfileFromVM()
+
+        // Удаляем Telegram-профиль по Telegram-ID
+        fun deleteProfileById(tgId: Long) {
+            viewModelScope.launch {
+                profileRepo.deleteProfileByTgId(tgId)
+            }
+        }
+
+        // Обновляем активность Tg-профиля, access-токен и время жизни токена по Telegram-ID
+        fun updateActiveBot(
+            isActive: Boolean,
+            tgId: Long,
+            accessToken: String,
+            expiresAt: Long,
+        ) {
+            viewModelScope.launch {
+                profileRepo.updateActiveTgId(isActive, tgId, accessToken, expiresAt)
+            }
         }
     }
-    // Обновляем активность Tg-профиля, access-токен и время жизни токена по Telegram-ID
-    fun updateActiveBot(isActive: Boolean, tgId: Long, accessToken: String, expiresAt: Long) {
-        viewModelScope.launch {
-            profileRepo.updateActiveTgId(isActive, tgId, accessToken, expiresAt)
-        }
-    }
-}

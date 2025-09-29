@@ -50,6 +50,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.settings.SettingsViewModel
@@ -58,7 +59,6 @@ import com.example.telegramWallet.ui.app.theme.GreenColor
 import com.example.telegramWallet.ui.shared.getTextValueTheme
 import com.example.telegramWallet.ui.shared.sharedPref
 import rememberStackedSnackbarHostState
-import androidx.core.content.edit
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -72,7 +72,6 @@ fun SettingsScreen(
     goToSettingsSecurity: () -> Unit,
     goToSettingsAml: () -> Unit,
 ) {
-
     val snackbarHostState = rememberStackedSnackbarHostState()
 
     var openThemeChoice by remember { mutableStateOf(false) }
@@ -90,23 +89,26 @@ fun SettingsScreen(
 
     Scaffold(modifier = Modifier) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ), verticalArrangement = Arrangement.Bottom
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
+            verticalArrangement = Arrangement.Bottom,
         ) {
             TopAppBar(
                 title = {
                     Text(
                         text = "Settings",
-                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
+                        style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 navigationIcon = {
 //                    run {
 //                        IconButton(onClick = { goToBack() }) {
@@ -126,31 +128,33 @@ fun SettingsScreen(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
 
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomEnd = 0.dp,
-                            bottomStart = 0.dp
-                        )
-                    )
-                    .weight(0.8f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(
+                            RoundedCornerShape(
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
+                                bottomEnd = 0.dp,
+                                bottomStart = 0.dp,
+                            ),
+                        ).weight(0.8f),
             ) {
                 Column(
-                    modifier = Modifier.padding(bottom = bottomPadding.dp)
-                        .padding(vertical = 0.dp, horizontal = 0.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier
+                            .padding(bottom = bottomPadding.dp)
+                            .padding(vertical = 0.dp, horizontal = 0.dp)
+                            .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Spacer(modifier = Modifier.size(16.dp))
 
@@ -158,26 +162,27 @@ fun SettingsScreen(
                         iconID = R.drawable.icon_settings_account,
                         label = "Аккаунт",
                         iconSize = 24,
-                        onClick = {goToSettingsAccount()}
+                        onClick = { goToSettingsAccount() },
                     )
                     CardForSettings(
                         iconID = R.drawable.icon_settings_aml,
                         label = "AML",
                         iconSize = 24,
-                        onClick = {goToSettingsAml()}
+                        onClick = { goToSettingsAml() },
                     )
                     CardForSettings(
                         iconID = R.drawable.icon_settings_theme,
                         label = "Тема",
-                        noClick = true
+                        noClick = true,
                     ) {
                         Row(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(10.dp))
-                                .clickable { openThemeChoice = !openThemeChoice }
-                                .padding(horizontal = 16.dp),
+                            modifier =
+                                Modifier
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .clickable { openThemeChoice = !openThemeChoice }
+                                    .padding(horizontal = 16.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.End
+                            horizontalArrangement = Arrangement.End,
                         ) {
                             Text(
                                 text = getTextValueTheme(themeSharedInt = themeSharedInt),
@@ -186,21 +191,21 @@ fun SettingsScreen(
                             if (openThemeChoice) {
                                 Icon(
                                     Icons.Filled.KeyboardArrowUp,
-                                    contentDescription = "Вниз"
+                                    contentDescription = "Вниз",
                                 )
                             } else {
                                 Icon(
                                     Icons.Filled.KeyboardArrowDown,
-                                    contentDescription = "Вверх"
+                                    contentDescription = "Вверх",
                                 )
                             }
                             DropdownMenu(
                                 expanded = openThemeChoice,
-                                onDismissRequest = { openThemeChoice = false }
+                                onDismissRequest = { openThemeChoice = false },
                             ) {
                                 DropdownMenuItem(
                                     onClick = {
-                                        shared.edit() { putInt("valueTheme", 0) }
+                                        shared.edit { putInt("valueTheme", 0) }
                                         themeVM.getThemeApp(shared)
                                         themeSharedInt = 0
                                     },
@@ -209,24 +214,25 @@ fun SettingsScreen(
                                             "Светлая",
                                             style = MaterialTheme.typography.labelMedium,
                                         )
-                                    }, trailingIcon = {
+                                    },
+                                    trailingIcon = {
                                         if (themeSharedInt == 0) {
                                             Icon(
                                                 modifier = Modifier.size(20.dp),
                                                 imageVector = Icons.Filled.Check,
                                                 tint = GreenColor,
-                                                contentDescription = ""
+                                                contentDescription = "",
                                             )
                                         }
-                                    }
+                                    },
                                 )
                                 HorizontalDivider(
                                     modifier = Modifier.padding(horizontal = 8.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                 )
                                 DropdownMenuItem(
                                     onClick = {
-                                        shared.edit() { putInt("valueTheme", 1) }
+                                        shared.edit { putInt("valueTheme", 1) }
                                         themeVM.getThemeApp(shared)
                                         themeSharedInt = 1
                                     },
@@ -235,24 +241,25 @@ fun SettingsScreen(
                                             "Тёмная",
                                             style = MaterialTheme.typography.labelMedium,
                                         )
-                                    }, trailingIcon = {
+                                    },
+                                    trailingIcon = {
                                         if (themeSharedInt == 1) {
                                             Icon(
                                                 modifier = Modifier.size(20.dp),
                                                 imageVector = Icons.Filled.Check,
                                                 tint = GreenColor,
-                                                contentDescription = ""
+                                                contentDescription = "",
                                             )
                                         }
-                                    }
+                                    },
                                 )
                                 HorizontalDivider(
                                     modifier = Modifier.padding(horizontal = 8.dp),
-                                    color = MaterialTheme.colorScheme.onPrimary
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                 )
                                 DropdownMenuItem(
                                     onClick = {
-                                        shared.edit() { putInt("valueTheme", 2) }
+                                        shared.edit { putInt("valueTheme", 2) }
                                         themeVM.getThemeApp(shared)
                                         themeSharedInt = 2
                                     },
@@ -261,59 +268,58 @@ fun SettingsScreen(
                                             "Системная",
                                             style = MaterialTheme.typography.labelMedium,
                                         )
-                                    }, trailingIcon = {
+                                    },
+                                    trailingIcon = {
                                         if (themeSharedInt == 2) {
                                             Icon(
                                                 modifier = Modifier.size(20.dp),
                                                 imageVector = Icons.Filled.Check,
                                                 tint = GreenColor,
-                                                contentDescription = ""
+                                                contentDescription = "",
                                             )
                                         }
-                                    }
+                                    },
                                 )
-
                             }
                         }
-
                     }
 
                     CardForSettings(
-                        onClick = {goToSettingsNotifications()},
+                        onClick = { goToSettingsNotifications() },
                         iconID = R.drawable.icon_settings_alert,
-                        label = "Уведомления"
+                        label = "Уведомления",
                     )
                     CardForSettings(
                         onClick = {},
                         iconID = R.drawable.icon_settings_dollar,
-                        label = "Валюта"
+                        label = "Валюта",
                     ) {
                         Text(
                             "USD",
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                     }
                     CardForSettings(
                         onClick = {},
                         iconID = R.drawable.icon_settings_support,
-                        label = "Поддержка"
+                        label = "Поддержка",
                     )
                     CardForSettings(
-                        onClick = {goToSettingsSecurity()},
+                        onClick = { goToSettingsSecurity() },
                         iconID = R.drawable.icon_settings_security,
-                        label = "Безопасность"
+                        label = "Безопасность",
                     )
                     CardForSettings(
                         onClick = {},
                         iconID = R.drawable.icon_settings_faq,
-                        label = "FAQ"
+                        label = "FAQ",
                     )
                     CardForSettings(
                         onClick = {},
                         iconID = R.drawable.icon_settings_privacy_policy,
                         label = "Политика \nКонфиденциальности",
-                        smallLabel = true
+                        smallLabel = true,
                     )
 
 //
@@ -388,35 +394,41 @@ fun CardForSettings(
     smallLabel: Boolean = false,
     noClick: Boolean = false,
     iconSize: Int = 40,
-    content: @Composable () -> Unit = {}
+    content: @Composable () -> Unit = {},
 ) {
     @Composable
     fun contentThis() {
         Row(
-            modifier = Modifier
-                .padding(vertical = 6.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(vertical = 6.dp)
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Row(
-                modifier = Modifier
-                    .padding(start = 8.dp, end = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    Modifier
+                        .padding(start = 8.dp, end = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-               Box(modifier = Modifier.size(40.dp)
-                   .clip(CircleShape)
-                   .background(MaterialTheme.colorScheme.onPrimary),
-                   contentAlignment = Alignment.Center
-                   ) {
-                   Icon(
-                       modifier = Modifier
-                           .size(iconSize.dp),
-                       imageVector = ImageVector.vectorResource(id = iconID),
-                       contentDescription = "",
-                       tint = MaterialTheme.colorScheme.primary
-                   )
-               }
+                Box(
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.onPrimary),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        modifier =
+                            Modifier
+                                .size(iconSize.dp),
+                        imageVector = ImageVector.vectorResource(id = iconID),
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
                 Text(
                     modifier = Modifier.padding(horizontal = 12.dp),
                     text = label,
@@ -429,20 +441,22 @@ fun CardForSettings(
 
     if (noClick) {
         Card(
-            modifier = Modifier
-                .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
-                .fillMaxWidth()
-                .shadow(7.dp, RoundedCornerShape(10.dp)),
+            modifier =
+                Modifier
+                    .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
+                    .shadow(7.dp, RoundedCornerShape(10.dp)),
         ) {
             contentThis()
         }
     } else {
         Card(
-            modifier = Modifier
-                .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
-                .fillMaxWidth()
-                .shadow(7.dp, RoundedCornerShape(10.dp)),
-            onClick = { onClick() }
+            modifier =
+                Modifier
+                    .padding(top = 4.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
+                    .fillMaxWidth()
+                    .shadow(7.dp, RoundedCornerShape(10.dp)),
+            onClick = { onClick() },
         ) {
             contentThis()
         }

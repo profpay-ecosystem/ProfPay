@@ -32,7 +32,7 @@ import kotlin.math.roundToInt
 fun InputDots(
     numbers: List<Int> = listOf(1, 2),
     isError: Boolean = false,
-    onErrorReset: (() -> Unit)? = null
+    onErrorReset: (() -> Unit)? = null,
 ) {
     val offsetX = remember { Animatable(0f) }
     LaunchedEffect(isError) {
@@ -40,16 +40,17 @@ fun InputDots(
             offsetX.snapTo(0f)
             offsetX.animateTo(
                 targetValue = 0f,
-                animationSpec = keyframes {
-                    durationMillis = 500
-                    -10f at 50
-                    10f at 100
-                    -8f at 150
-                    8f at 200
-                    -4f at 250
-                    4f at 300
-                    0f at 500
-                }
+                animationSpec =
+                    keyframes {
+                        durationMillis = 500
+                        -10f at 50
+                        10f at 100
+                        -8f at 150
+                        8f at 200
+                        -4f at 250
+                        4f at 300
+                        0f at 500
+                    },
             )
 
             delay(1000)
@@ -60,17 +61,19 @@ fun InputDots(
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .offset { IntOffset(offsetX.value.roundToInt(), 0) }
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .offset { IntOffset(offsetX.value.roundToInt(), 0) },
     ) {
         for (i in 0..3) {
             PinIndicator(
-                filled = when (i) {
-                    0 -> numbers.isNotEmpty()
-                    else -> numbers.size > i
-                },
-                isError = isError
+                filled =
+                    when (i) {
+                        0 -> numbers.isNotEmpty()
+                        else -> numbers.size > i
+                    },
+                isError = isError,
             )
         }
     }
@@ -79,25 +82,27 @@ fun InputDots(
 @Composable
 private fun PinIndicator(
     filled: Boolean,
-    isError: Boolean
+    isError: Boolean,
 ) {
-    val targetBorderColor = when {
-        isError -> Color.Red
-        else -> MaterialTheme.colorScheme.onPrimary
-    }
+    val targetBorderColor =
+        when {
+            isError -> Color.Red
+            else -> MaterialTheme.colorScheme.onPrimary
+        }
 
     val animatedBorderColor by animateColorAsState(
         targetValue = targetBorderColor,
         animationSpec = tween(durationMillis = 400),
-        label = "PinIndicatorColor"
+        label = "PinIndicatorColor",
     )
 
     Box(
-        modifier = Modifier
-            .padding(15.dp)
-            .size(15.dp)
-            .clip(CircleShape)
-            .background(if (filled) MaterialTheme.colorScheme.onPrimary else Color.Transparent)
-            .border(2.dp, animatedBorderColor, CircleShape)
+        modifier =
+            Modifier
+                .padding(15.dp)
+                .size(15.dp)
+                .clip(CircleShape)
+                .background(if (filled) MaterialTheme.colorScheme.onPrimary else Color.Transparent)
+                .border(2.dp, animatedBorderColor, CircleShape),
     )
 }

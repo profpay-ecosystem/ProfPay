@@ -11,17 +11,17 @@ import com.example.telegramWallet.data.database.models.HasTronCredentials
     indices = [
         Index(
             value = ["address"],
-            unique = true
+            unique = true,
         ),
         Index(
             value = ["public_key"],
-            unique = true
+            unique = true,
         ),
         Index(
             value = ["private_key"],
-            unique = true
+            unique = true,
         ),
-    ]
+    ],
 )
 data class AddressEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "address_id") val addressId: Long? = null,

@@ -64,9 +64,8 @@ import kotlinx.coroutines.launch
 fun RecoverWalletScreen(
     goToRecoveringWalletAdding: () -> Unit,
     viewModel: RecoverWalletViewModel = hiltViewModel(),
-    goToBack: () -> Unit
+    goToBack: () -> Unit,
 ) {
-
     var seedPhrase by remember { mutableStateOf("") }
     val openDialog = remember { mutableStateOf(false) }
 
@@ -88,18 +87,19 @@ fun RecoverWalletScreen(
                 dialogTitle = "Восстановить кошелёк",
                 dialogText = dialogText,
                 icon = Icons.Default.Create,
-                textButton = "Вернуться"
+                textButton = "Вернуться",
             )
         }
     }
 
-    Scaffold(
-    ) { padding ->
+    Scaffold { padding ->
         padding
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { keyboardController?.hide() }) {}
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable { keyboardController?.hide() },
+        ) {}
         TitleCreateOrRecoveryWalletFeature(
             title = "Вставьте вашу seed- фразу",
             bottomContent = {
@@ -114,47 +114,52 @@ fun RecoverWalletScreen(
                     },
                     allowGoToNext = true,
                     currentScreen = 1,
-                    quantityScreens = 1
+                    quantityScreens = 1,
                 )
-            }) {
+            },
+        ) {
             Column(
                 modifier = Modifier.fillMaxHeight(0.7f),
                 verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(modifier = Modifier.fillMaxHeight(0.1f))
                 Card(
                     shape = RoundedCornerShape(10.dp),
                     modifier = Modifier,
                     elevation = CardDefaults.cardElevation(10.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White
-                    )
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = Color.White,
+                        ),
                 ) {
                     TextField(
                         value = seedPhrase,
-                        modifier = Modifier
-                            .height(IntrinsicSize.Min)
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .height(IntrinsicSize.Min)
+                                .fillMaxWidth(),
                         label = {
-                            Text(text = "Введите Сид-фразу", style = MaterialTheme.typography.titleSmall,)
+                            Text(text = "Введите Сид-фразу", style = MaterialTheme.typography.titleSmall)
                         },
                         onValueChange = { seedPhrase = it },
                         trailingIcon = {},
-                        colors = TextFieldDefaults.colors(
-                            focusedTextColor = BackgroundDark,
-                            unfocusedTextColor = BackgroundDark,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            cursorColor = BackgroundDark,
-                            selectionColors = TextSelectionColors(
-                                handleColor = BackgroundDark,
-                                backgroundColor = Color.Transparent
-                            )
-                        )
+                        colors =
+                            TextFieldDefaults.colors(
+                                focusedTextColor = BackgroundDark,
+                                unfocusedTextColor = BackgroundDark,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                cursorColor = BackgroundDark,
+                                selectionColors =
+                                    TextSelectionColors(
+                                        handleColor = BackgroundDark,
+                                        backgroundColor = Color.Transparent,
+                                    ),
+                            ),
                     )
                 }
 
@@ -167,15 +172,15 @@ fun RecoverWalletScreen(
                                 AlertDialogForCoRFeature(
                                     dialogText =
                                         "Кошелёк уже есть.\n\n" +
-                                                "Кошелёк по данной сид-фразе уже добавлен у вас в приложении"
+                                            "Кошелёк по данной сид-фразе уже добавлен у вас в приложении",
                                 )
                             }
                             is RecoveryResult.InvalidMnemonic -> {
                                 AlertDialogForCoRFeature(
                                     dialogText =
                                         "Введена некорректная сид-фраза.\n\n" +
-                                                "Пожалуйста перепроверьте правильность написания сид-фразы, " +
-                                                "и попробуйте снова."
+                                            "Пожалуйста перепроверьте правильность написания сид-фразы, " +
+                                            "и попробуйте снова.",
                                 )
                             }
                             is RecoveryResult.AddressNotFound -> {}
@@ -184,8 +189,8 @@ fun RecoverWalletScreen(
                                 AlertDialogForCoRFeature(
                                     dialogText =
                                         "Произошла ошибка!\n\n" +
-                                                throwable +
-                                                "\nПожалуйста попробуйте позднее."
+                                            throwable +
+                                            "\nПожалуйста попробуйте позднее.",
                                 )
                             }
                             is RecoveryResult.Success -> {
@@ -199,9 +204,7 @@ fun RecoverWalletScreen(
             }
         }
     }
-
 }
-
 
 @Composable
 fun BottomButtonsForCoRFeature(
@@ -209,68 +212,68 @@ fun BottomButtonsForCoRFeature(
     goToNext: () -> Unit,
     allowGoToNext: Boolean,
     currentScreen: Int,
-    quantityScreens: Int
+    quantityScreens: Int,
 ) {
-    val colorGoToNext: Color = if (allowGoToNext) {
-        BackgroundContainerButtonDark
-    } else {
-        Color.White
-    }
+    val colorGoToNext: Color =
+        if (allowGoToNext) {
+            BackgroundContainerButtonDark
+        } else {
+            Color.White
+        }
     Row(modifier = Modifier.fillMaxWidth(0.9f), verticalAlignment = Alignment.CenterVertically) {
         Box(modifier = Modifier.weight(0.33f), contentAlignment = Alignment.CenterStart) {
             IconButton(
                 onClick = { goToBack() },
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(BackgroundContainerButtonLight)
-                    .size(width = 70.dp, height = 30.dp)
+                modifier =
+                    Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(BackgroundContainerButtonLight)
+                        .size(width = 70.dp, height = 30.dp),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "",
-                    tint = BackgroundContainerButtonDark
+                    tint = BackgroundContainerButtonDark,
                 )
             }
         }
         Row(
             modifier = Modifier.weight(0.33f),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             for (i in 1..quantityScreens) {
-                val color = if (i == currentScreen) {
-                    IndicatorGreen
-                } else {
-                    BackgroundIcon
-                }
+                val color =
+                    if (i == currentScreen) {
+                        IndicatorGreen
+                    } else {
+                        BackgroundIcon
+                    }
                 Box(
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(10.dp)
-
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 4.dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .size(10.dp),
                 )
             }
         }
         Box(modifier = Modifier.weight(0.33f), contentAlignment = Alignment.CenterEnd) {
             IconButton(
                 onClick = { if (allowGoToNext) goToNext() },
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(BackgroundContainerButtonLight)
-                    .size(width = 70.dp, height = 30.dp)
+                modifier =
+                    Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(BackgroundContainerButtonLight)
+                        .size(width = 70.dp, height = 30.dp),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "",
-                    tint = colorGoToNext
+                    tint = colorGoToNext,
                 )
             }
         }
-
-
     }
-
 }
-

@@ -1,7 +1,7 @@
 package com.example.telegramWallet.data.flow_db
 
-import androidx.datastore.core.DataStore
 import android.content.Context
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import dagger.Module
@@ -15,13 +15,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
-
     @Provides
     @Singleton
-    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
-        return PreferenceDataStoreFactory.create(
+    fun provideDataStore(
+        @ApplicationContext context: Context,
+    ): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create(
             corruptionHandler = null,
-            produceFile = { File(context.filesDir, "secure_prefs.preferences_pb") }
+            produceFile = { File(context.filesDir, "secure_prefs.preferences_pb") },
         )
-    }
 }

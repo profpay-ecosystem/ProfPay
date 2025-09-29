@@ -11,12 +11,12 @@ import androidx.room.PrimaryKey
         Index(
             value = ["symbol"],
             name = "exchange_data_index_symbol",
-            unique = true
-        )
-    ]
+            unique = true,
+        ),
+    ],
 )
-data class ExchangeRatesEntity (
+data class ExchangeRatesEntity(
     @PrimaryKey(autoGenerate = true) val id: Long? = null,
     @ColumnInfo(name = "symbol") val symbol: String,
-    @ColumnInfo(name = "value") val value: Double
+    @ColumnInfo(name = "value") val value: Double,
 )

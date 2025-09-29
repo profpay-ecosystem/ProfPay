@@ -11,9 +11,9 @@ object GrpcUtils {
 
     suspend fun <T> safeCall(
         tokenProvider: TokenProvider,
-        block: suspend () -> Result<T>
-    ): Result<T> {
-        return try {
+        block: suspend () -> Result<T>,
+    ): Result<T> =
+        try {
             runCatching { block().getOrThrow() }.recoverCatching {
                 val ex = it
                 if (ex is StatusRuntimeException && ex.status.code == Status.Code.UNAUTHENTICATED) {
@@ -28,9 +28,6 @@ object GrpcUtils {
         } catch (e: Exception) {
             Result.failure(e)
         }
-    }
 }
 
-suspend fun <T> TokenProvider.safeGrpcCall(block: suspend () -> Result<T>): Result<T> {
-    return GrpcUtils.safeCall(this, block)
-}
+suspend fun <T> TokenProvider.safeGrpcCall(block: suspend () -> Result<T>): Result<T> = GrpcUtils.safeCall(this, block)

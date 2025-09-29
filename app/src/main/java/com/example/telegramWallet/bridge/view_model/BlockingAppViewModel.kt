@@ -12,28 +12,34 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BlockingAppViewModel @Inject constructor(private val blockingAppRepo: BlockingAppRepo) :
-    ViewModel() {
-    // Триггер на обновление состояния блокировки
-    fun getBlockedAppState() {
-        viewModelScope.launch { blockingAppRepo.getBlockedAppState() }
-    }
+class BlockingAppViewModel
+    @Inject
+    constructor(
+        private val blockingAppRepo: BlockingAppRepo,
+    ) : ViewModel() {
+        // Триггер на обновление состояния блокировки
+        fun getBlockedAppState() {
+            viewModelScope.launch { blockingAppRepo.getBlockedAppState() }
+        }
 
-    private val _state: MutableStateFlow<BlockingAppState> =
-        MutableStateFlow(BlockingAppState.Loading)
-    // Состояния блокировки true\false
-    val state: StateFlow<BlockingAppState> = _state.asStateFlow()
+        private val _state: MutableStateFlow<BlockingAppState> =
+            MutableStateFlow(BlockingAppState.Loading)
 
-    init {
-        getBlockedAppState()
-        viewModelScope.launch {
-            blockingAppRepo.isBlockedApp.collect { _state.value = BlockingAppState.Success(it) }
+        // Состояния блокировки true\false
+        val state: StateFlow<BlockingAppState> = _state.asStateFlow()
+
+        init {
+            getBlockedAppState()
+            viewModelScope.launch {
+                blockingAppRepo.isBlockedApp.collect { _state.value = BlockingAppState.Success(it) }
+            }
         }
     }
-}
 
 sealed interface BlockingAppState {
     data object Loading : BlockingAppState
-    data class Success(val value: BlockingAppRepoState) : BlockingAppState
-}
 
+    data class Success(
+        val value: BlockingAppRepoState,
+    ) : BlockingAppState
+}

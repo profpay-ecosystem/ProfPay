@@ -38,17 +38,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun bottomSheetReissueAddress(
-    viewModel: ReissueCentralAddressViewModel = hiltViewModel()
-): Pair<Boolean, (Boolean) -> Unit> {
+fun bottomSheetReissueAddress(viewModel: ReissueCentralAddressViewModel = hiltViewModel()): Pair<Boolean, (Boolean) -> Unit> {
     val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { true }
-    )
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { true },
+        )
 
     val (isOpenSheet, setIsOpenSheet) = remember { mutableStateOf(false) }
 
@@ -72,34 +70,38 @@ fun bottomSheetReissueAddress(
                 Row(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp, bottom = 16.dp),
                     horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = "Замена общего адреса",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
 
                 Card(
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .padding( horizontal = 16.dp,),
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 16.dp),
                     elevation = CardDefaults.cardElevation(10.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
                 ) {
                     Row(
-                        modifier = Modifier
-                            .padding(vertical = 18.dp, horizontal = 16.dp)
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .padding(vertical = 18.dp, horizontal = 16.dp)
+                                .fillMaxWidth(),
                     ) {
                         Text(
-                            text = "Убедитесь, что на текущем общем адресе нет токенов.\n" +
+                            text =
+                                "Убедитесь, что на текущем общем адресе нет токенов.\n" +
                                     "При перевыпуске адреса Вы потеряете средства, находящиеся на текущем адресе.",
                             fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
                 }
@@ -117,21 +119,24 @@ fun bottomSheetReissueAddress(
                             }
                         }
                     },
-                    modifier = Modifier
-                        .padding(vertical = 24.dp, horizontal = 16.dp)
-                        .fillMaxWidth()
-                        .height(50.dp), colors = ButtonDefaults.buttonColors(
-                        containerColor = GreenColor,
-                        contentColor = BackgroundContainerButtonLight
-                    ), shape = RoundedCornerShape(12.dp)
+                    modifier =
+                        Modifier
+                            .padding(vertical = 24.dp, horizontal = 16.dp)
+                            .fillMaxWidth()
+                            .height(50.dp),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = GreenColor,
+                            contentColor = BackgroundContainerButtonLight,
+                        ),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
                         text = "Продолжить",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
-
             }
         }
     }

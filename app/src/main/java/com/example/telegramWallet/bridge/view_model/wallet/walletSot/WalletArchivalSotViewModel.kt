@@ -13,29 +13,28 @@ import java.math.BigInteger
 import javax.inject.Inject
 
 @HiltViewModel
-class WalletArchivalSotViewModel @Inject constructor(
-    private val addressRepo: AddressRepo,
-    private val walletProfileRepo: WalletProfileRepo,
-    private val tokenRepo: TokenRepo
-) : ViewModel() {
-    fun getAddressWithTokensArchivalByBlockchainLD(
-        walletId: Long,
-        blockchainName: String
-    ): LiveData<List<AddressWithTokens>> {
-        return liveData(Dispatchers.IO) {
-            emitSource(addressRepo.getAddressesWithTokensArchivalByBlockchainLD(walletId, blockchainName))
-        }
-    }
-
-    fun getAddressesWTAWithFunds(
-        listAddressWithTokens: List<AddressWithTokens>,
-        tokenName: String
-    ): List<AddressWithTokens> {
-        return listAddressWithTokens.filter { addressWT ->
-            addressWT.tokens.any { token ->
-                token.token.tokenName == tokenName && token.balanceWithoutFrozen > BigInteger.ZERO
+class WalletArchivalSotViewModel
+    @Inject
+    constructor(
+        private val addressRepo: AddressRepo,
+        private val walletProfileRepo: WalletProfileRepo,
+        private val tokenRepo: TokenRepo,
+    ) : ViewModel() {
+        fun getAddressWithTokensArchivalByBlockchainLD(
+            walletId: Long,
+            blockchainName: String,
+        ): LiveData<List<AddressWithTokens>> =
+            liveData(Dispatchers.IO) {
+                emitSource(addressRepo.getAddressesWithTokensArchivalByBlockchainLD(walletId, blockchainName))
             }
-        }
-    }
 
-}
+        fun getAddressesWTAWithFunds(
+            listAddressWithTokens: List<AddressWithTokens>,
+            tokenName: String,
+        ): List<AddressWithTokens> =
+            listAddressWithTokens.filter { addressWT ->
+                addressWT.tokens.any { token ->
+                    token.token.tokenName == tokenName && token.balanceWithoutFrozen > BigInteger.ZERO
+                }
+            }
+    }

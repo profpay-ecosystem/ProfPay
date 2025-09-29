@@ -47,14 +47,14 @@ import org.example.protobuf.smart.SmartContractProto
 @Composable
 fun bottomSheetDetails(
     contract: SmartContractProto.ContractDealListResponse,
-    viewModel: GetSmartContractViewModel
+    viewModel: GetSmartContractViewModel,
 ): Pair<Boolean, (Boolean) -> Unit> {
-
     val coroutineScope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { true }
-    )
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { true },
+        )
 
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
 
@@ -75,15 +75,17 @@ fun bottomSheetDetails(
             sheetState = sheetState,
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 8.dp),
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp),
-                    horizontalArrangement = Arrangement.End
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(30.dp),
+                    horizontalArrangement = Arrangement.End,
                 ) {
                     Row(
                         modifier = Modifier,
@@ -95,16 +97,17 @@ fun bottomSheetDetails(
                             Icon(
                                 imageVector = Icons.Filled.Clear,
                                 contentDescription = "",
-                                modifier = Modifier.size(27.dp)
+                                modifier = Modifier.size(27.dp),
                             )
                         }
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp, start = 16.dp, end = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp, start = 16.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(modifier = Modifier.weight(0.5f)) {
                         Text("Адрес контракта", fontSize = 16.sp)
@@ -112,96 +115,107 @@ fun bottomSheetDetails(
                     Row(
                         modifier = Modifier.weight(0.5f),
                         horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "${contract.smartContractAddress.take(5)}..." +
+                            text =
+                                "${contract.smartContractAddress.take(5)}..." +
                                     "${contract.smartContractAddress.takeLast(5)} ",
-                            fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
                         )
                         IconButton(
                             modifier = Modifier.size(35.dp),
                             onClick = {
                                 clipboardManager.setText(AnnotatedString(contract.smartContractAddress))
-                            }) {
+                            },
+                        ) {
                             Icon(
                                 modifier = Modifier.padding(4.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                 contentDescription = "",
-                                )
+                            )
                         }
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp, start = 16.dp, end = 16.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp, start = 16.dp, end = 16.dp),
                 ) {
                     Row(modifier = Modifier.weight(0.5f)) {
                         Text("Сумма", fontSize = 16.sp)
                     }
                     Row(
                         modifier = Modifier.weight(0.5f),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
                     ) {
                         Text(
                             text = "${contract.amount.toBigInteger().toTokenAmount()}$",
-                            fontSize = 16.sp, fontWeight = FontWeight.SemiBold
-                         )
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp, start = 16.dp, end = 16.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp, start = 16.dp, end = 16.dp),
                 ) {
                     Row(modifier = Modifier.weight(0.5f)) {
                         Text("Общая комиссия", fontSize = 16.sp)
                     }
                     Row(
                         modifier = Modifier.weight(0.5f),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.End,
                     ) {
                         Text(
                             text = "${contract.dealData.totalExpertCommissions.toBigInteger().toTokenAmount()}$",
-                            fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
                 }
                 if (!isAddressZero(contract.disputeResolutionStatus.decisionAdmin)) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp, start = 16.dp, end = 16.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp, start = 16.dp, end = 16.dp),
                     ) {
                         Row(modifier = Modifier.weight(0.5f)) {
                             Text("Сумма покупателю", fontSize = 16.sp)
                         }
                         Row(
                             modifier = Modifier.weight(0.5f),
-                            horizontalArrangement = Arrangement.End
+                            horizontalArrangement = Arrangement.End,
                         ) {
                             Text(
                                 text = "${contract.disputeResolutionStatus.amountToBuyer.toBigInteger().toTokenAmount()}$",
-                                fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
                             )
                         }
                     }
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp, start = 16.dp, end = 16.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp, start = 16.dp, end = 16.dp),
                     ) {
                         Row(modifier = Modifier.weight(0.5f)) {
                             Text("Сумма продавцу", fontSize = 16.sp)
                         }
                         Row(
                             modifier = Modifier.weight(0.5f),
-                            horizontalArrangement = Arrangement.End
+                            horizontalArrangement = Arrangement.End,
                         ) {
                             Text(
                                 text = "${contract.disputeResolutionStatus.amountToSeller.toBigInteger().toTokenAmount()}$",
-                                fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
                             )
                         }
                     }
@@ -209,10 +223,11 @@ fun bottomSheetDetails(
                 Spacer(modifier = Modifier.size(10.dp))
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp, start = 16.dp, end = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp, start = 16.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(modifier = Modifier.weight(0.5f)) {
                         Text("Адрес получателя", fontSize = 16.sp)
@@ -220,29 +235,33 @@ fun bottomSheetDetails(
                     Row(
                         modifier = Modifier.weight(0.5f),
                         horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "${contract.seller.address.take(5)}..." +
+                            text =
+                                "${contract.seller.address.take(5)}..." +
                                     "${contract.seller.address.takeLast(5)} ",
-                            fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
                         )
-                        IconButton(modifier = Modifier.size(35.dp),
-                            onClick = { clipboardManager.setText(AnnotatedString(contract.seller.address)) }) {
+                        IconButton(
+                            modifier = Modifier.size(35.dp),
+                            onClick = { clipboardManager.setText(AnnotatedString(contract.seller.address)) },
+                        ) {
                             Icon(
                                 modifier = Modifier.padding(4.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                 contentDescription = "",
-
-                                )
+                            )
                         }
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 0.dp, start = 16.dp, end = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 0.dp, start = 16.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(modifier = Modifier.weight(0.5f)) {
                         Text("Username получателя", fontSize = 16.sp)
@@ -250,31 +269,33 @@ fun bottomSheetDetails(
                     Row(
                         modifier = Modifier.weight(0.5f),
                         horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = "@${contract.seller.username}",
-                            fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
                         )
-                        IconButton(modifier = Modifier.size(35.dp),
+                        IconButton(
+                            modifier = Modifier.size(35.dp),
                             onClick = {
                                 clipboardManager.setText(AnnotatedString("@${contract.seller.username}"))
-                            }) {
+                            },
+                        ) {
                             Icon(
                                 modifier = Modifier.padding(4.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                 contentDescription = "",
-
-                                )
-
+                            )
                         }
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 0.dp, start = 16.dp, end = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 0.dp, start = 16.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(modifier = Modifier.weight(0.5f)) {
                         Text("Telegram ID получателя", fontSize = 16.sp)
@@ -282,23 +303,24 @@ fun bottomSheetDetails(
                     Row(
                         modifier = Modifier.weight(0.5f),
                         horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = "${contract.seller.telegramId}",
-                            fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
                         )
-                        IconButton(modifier = Modifier.size(35.dp),
+                        IconButton(
+                            modifier = Modifier.size(35.dp),
                             onClick = {
                                 clipboardManager.setText(AnnotatedString(contract.seller.telegramId.toString()))
-                            }) {
+                            },
+                        ) {
                             Icon(
                                 modifier = Modifier.padding(4.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                 contentDescription = "",
-
-                                )
-
+                            )
                         }
                     }
                 }
@@ -306,10 +328,11 @@ fun bottomSheetDetails(
                 Spacer(modifier = Modifier.size(10.dp))
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp, start = 16.dp, end = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp, start = 16.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(modifier = Modifier.weight(0.5f)) {
                         Text("Адрес отправителя", fontSize = 16.sp)
@@ -317,32 +340,35 @@ fun bottomSheetDetails(
                     Row(
                         modifier = Modifier.weight(0.5f),
                         horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "${contract.buyer.address.take(5)}..." +
+                            text =
+                                "${contract.buyer.address.take(5)}..." +
                                     "${contract.buyer.address.takeLast(5)} ",
-                            fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
                         )
-                        IconButton(modifier = Modifier.size(35.dp),
+                        IconButton(
+                            modifier = Modifier.size(35.dp),
                             onClick = {
                                 clipboardManager.setText(AnnotatedString(contract.buyer.address))
-                            }) {
+                            },
+                        ) {
                             Icon(
                                 modifier = Modifier.padding(4.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                 contentDescription = "",
-
-                                )
-
+                            )
                         }
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 0.dp, start = 16.dp, end = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 0.dp, start = 16.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(modifier = Modifier.weight(0.5f)) {
                         Text("Username отправителя", fontSize = 16.sp)
@@ -350,31 +376,33 @@ fun bottomSheetDetails(
                     Row(
                         modifier = Modifier.weight(0.5f),
                         horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = "@${contract.buyer.username}",
-                            fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
                         )
-                        IconButton(modifier = Modifier.size(35.dp),
+                        IconButton(
+                            modifier = Modifier.size(35.dp),
                             onClick = {
                                 clipboardManager.setText(AnnotatedString("@${contract.buyer.username}"))
-                            }) {
+                            },
+                        ) {
                             Icon(
                                 modifier = Modifier.padding(4.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                 contentDescription = "",
-
-                                )
-
+                            )
                         }
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 0.dp, start = 16.dp, end = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 0.dp, start = 16.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(modifier = Modifier.weight(0.5f)) {
                         Text("Telegram ID отправителя", fontSize = 16.sp)
@@ -382,23 +410,24 @@ fun bottomSheetDetails(
                     Row(
                         modifier = Modifier.weight(0.5f),
                         horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = "${contract.buyer.telegramId}",
-                            fontSize = 16.sp, fontWeight = FontWeight.SemiBold
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
                         )
-                        IconButton(modifier = Modifier.size(35.dp),
+                        IconButton(
+                            modifier = Modifier.size(35.dp),
                             onClick = {
                                 clipboardManager.setText(AnnotatedString(contract.buyer.telegramId.toString()))
-                            }) {
+                            },
+                        ) {
                             Icon(
                                 modifier = Modifier.padding(4.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                 contentDescription = "",
-
-                                )
-
+                            )
                         }
                     }
                 }

@@ -46,20 +46,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 @Composable
 fun CreatedWalletAddingScreen(
     goToHome: () -> Unit,
     viewModel: SeedPhraseConfirmationViewModel = hiltViewModel(),
-    goToBack: () -> Unit
+    goToBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    Scaffold(
-    ) { padding ->
+    Scaffold { padding ->
         Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
+            modifier =
+                Modifier
+                    .padding(padding)
+                    .fillMaxSize(),
         ) {}
         when (state) {
             is SeedPhraseConfirmationState.Loading ->
@@ -68,17 +67,18 @@ fun CreatedWalletAddingScreen(
                         .fillMaxSize()
                         .paint(
                             painterResource(id = R.drawable.create_recovery_bg_end),
-                            contentScale = ContentScale.FillBounds
+                            contentScale = ContentScale.FillBounds,
                         ),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
 
-            is SeedPhraseConfirmationState.Success -> CreatedWalletAddingWidget(
-                addressGenerateResult = (state as SeedPhraseConfirmationState.Success).addressGenerateResult,
-                goToHome = goToHome
-            )
+            is SeedPhraseConfirmationState.Success ->
+                CreatedWalletAddingWidget(
+                    addressGenerateResult = (state as SeedPhraseConfirmationState.Success).addressGenerateResult,
+                    goToHome = goToHome,
+                )
         }
     }
 }
@@ -87,38 +87,43 @@ fun CreatedWalletAddingScreen(
 fun CreatedWalletAddingWidget(
     addressGenerateResult: AddressGenerateResult,
     goToHome: () -> Unit,
-    viewModel: WalletAddedViewModel = hiltViewModel()
+    viewModel: WalletAddedViewModel = hiltViewModel(),
 ) {
     val sharedPref = sharedPref()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .paint(
-                painterResource(id = R.drawable.create_recovery_bg_end),
-                contentScale = ContentScale.FillBounds
-            ),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .paint(
+                    painterResource(id = R.drawable.create_recovery_bg_end),
+                    contentScale = ContentScale.FillBounds,
+                ),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 70.dp, horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 70.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Icon(
                 modifier = Modifier.size(170.dp),
                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_smart),
-                contentDescription = "", tint = BackgroundLight
+                contentDescription = "",
+                tint = BackgroundLight,
             )
             Text(
                 textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(vertical = 18.dp),
+                modifier =
+                    Modifier
+                        .padding(vertical = 18.dp),
                 text = "Всё готово!",
-                style = MaterialTheme.typography.displayMedium, color = BackgroundLight
+                style = MaterialTheme.typography.displayMedium,
+                color = BackgroundLight,
             )
             Button(
                 onClick = {
@@ -130,7 +135,7 @@ fun CreatedWalletAddingWidget(
                         if (isFirstStarted) {
                             viewModel.registerUserAccount(
                                 deviceToken = deviceToken,
-                                sharedPref = sharedPref
+                                sharedPref = sharedPref,
                             )
                             sharedPref.edit(commit = true) { putBoolean(PrefKeys.FIRST_STARTED, false) }
                         }
@@ -144,7 +149,7 @@ fun CreatedWalletAddingWidget(
                             }
                         } catch (e: Exception) {
                             if (!sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)) {
-                                sharedPref.edit() { putBoolean(PrefKeys.FIRST_STARTED, true) }
+                                sharedPref.edit { putBoolean(PrefKeys.FIRST_STARTED, true) }
                             }
                             Sentry.captureException(e)
                             // todo: реализовать
@@ -154,33 +159,32 @@ fun CreatedWalletAddingWidget(
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = BackgroundLight),
-                modifier = Modifier
-                    .padding(vertical = 16.dp),
-                shape = RoundedCornerShape(10.dp)
+                modifier =
+                    Modifier
+                        .padding(vertical = 16.dp),
+                shape = RoundedCornerShape(10.dp),
             ) {
                 Text(text = "Приступить к работе", style = MaterialTheme.typography.titleSmall, color = BackgroundDark)
             }
-
         }
     }
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.97f),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.97f),
         verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = "ProfPay",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold),
-            color = BackgroundDark
+            color = BackgroundDark,
         )
         Text(
             text = "ProfPay IO, 2024",
             style = MaterialTheme.typography.titleSmall,
-            color = BackgroundDark
+            color = BackgroundDark,
         )
     }
 }
-
-

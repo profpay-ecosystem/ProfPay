@@ -25,7 +25,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +51,6 @@ import org.example.protobuf.transfer.TransferProto
 import java.math.BigDecimal
 import java.math.BigInteger
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun bottomSheetTransOnGeneralReceipt(
@@ -61,12 +59,13 @@ fun bottomSheetTransOnGeneralReceipt(
     snackbar: StackedSnakbarHostState,
     tokenName: String,
     walletId: Long,
-    balance: BigInteger? = null
+    balance: BigInteger? = null,
 ): Pair<Boolean, (Boolean) -> Unit> {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { true }
-    )
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { true },
+        )
 
     val (isOpenSheet, setIsOpenSheet) = remember { mutableStateOf(false) }
     val (isConfirmTransaction, setIsConfirmTransaction) = remember { mutableStateOf(false) }
@@ -81,35 +80,43 @@ fun bottomSheetTransOnGeneralReceipt(
 
     if (isOpenSheet) {
         val tokenEntity =
-            addressWithTokens!!.tokens.stream().filter { it.token.tokenName == tokenName }?.findFirst()
+            addressWithTokens!!
+                .tokens
+                .stream()
+                .filter { it.token.tokenName == tokenName }
+                ?.findFirst()
                 ?.orElse(null)
 
         LaunchedEffect(Unit) {
-            val address = withContext(Dispatchers.IO) {
-                viewModel.addressRepo.getAddressEntityByAddress(addressWithTokens.addressEntity.address)
-            }
-            val generalAddress = withContext(Dispatchers.IO) {
-                viewModel.addressRepo.getGeneralAddressByWalletId(walletId)
-            }
+            val address =
+                withContext(Dispatchers.IO) {
+                    viewModel.addressRepo.getAddressEntityByAddress(addressWithTokens.addressEntity.address)
+                }
+            val generalAddress =
+                withContext(Dispatchers.IO) {
+                    viewModel.addressRepo.getGeneralAddressByWalletId(walletId)
+                }
 
             if (address == null) return@LaunchedEffect
 
-            val requiredEnergy = withContext(Dispatchers.IO) {
-                viewModel.tron.transactions.estimateEnergy(
-                    fromAddress = address.address,
-                    toAddress = generalAddress,
-                    privateKey = address.privateKey,
-                    amount = balance ?: tokenEntity?.balanceWithoutFrozen!!
-                )
-            }
-            val requiredBandwidth = withContext(Dispatchers.IO) {
-                viewModel.tron.transactions.estimateBandwidth(
-                    fromAddress = address.address,
-                    toAddress = generalAddress,
-                    privateKey = address.privateKey,
-                    amount = balance ?: tokenEntity?.balanceWithoutFrozen!!
-                )
-            }
+            val requiredEnergy =
+                withContext(Dispatchers.IO) {
+                    viewModel.tron.transactions.estimateEnergy(
+                        fromAddress = address.address,
+                        toAddress = generalAddress,
+                        privateKey = address.privateKey,
+                        amount = balance ?: tokenEntity?.balanceWithoutFrozen!!,
+                    )
+                }
+            val requiredBandwidth =
+                withContext(Dispatchers.IO) {
+                    viewModel.tron.transactions.estimateBandwidth(
+                        fromAddress = address.address,
+                        toAddress = generalAddress,
+                        privateKey = address.privateKey,
+                        amount = balance ?: tokenEntity?.balanceWithoutFrozen!!,
+                    )
+                }
 
             withContext(Dispatchers.IO) {
                 if (!viewModel.tron.addressUtilities.isAddressActivated(generalAddress)) {
@@ -121,7 +128,7 @@ fun bottomSheetTransOnGeneralReceipt(
                 viewModel.estimateCommission(
                     address = addressWithTokens.addressEntity.address,
                     bandwidth = requiredBandwidth.bandwidth,
-                    energy = requiredEnergy.energy
+                    energy = requiredEnergy.energy,
                 )
             }
         }
@@ -158,30 +165,33 @@ fun bottomSheetTransOnGeneralReceipt(
                     Row(
                         modifier = Modifier.padding(top = 16.dp, start = 16.dp, bottom = 16.dp),
                         horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = "Перевод на Главный",
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
 
                     Card(
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .padding( vertical = 8.dp, horizontal = 16.dp,),
+                        modifier =
+                            Modifier
+                                .padding(vertical = 8.dp, horizontal = 16.dp),
                         elevation = CardDefaults.cardElevation(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                            ),
                     ) {
                         Row(
-                            modifier = Modifier
-                                .padding(18.dp)
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .padding(18.dp)
+                                    .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(text = "Комиссия:", fontWeight = FontWeight.SemiBold)
                             Row {
@@ -194,19 +204,22 @@ fun bottomSheetTransOnGeneralReceipt(
                     if (isGeneralAddressNotActivatedVisible) {
                         Card(
                             shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier
-                                .padding(vertical = 8.dp, horizontal = 16.dp),
+                            modifier =
+                                Modifier
+                                    .padding(vertical = 8.dp, horizontal = 16.dp),
                             elevation = CardDefaults.cardElevation(10.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
+                            colors =
+                                CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                ),
                         ) {
                             Row(
-                                modifier = Modifier
-                                    .padding(18.dp)
-                                    .fillMaxWidth(),
+                                modifier =
+                                    Modifier
+                                        .padding(18.dp)
+                                        .fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Text(text = "Активация адреса:", fontWeight = FontWeight.SemiBold, color = Color.Red)
                                 Row {
@@ -219,24 +232,28 @@ fun bottomSheetTransOnGeneralReceipt(
 
                     Card(
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .padding( horizontal = 16.dp,),
+                        modifier =
+                            Modifier
+                                .padding(horizontal = 16.dp),
                         elevation = CardDefaults.cardElevation(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                            ),
                     ) {
                         Row(
-                            modifier = Modifier
-                                .padding(vertical = 18.dp, horizontal = 16.dp)
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .padding(vertical = 18.dp, horizontal = 16.dp)
+                                    .fillMaxWidth(),
                         ) {
                             Text(
-                                text = "Мы списываем комиссию в TRX, которая рассчитывается исходя из количества полученных AML отчетов и числа оплаченных услуг, " +
+                                text =
+                                    "Мы списываем комиссию в TRX, которая рассчитывается исходя из количества полученных AML отчетов и числа оплаченных услуг, " +
                                         "связанных с проверкой по AML. " +
                                         "Размер комиссии напрямую зависит от объема предоставленных отчетов и оплаченных проверок на соответствие требованиям по борьбе с отмыванием денег (AML).",
                                 fontSize = 14.sp,
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
                             )
                         }
                     }
@@ -247,28 +264,31 @@ fun bottomSheetTransOnGeneralReceipt(
                             isButtonEnabled = false // Отключаем кнопку
                             setIsConfirmTransaction(true)
                             viewModel.viewModelScope.launch {
-                                val result = withContext(Dispatchers.IO) {
-                                    viewModel.acceptTransaction(
-                                        addressWithTokens = addressWithTokens,
-                                        commission = commissionOnTransaction.toSunAmount(),
-                                        walletId = walletId,
-                                        tokenEntity = tokenEntity,
-                                        amount = balance ?: tokenEntity?.balanceWithoutFrozen!!,
-                                        commissionResult = commissionResult
-                                    )
-                                }
+                                val result =
+                                    withContext(Dispatchers.IO) {
+                                        viewModel.acceptTransaction(
+                                            addressWithTokens = addressWithTokens,
+                                            commission = commissionOnTransaction.toSunAmount(),
+                                            walletId = walletId,
+                                            tokenEntity = tokenEntity,
+                                            amount = balance ?: tokenEntity?.balanceWithoutFrozen!!,
+                                            commissionResult = commissionResult,
+                                        )
+                                    }
 
                                 when (result) {
-                                    is TransferResult.Success -> snackbar.showSuccessSnackbar(
-                                        "Успешное действие",
-                                        "Успешно отправлено ${(balance ?: tokenEntity?.balanceWithoutFrozen!!).toTokenAmount()} $tokenName",
-                                        "Закрыть",
-                                    )
-                                    is TransferResult.Failure -> snackbar.showErrorSnackbar(
-                                        "Перевод валюты невозможен",
-                                        result.error.message,
-                                        "Закрыть",
-                                    )
+                                    is TransferResult.Success ->
+                                        snackbar.showSuccessSnackbar(
+                                            "Успешное действие",
+                                            "Успешно отправлено ${(balance ?: tokenEntity?.balanceWithoutFrozen!!).toTokenAmount()} $tokenName",
+                                            "Закрыть",
+                                        )
+                                    is TransferResult.Failure ->
+                                        snackbar.showErrorSnackbar(
+                                            "Перевод валюты невозможен",
+                                            result.error.message,
+                                            "Закрыть",
+                                        )
                                 }
 
                                 setIsOpenSheet(false)
@@ -276,23 +296,26 @@ fun bottomSheetTransOnGeneralReceipt(
                                 setIsConfirmTransaction(false)
                             }
                         },
-                        modifier = Modifier
-                            .padding(vertical = 24.dp, horizontal = 16.dp)
-                            .fillMaxWidth()
-                            .height(50.dp), colors = ButtonDefaults.buttonColors(
-                            containerColor = GreenColor,
-                            contentColor = BackgroundContainerButtonLight
-                        ), shape = RoundedCornerShape(12.dp)
+                        modifier =
+                            Modifier
+                                .padding(vertical = 24.dp, horizontal = 16.dp)
+                                .fillMaxWidth()
+                                .height(50.dp),
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = GreenColor,
+                                contentColor = BackgroundContainerButtonLight,
+                            ),
+                        shape = RoundedCornerShape(12.dp),
                     ) {
                         Text(
                             text = "Подтвердить",
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
                 } else {
                     ContentBottomSheetTransferProcessing(onClick = {
-
                     })
                 }
             }

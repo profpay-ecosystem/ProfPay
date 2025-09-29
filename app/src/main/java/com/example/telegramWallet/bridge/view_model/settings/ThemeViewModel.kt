@@ -12,39 +12,44 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ThemeViewModel @Inject constructor(private val themeAppRepo: ThemeAppRepo) : ViewModel() {
-    // Получаем true\false в зависимости тёмная\светлая тема
-    fun isDarkTheme(sharedThemeInt: Int, systemDarkTheme: Boolean): Boolean {
-        return sharedThemeInt == 1 || (sharedThemeInt == 2 && systemDarkTheme)
-    }
+class ThemeViewModel
+    @Inject
+    constructor(
+        private val themeAppRepo: ThemeAppRepo,
+    ) : ViewModel() {
+        // Получаем true\false в зависимости тёмная\светлая тема
+        fun isDarkTheme(
+            sharedThemeInt: Int,
+            systemDarkTheme: Boolean,
+        ): Boolean = sharedThemeInt == 1 || (sharedThemeInt == 2 && systemDarkTheme)
 
-    // Триггер на обновление состояния выбранной темы
-    fun getThemeApp(shared: SharedPreferences) {
-        viewModelScope.launch {
-            themeAppRepo.isDarkTheme(shared)
+        // Триггер на обновление состояния выбранной темы
+        fun getThemeApp(shared: SharedPreferences) {
+            viewModelScope.launch {
+                themeAppRepo.isDarkTheme(shared)
+            }
         }
-    }
 
-    private val _state: MutableStateFlow<ThemeState> =
-        MutableStateFlow(ThemeState.Loading)
+        private val _state: MutableStateFlow<ThemeState> =
+            MutableStateFlow(ThemeState.Loading)
 
-    // Значение темы в числовом формате
-    val state: StateFlow<ThemeState> =
-        _state.asStateFlow()
+        // Значение темы в числовом формате
+        val state: StateFlow<ThemeState> =
+            _state.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            themeAppRepo.isDarkTheme.collect {
-                _state.value = ThemeState.Success(it)
+        init {
+            viewModelScope.launch {
+                themeAppRepo.isDarkTheme.collect {
+                    _state.value = ThemeState.Success(it)
+                }
             }
         }
     }
-}
 
 sealed interface ThemeState {
     data object Loading : ThemeState
-    data class Success(
-        val themeStateResult: Int
-    ) : ThemeState
 
+    data class Success(
+        val themeStateResult: Int,
+    ) : ThemeState
 }

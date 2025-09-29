@@ -2,7 +2,6 @@ package com.example.telegramWallet
 
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -21,7 +20,6 @@ import com.example.telegramWallet.bridge.view_model.settings.ThemeViewModel
 import com.example.telegramWallet.data.services.AppLockManager
 import com.example.telegramWallet.data.services.NetworkMonitor
 import com.example.telegramWallet.ui.app.navigation.MyApp
-import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.WalletInfo
 import com.example.telegramWallet.ui.app.theme.WalletNavigationBottomBarTheme
 import com.example.telegramWallet.ui.screens.NotNetworkScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,10 +46,11 @@ class MainActivity : FragmentActivity() {
             options.isAttachScreenshot = false
         }
 
-        val sharedPrefs = getSharedPreferences(
-            ContextCompat.getString(this, R.string.preference_file_key),
-            MODE_PRIVATE
-        )
+        val sharedPrefs =
+            getSharedPreferences(
+                ContextCompat.getString(this, R.string.preference_file_key),
+                MODE_PRIVATE,
+            )
 
         networkMonitor = NetworkMonitor(this, sharedPrefs).also { it.register() }
         enableEdgeToEdge()
@@ -59,8 +58,8 @@ class MainActivity : FragmentActivity() {
         ProcessLifecycleOwner.get().lifecycle.addObserver(
             AppLifecycleObserver(
                 onAppForegrounded = { pinLockViewModel.checkPinState() },
-                onAppBackgrounded = { AppLockManager.lock() }
-            )
+                onAppBackgrounded = { AppLockManager.lock() },
+            ),
         )
 
         lifecycleScope.launch {
@@ -85,10 +84,11 @@ class MainActivity : FragmentActivity() {
                     themeViewModel.getThemeApp(sharedPrefs)
                 }
                 is ThemeState.Success -> {
-                    val isDarkTheme = themeViewModel.isDarkTheme(
-                        themeState.themeStateResult,
-                        isSystemDark
-                    )
+                    val isDarkTheme =
+                        themeViewModel.isDarkTheme(
+                            themeState.themeStateResult,
+                            isSystemDark,
+                        )
                     WalletNavigationBottomBarTheme(activity = this, isDarkTheme = isDarkTheme) {
                         NotNetworkScreen()
                     }
@@ -108,10 +108,11 @@ class MainActivity : FragmentActivity() {
                     themeViewModel.getThemeApp(sharedPrefs)
                 }
                 is ThemeState.Success -> {
-                    val isDarkTheme = themeViewModel.isDarkTheme(
-                        themeState.themeStateResult,
-                        isSystemDark
-                    )
+                    val isDarkTheme =
+                        themeViewModel.isDarkTheme(
+                            themeState.themeStateResult,
+                            isSystemDark,
+                        )
                     WalletNavigationBottomBarTheme(activity = this, isDarkTheme = isDarkTheme) {
                         val navController = rememberNavController()
                         MyApp(navController, networkMonitor)

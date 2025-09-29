@@ -11,12 +11,12 @@ import androidx.room.PrimaryKey
         Index(
             value = ["symbol"],
             name = "trading_insights_index_symbol",
-            unique = true
-        )
-    ]
+            unique = true,
+        ),
+    ],
 )
-data class TradingInsightsEntity (
+data class TradingInsightsEntity(
     @PrimaryKey(autoGenerate = true) val id: Long? = null,
     @ColumnInfo(name = "symbol") val symbol: String,
-    @ColumnInfo(name = "price_change_percentage_24h") val priceChangePercentage24h: Double
+    @ColumnInfo(name = "price_change_percentage_24h") val priceChangePercentage24h: Double,
 )

@@ -49,58 +49,61 @@ fun CACardHistoryTransactionsFeature(
         else -> return
     }
 
-
     Card(
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .fillMaxWidth()
-            .shadow(7.dp, RoundedCornerShape(10.dp))
+        modifier =
+            Modifier
+                .padding(vertical = 4.dp)
+                .fillMaxWidth()
+                .shadow(7.dp, RoundedCornerShape(10.dp)),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier =
+                Modifier
+                    .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 16.dp)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.Center
+                modifier =
+                    Modifier
+                        .padding(start = 10.dp, end = 16.dp)
+                        .fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .size(40.dp)
-                            .paint(
-                                painterResource(id = paintIconId),
-                                contentScale = ContentScale.FillBounds
-                            ),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .padding(vertical = 8.dp)
+                                .size(40.dp)
+                                .paint(
+                                    painterResource(id = paintIconId),
+                                    contentScale = ContentScale.FillBounds,
+                                ),
+                        contentAlignment = Alignment.Center,
                     ) {}
                     Column(modifier = Modifier.padding(horizontal = 12.dp, 8.dp)) {
                         Text(
                             text = transactionLabel,
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                         Text(text = transactionDirection, style = MaterialTheme.typography.labelLarge)
                     }
                 }
             }
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 10.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End
+                horizontalAlignment = Alignment.End,
             ) {
                 Text(
                     text = "$amount $shortNameToken",
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
                 )
-
             }
         }
     }

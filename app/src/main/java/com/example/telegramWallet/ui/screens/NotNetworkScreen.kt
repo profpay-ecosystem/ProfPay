@@ -17,23 +17,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.telegramWallet.R
-import com.example.telegramWallet.bridge.view_model.BlockingAppViewModel
 import com.example.telegramWallet.ui.app.theme.LocalFontSize
 
 @Composable
 fun NotNetworkScreen() {
     Scaffold {
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(it),
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 IsEthDisableBASFeature()
             }
@@ -46,19 +45,19 @@ fun IsEthDisableBASFeature() {
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Icon(
             modifier = Modifier.size(120.dp).padding(bottom = 20.dp),
             imageVector = ImageVector.vectorResource(id = R.drawable.icon_eth_disable),
             contentDescription = "Back",
-            tint = MaterialTheme.colorScheme.onPrimary
+            tint = MaterialTheme.colorScheme.onPrimary,
         )
         Text(
             text = "Упс, что-то пошло не так",
             fontSize = LocalFontSize.Large.fS,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(bottom = 10.dp)
+            modifier = Modifier.padding(bottom = 10.dp),
         )
         Text(text = "В данный момент доступ к серверу отсутствует. Пожалуйста, проверьте ваше соединение с интернетом.")
     }

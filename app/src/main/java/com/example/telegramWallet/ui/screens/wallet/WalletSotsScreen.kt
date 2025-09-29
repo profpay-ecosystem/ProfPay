@@ -77,15 +77,16 @@ fun WalletSotsScreen(
     goToReceive: () -> Unit,
     goToWalletAddress: () -> Unit,
     goToWalletArchivalSots: () -> Unit,
-    viewModel: WalletSotViewModel = hiltViewModel()
+    viewModel: WalletSotViewModel = hiltViewModel(),
 ) {
-    val sheetState = rememberStandardBottomSheetState(
-        initialValue = SheetValue.PartiallyExpanded,
-        confirmValueChange = { newState ->
-            newState != SheetValue.Hidden
-        },
-        skipHiddenState = true
-    )
+    val sheetState =
+        rememberStandardBottomSheetState(
+            initialValue = SheetValue.PartiallyExpanded,
+            confirmValueChange = { newState ->
+                newState != SheetValue.Hidden
+            },
+            skipHiddenState = true,
+        )
 
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
 
@@ -93,9 +94,11 @@ fun WalletSotsScreen(
 
     val token = sharedPref().getString("token_name", TokenName.USDT.tokenName)
 
-    val addressWithTokens by viewModel.getAddressesSotsWithTokensByBlockchainLD(
-        walletId = walletId, blockchainName = TokenName.valueOf(token!!).blockchainName
-    ).observeAsState(emptyList())
+    val addressWithTokens by viewModel
+        .getAddressesSotsWithTokensByBlockchainLD(
+            walletId = walletId,
+            blockchainName = TokenName.valueOf(token!!).blockchainName,
+        ).observeAsState(emptyList())
 
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
 
@@ -103,14 +106,14 @@ fun WalletSotsScreen(
         modifier = Modifier.padding(bottom = bottomPadding.dp),
         sheetDragHandle = {
             Box(
-                modifier = Modifier
-                    .padding(
-                        horizontal = 160.dp,
-                        vertical = 7.dp
-                    )
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.onPrimary)
-                    .size(width = 90.dp, height = 5.dp)
+                modifier =
+                    Modifier
+                        .padding(
+                            horizontal = 160.dp,
+                            vertical = 7.dp,
+                        ).clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.onPrimary)
+                        .size(width = 90.dp, height = 5.dp),
             )
         },
         sheetShape = RoundedCornerShape(20.dp),
@@ -121,25 +124,26 @@ fun WalletSotsScreen(
                 addressList = addressWithTokens,
                 goToWalletAddress = { goToWalletAddress() },
                 viewModel = viewModel,
-                goToWalletArchivalSots = { goToWalletArchivalSots() }
+                goToWalletArchivalSots = { goToWalletArchivalSots() },
             )
         },
-        sheetPeekHeight = 435.dp
+        sheetPeekHeight = 435.dp,
     ) { _ ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ),
-            contentAlignment = Alignment.TopCenter
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
+            contentAlignment = Alignment.TopCenter,
         ) {
             HexagonsFeature(
                 goToBack = goToBack,
                 goToReceive = goToReceive,
                 addressList = addressWithTokens,
-                size = with(LocalDensity.current) { sheetState.requireOffset().toDp() * 1.1f }
+                size = with(LocalDensity.current) { sheetState.requireOffset().toDp() * 1.1f },
             )
         }
     }
@@ -148,108 +152,121 @@ fun WalletSotsScreen(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SheetContent(
-    walletId: Long, addressList: List<AddressWithTokens>, goToWalletAddress: () -> Unit,
-    viewModel: WalletSotViewModel, goToWalletArchivalSots: () -> Unit
+    walletId: Long,
+    addressList: List<AddressWithTokens>,
+    goToWalletAddress: () -> Unit,
+    viewModel: WalletSotViewModel,
+    goToWalletArchivalSots: () -> Unit,
 ) {
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
     val sharedPref = sharedPref()
     val tokenName = sharedPref.getString("token_name", TokenName.USDT.tokenName)
 
-    val listColors: List<Color> = listOf(
-        Color(0xFF6A0E8D),
-        Color(0xFF29A512),
-        Color(0xFFFFA200),
-        Color(0xFF0019FF),
-        Color(0xFF00FE00),
-        Color(0xFFF6DA00),
-        Color(0xFF0099D7),
-    )
+    val listColors: List<Color> =
+        listOf(
+            Color(0xFF6A0E8D),
+            Color(0xFF29A512),
+            Color(0xFFFFA200),
+            Color(0xFF0019FF),
+            Color(0xFF00FE00),
+            Color(0xFFF6DA00),
+            Color(0xFF0099D7),
+        )
     Column(modifier = Modifier) {
         Column(
             modifier = Modifier,
-            verticalArrangement = Arrangement.Bottom
+            verticalArrangement = Arrangement.Bottom,
         ) {
             LazyColumn(
                 modifier = Modifier,
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 itemsIndexed(
                     addressList
                         .stream()
                         .filter { it.addressEntity.sotIndex >= 0 }
                         .sorted(Comparator.comparingInt { it.addressEntity.sotIndex.toInt() })
-                        .collect(Collectors.toList()))
-                { index, address ->
-                    val tokenEntity = address.tokens.stream()
-                        .filter { currentToken -> currentToken.token.tokenName == tokenName }
-                        .findFirst()
-                        .orElse(null)
+                        .collect(Collectors.toList()),
+                ) { index, address ->
+                    val tokenEntity =
+                        address.tokens
+                            .stream()
+                            .filter { currentToken -> currentToken.token.tokenName == tokenName }
+                            .findFirst()
+                            .orElse(null)
 
                     var expandedDropdownMenu by remember { mutableStateOf(false) }
 
                     Card(
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(IntrinsicSize.Min),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Min),
                         elevation = CardDefaults.cardElevation(10.dp),
                         onClick = {
-                            sharedPref.edit() {
+                            sharedPref.edit {
                                 putString(PrefKeys.ADDRESS_FOR_WALLET_ADDRESS, address.addressEntity.address)
                             }
                             goToWalletAddress()
-                        }
+                        },
                     ) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxSize(),
+                            modifier =
+                                Modifier
+                                    .fillMaxSize(),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             Column(
-                                modifier = Modifier
-                                    .padding(start =  8.dp, )
-                                    .padding(vertical = 8.dp)
-                                    .fillMaxHeight(),
-                                verticalArrangement = Arrangement.Center
+                                modifier =
+                                    Modifier
+                                        .padding(start = 8.dp)
+                                        .padding(vertical = 8.dp)
+                                        .fillMaxHeight(),
+                                verticalArrangement = Arrangement.Center,
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Box(
-                                        modifier = Modifier
-                                            .clip(HexagonShape(true))
-                                            .border(2.dp, listColors[index], HexagonShape(true))
-                                            .size(40.dp),
-                                        contentAlignment = Alignment.Center
+                                        modifier =
+                                            Modifier
+                                                .clip(HexagonShape(true))
+                                                .border(2.dp, listColors[index], HexagonShape(true))
+                                                .size(40.dp),
+                                        contentAlignment = Alignment.Center,
                                     ) {
                                         Text(
                                             text = "${index + 1}",
                                             style = MaterialTheme.typography.headlineMedium,
-                                            color = MaterialTheme.colorScheme.onPrimary
+                                            color = MaterialTheme.colorScheme.onPrimary,
                                         )
                                     }
                                     Column(modifier = Modifier.padding(start = 8.dp)) {
                                         Text(
-                                            text = "${address.addressEntity.address.take(7)}..." +
+                                            text =
+                                                "${address.addressEntity.address.take(7)}..." +
                                                     "${address.addressEntity.address.takeLast(7)} ",
-                                            style = MaterialTheme.typography.bodySmall
+                                            style = MaterialTheme.typography.bodySmall,
                                         )
                                         Text(
-                                            text = if (tokenName == "USDT") {
-                                                "$${(tokenEntity?.balanceWithoutFrozen ?: BigInteger.ZERO).toTokenAmount()}"
-                                            } else {
-                                                "${(tokenEntity?.balanceWithoutFrozen ?: BigInteger.ZERO).toTokenAmount()} TRX"
-                                            },
+                                            text =
+                                                if (tokenName == "USDT") {
+                                                    "$${(tokenEntity?.balanceWithoutFrozen ?: BigInteger.ZERO).toTokenAmount()}"
+                                                } else {
+                                                    "${(tokenEntity?.balanceWithoutFrozen ?: BigInteger.ZERO).toTokenAmount()} TRX"
+                                                },
                                             style = MaterialTheme.typography.labelLarge,
                                         )
                                     }
                                 }
                             }
                             Column(
-                                modifier = Modifier
-                                    .padding()
-                                    .fillMaxHeight(),
-                                verticalArrangement = Arrangement.Center
+                                modifier =
+                                    Modifier
+                                        .padding()
+                                        .fillMaxHeight(),
+                                verticalArrangement = Arrangement.Center,
                             ) {
                                 IconButton(onClick = {
                                     expandedDropdownMenu = !expandedDropdownMenu
@@ -258,25 +275,24 @@ private fun SheetContent(
                                         modifier = Modifier.size(25.dp),
                                         imageVector = ImageVector.vectorResource(id = R.drawable.icon_more_vert),
                                         contentDescription = "",
-                                        tint = BackgroundIcon2
+                                        tint = BackgroundIcon2,
                                     )
                                 }
                                 DropdownMenu(
                                     expanded = expandedDropdownMenu,
-                                    onDismissRequest = { expandedDropdownMenu = false }
+                                    onDismissRequest = { expandedDropdownMenu = false },
                                 ) {
                                     DropdownMenuItem(
                                         onClick = {
-
                                         },
                                         text = {
                                             Text(
                                                 "Получить AML",
-                                                fontWeight = FontWeight.SemiBold
+                                                fontWeight = FontWeight.SemiBold,
                                             )
-                                        }
+                                        },
                                     )
-                                    if (address.addressEntity.sotDerivationIndex != 0){
+                                    if (address.addressEntity.sotDerivationIndex != 0) {
                                         HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
                                         DropdownMenuItem(
                                             modifier = Modifier.height(IntrinsicSize.Min),
@@ -285,7 +301,7 @@ private fun SheetContent(
                                                     withContext(Dispatchers.IO) {
                                                         viewModel.creationOfANewCell(
                                                             walletId,
-                                                            address.addressEntity
+                                                            address.addressEntity,
                                                         )
                                                     }
                                                     expandedDropdownMenu = !expandedDropdownMenu
@@ -296,7 +312,7 @@ private fun SheetContent(
                                                     "Заменить адрес",
                                                     style = MaterialTheme.typography.labelLarge,
                                                 )
-                                            }
+                                            },
                                         )
                                     }
                                 }
@@ -307,22 +323,24 @@ private fun SheetContent(
                 item {
                     Card(
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(IntrinsicSize.Min),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Min),
                         elevation = CardDefaults.cardElevation(10.dp),
                         onClick = {
                             goToWalletArchivalSots()
-                        }
+                        },
                     ) {
                         Column(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(),
                             verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            Text(text = "Архивные соты", style = MaterialTheme.typography.bodySmall,)
+                            Text(text = "Архивные соты", style = MaterialTheme.typography.bodySmall)
                         }
                     }
                     Spacer(modifier = Modifier.padding(bottom = (bottomPadding + 8).dp))
@@ -331,6 +349,3 @@ private fun SheetContent(
         }
     }
 }
-
-
-

@@ -16,9 +16,12 @@ import com.example.telegramWallet.data.database.entities.wallet.SmartContractEnt
 import com.example.telegramWallet.data.database.repositories.ProfileRepo
 import com.example.telegramWallet.data.database.repositories.TransactionsRepo
 import com.example.telegramWallet.data.database.repositories.wallet.AddressRepo
+import com.example.telegramWallet.data.database.repositories.wallet.PendingAmlTransactionRepo
 import com.example.telegramWallet.data.database.repositories.wallet.PendingTransactionRepo
 import com.example.telegramWallet.data.database.repositories.wallet.SmartContractRepo
 import com.example.telegramWallet.data.database.repositories.wallet.TokenRepo
+import com.example.telegramWallet.models.pushy.AmlPaymentErrorMessage
+import com.example.telegramWallet.models.pushy.AmlPaymentSuccessfullyMessage
 import com.example.telegramWallet.models.pushy.PushyDeployContractSuccessfullyMessage
 import com.example.telegramWallet.models.pushy.PushyTransferErrorMessage
 import com.example.telegramWallet.models.pushy.PushyTransferSuccessfullyMessage
@@ -34,28 +37,116 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @AndroidEntryPoint
-class PushReceiver : BroadcastReceiver(), CoroutineScope {
+class PushReceiver :
+    BroadcastReceiver(),
+    CoroutineScope {
     @Inject lateinit var tokenRepo: TokenRepo
+
     @Inject lateinit var transactionRepo: TransactionsRepo
+
     @Inject lateinit var addressRepo: AddressRepo
+
     @Inject lateinit var smartContractRepo: SmartContractRepo
+
     @Inject lateinit var profileRepo: ProfileRepo
+
     @Inject lateinit var pendingTransactionRepo: PendingTransactionRepo
+
+    @Inject lateinit var pendingAmlTransactionRepo: PendingAmlTransactionRepo
 
     private val localJson = Json { ignoreUnknownKeys = false }
 
     private var job: Job = Job()
     override val coroutineContext: CoroutineContext get() = Dispatchers.IO + job
 
-    override fun onReceive(context: Context, intent: Intent) {
-        val notificationTitle = if (intent.getStringExtra("title") != null) intent.getStringExtra("title") else context.packageManager.getApplicationLabel(context.applicationInfo).toString()
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
+        val notificationTitle =
+            if (intent.getStringExtra("title") !=
+                null
+            ) {
+                intent.getStringExtra("title")
+            } else {
+                context.packageManager.getApplicationLabel(context.applicationInfo).toString()
+            }
         val notificationText = if (intent.getStringExtra("message") != null) intent.getStringExtra("message") else "Test notification"
-        val transferErrorMessage = if (intent.getStringExtra("transferErrorMessage") != null) intent.getStringExtra("transferErrorMessage") else null
-        val pushyTransferSuccessfullyMessage = if (intent.getStringExtra("pushyTransferSuccessfullyMessage") != null) intent.getStringExtra("pushyTransferSuccessfullyMessage") else null
-        val transferSuccessfullyMessage = if (intent.getStringExtra("transferSuccessfullyMessage") != null) intent.getStringExtra("transferSuccessfullyMessage") else null
+        val transferErrorMessage =
+            if (intent.getStringExtra("transferErrorMessage") !=
+                null
+            ) {
+                intent.getStringExtra("transferErrorMessage")
+            } else {
+                null
+            }
+        val pushyTransferSuccessfullyMessage =
+            if (intent.getStringExtra("pushyTransferSuccessfullyMessage") !=
+                null
+            ) {
+                intent.getStringExtra("pushyTransferSuccessfullyMessage")
+            } else {
+                null
+            }
+        val transferSuccessfullyMessage =
+            if (intent.getStringExtra("transferSuccessfullyMessage") !=
+                null
+            ) {
+                intent.getStringExtra("transferSuccessfullyMessage")
+            } else {
+                null
+            }
 
-        val pushyDeployContractSuccessfullyMessage = if (intent.getStringExtra("pushyDeployContractSuccessfullyMessage") != null) intent.getStringExtra("pushyDeployContractSuccessfullyMessage") else null
-        var pushyDeployContractErrorMessage = if (intent.getStringExtra("pushyDeployContractErrorMessage") != null) intent.getStringExtra("pushyDeployContractErrorMessage") else null
+        val pushyDeployContractSuccessfullyMessage =
+            if (intent.getStringExtra("pushyDeployContractSuccessfullyMessage") !=
+                null
+            ) {
+                intent.getStringExtra("pushyDeployContractSuccessfullyMessage")
+            } else {
+                null
+            }
+        var pushyDeployContractErrorMessage =
+            if (intent.getStringExtra("pushyDeployContractErrorMessage") !=
+                null
+            ) {
+                intent.getStringExtra("pushyDeployContractErrorMessage")
+            } else {
+                null
+            }
+
+        var amlPaymentSuccessfullyMessage =
+            if (intent.getStringExtra("amlPaymentSuccessfullyMessage") !=
+                null
+            ) {
+                intent.getStringExtra("amlPaymentSuccessfullyMessage")
+            } else {
+                null
+            }
+        var amlPaymentErrorMessage =
+            if (intent.getStringExtra("amlPaymentErrorMessage") !=
+                null
+            ) {
+                intent.getStringExtra("amlPaymentErrorMessage")
+            } else {
+                null
+            }
+
+        Log.e("ERR", amlPaymentSuccessfullyMessage.toString())
+        Log.e("ERR", amlPaymentErrorMessage.toString())
+        if (amlPaymentSuccessfullyMessage != null) {
+            val pushyObj = localJson.decodeFromString<AmlPaymentSuccessfullyMessage>(amlPaymentSuccessfullyMessage)
+            launch {
+                pendingAmlTransactionRepo.markAsSuccessful(pushyObj.transactionId)
+            }
+        }
+
+        if (amlPaymentErrorMessage != null) {
+            val pushyObj = localJson.decodeFromString<AmlPaymentErrorMessage>(amlPaymentErrorMessage)
+            launch {
+                pendingAmlTransactionRepo.markAsError(pushyObj.transactionId)
+            }
+        }
+
         if (transferErrorMessage != null) {
             val pushyObj = localJson.decodeFromString<PushyTransferErrorMessage>(transferErrorMessage)
             launch {
@@ -74,8 +165,8 @@ class PushReceiver : BroadcastReceiver(), CoroutineScope {
                     smartContractRepo.insert(
                         SmartContractEntity(
                             contractAddress = pushyObj.contractAddress,
-                            ownerAddress = pushyObj.address
-                        )
+                            ownerAddress = pushyObj.address,
+                        ),
                     )
                 } else {
                     smartContractRepo.restoreSmartContract(pushyObj.contractAddress)
@@ -104,22 +195,24 @@ class PushReceiver : BroadcastReceiver(), CoroutineScope {
             notificationChannel.vibrationPattern = longArrayOf(0, 400, 250, 400)
             notificationManager.createNotificationChannel(notificationChannel)
 
-            val builder = NotificationCompat.Builder(context, channelId)
-                .setAutoCancel(true)
-                .setSmallIcon(android.R.drawable.stat_notify_chat)
-                .setContentTitle(notificationTitle)
-                .setContentText(notificationText)
-                .setLights(Color.RED, 1000, 1000)
-                .setVibrate(longArrayOf(0, 400, 250, 400))
-                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setContentIntent(
-                    PendingIntent.getActivity(
-                        context,
-                        0,
-                        Intent(context, MainActivity::class.java),
-                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            val builder =
+                NotificationCompat
+                    .Builder(context, channelId)
+                    .setAutoCancel(true)
+                    .setSmallIcon(android.R.drawable.stat_notify_chat)
+                    .setContentTitle(notificationTitle)
+                    .setContentText(notificationText)
+                    .setLights(Color.RED, 1000, 1000)
+                    .setVibrate(longArrayOf(0, 400, 250, 400))
+                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                    .setContentIntent(
+                        PendingIntent.getActivity(
+                            context,
+                            0,
+                            Intent(context, MainActivity::class.java),
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+                        ),
                     )
-                )
 
             Pushy.setNotificationChannel(builder, context)
             notificationManager.notify((Math.random() * 100000).toInt(), builder.build())

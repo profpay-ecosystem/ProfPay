@@ -8,12 +8,11 @@ import java.math.BigInteger
 
 data class TokenWithPendingTransactions(
     @Embedded val token: TokenEntity,
-
     @Relation(
         parentColumn = "token_id",
-        entityColumn = "token_id"
+        entityColumn = "token_id",
     )
-    val pendingTransactions: List<PendingTransactionEntity>
+    val pendingTransactions: List<PendingTransactionEntity>,
 ) {
     val frozenBalance: BigInteger
         get() = pendingTransactions.sumOf { it.amount }

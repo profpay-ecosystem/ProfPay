@@ -22,21 +22,24 @@ import com.example.telegramWallet.bridge.view_model.create_or_recovery_wallet.Se
 import com.example.telegramWallet.bridge.view_model.create_or_recovery_wallet.SeedPhraseConfirmationViewModel
 import com.example.telegramWallet.ui.widgets.SeedPhraseConfirmationWidget
 
-
 @Composable
 fun SeedPhraseConfirmationScreen(
-    goToWalletAdded: () -> Unit, viewModel: SeedPhraseConfirmationViewModel = hiltViewModel(),
-    goToBack: () -> Unit
+    goToWalletAdded: () -> Unit,
+    viewModel: SeedPhraseConfirmationViewModel = hiltViewModel(),
+    goToBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     // Текущая клавиатура
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Scaffold() { padding ->
-        Column(modifier = Modifier
-            .padding(padding)
-            .fillMaxSize()
-            .clickable { keyboardController?.hide() }) {}
+    Scaffold { padding ->
+        Column(
+            modifier =
+                Modifier
+                    .padding(padding)
+                    .fillMaxSize()
+                    .clickable { keyboardController?.hide() },
+        ) {}
         when (state) {
             is SeedPhraseConfirmationState.Loading ->
                 Box(
@@ -44,25 +47,18 @@ fun SeedPhraseConfirmationScreen(
                         .fillMaxSize()
                         .paint(
                             painterResource(id = R.drawable.create_recovery_bg),
-                            contentScale = ContentScale.FillBounds
+                            contentScale = ContentScale.FillBounds,
                         ),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
-            is SeedPhraseConfirmationState.Success -> SeedPhraseConfirmationWidget(
-                addressGenerateResult = (state as SeedPhraseConfirmationState.Success).addressGenerateResult,
-                goToBack = goToBack,
-                goToWalletAdded = goToWalletAdded
-            )
+            is SeedPhraseConfirmationState.Success ->
+                SeedPhraseConfirmationWidget(
+                    addressGenerateResult = (state as SeedPhraseConfirmationState.Success).addressGenerateResult,
+                    goToBack = goToBack,
+                    goToWalletAdded = goToWalletAdded,
+                )
         }
     }
 }
-
-
-
-
-
-
-
-

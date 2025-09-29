@@ -62,12 +62,13 @@ import java.math.BigInteger
 @Composable
 fun bottomSheetAgreeAmount(
     contract: SmartContractProto.ContractDealListResponse,
-    viewModel: GetSmartContractViewModel
+    viewModel: GetSmartContractViewModel,
 ): Pair<Boolean, (Boolean) -> Unit> {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = { true }
-    )
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = { true },
+        )
     val coroutineScope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -98,23 +99,23 @@ fun bottomSheetAgreeAmount(
 //              Row 1
                 Row(
                     modifier = Modifier.padding(top = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(fraction = 0.85f),
-                        horizontalArrangement = Arrangement.Center
+                        horizontalArrangement = Arrangement.Center,
                     ) {
                         Spacer(modifier = Modifier.size(40.dp))
                         Text(
                             text = "Введите сумму",
                             fontSize = 30.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
                     Row(
                         modifier = Modifier,
                         horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.Top
+                        verticalAlignment = Alignment.Top,
                     ) {
                         IconButton(onClick = {
                             coroutineScope.launch {
@@ -126,7 +127,7 @@ fun bottomSheetAgreeAmount(
                             Icon(
                                 imageVector = Icons.Filled.Clear,
                                 contentDescription = "",
-                                modifier = Modifier.size(27.dp)
+                                modifier = Modifier.size(27.dp),
                             )
                         }
                     }
@@ -135,36 +136,39 @@ fun bottomSheetAgreeAmount(
                 Row(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp),
                     horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = "Сумма продавцу",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
 //              Row 3
                 Row(
-                    modifier = Modifier
-                        .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                            .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Card(
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier,
                         elevation = CardDefaults.cardElevation(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                            ),
                     ) {
                         TextField(
                             value = amountSeller,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier
-                                .height(50.dp)
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .height(50.dp)
+                                    .fillMaxWidth(),
                             placeholder = { Text(text = "0") },
                             shape = MaterialTheme.shapes.small.copy(),
                             onValueChange = { amount ->
@@ -179,34 +183,40 @@ fun bottomSheetAgreeAmount(
                             trailingIcon = {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.End
+                                    horizontalArrangement = Arrangement.End,
                                 ) {
                                     Text(text = "USDT", fontWeight = FontWeight.SemiBold)
                                     IconButton(onClick = {
-                                        amountSeller = contract.amount.toBigInteger().toTokenAmount().toString()
+                                        amountSeller =
+                                            contract.amount
+                                                .toBigInteger()
+                                                .toTokenAmount()
+                                                .toString()
                                     }) {
                                         Text(
                                             text = "MAX",
                                             fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.onPrimary
+                                            color = MaterialTheme.colorScheme.onPrimary,
                                         )
                                     }
                                 }
                             },
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                unfocusedTextColor = PubAddressDark,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                cursorColor = MaterialTheme.colorScheme.onBackground,
-                                selectionColors = TextSelectionColors(
-                                    handleColor = MaterialTheme.colorScheme.onBackground,
-                                    backgroundColor = Color.Transparent
-                                )
-                            )
+                            colors =
+                                TextFieldDefaults.colors(
+                                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                    unfocusedTextColor = PubAddressDark,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    cursorColor = MaterialTheme.colorScheme.onBackground,
+                                    selectionColors =
+                                        TextSelectionColors(
+                                            handleColor = MaterialTheme.colorScheme.onBackground,
+                                            backgroundColor = Color.Transparent,
+                                        ),
+                                ),
                         )
                     }
                 }
@@ -214,36 +224,39 @@ fun bottomSheetAgreeAmount(
                 Row(
                     modifier = Modifier.padding(top = 24.dp, start = 16.dp),
                     horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = "Сумма покупателю",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
 //              Row 5
                 Row(
-                    modifier = Modifier
-                        .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                            .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Card(
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier,
                         elevation = CardDefaults.cardElevation(10.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
+                        colors =
+                            CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                            ),
                     ) {
                         TextField(
                             value = amountBuyer,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier
-                                .height(60.dp)
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .height(60.dp)
+                                    .fillMaxWidth(),
                             placeholder = { Text(text = "0") },
                             shape = MaterialTheme.shapes.small.copy(),
                             onValueChange = { amount ->
@@ -259,59 +272,68 @@ fun bottomSheetAgreeAmount(
                             trailingIcon = {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.End
+                                    horizontalArrangement = Arrangement.End,
                                 ) {
                                     Text(text = "USDT", fontWeight = FontWeight.SemiBold)
                                     IconButton(onClick = {
-                                        amountBuyer = contract.amount.toBigInteger().toTokenAmount().toString()
+                                        amountBuyer =
+                                            contract.amount
+                                                .toBigInteger()
+                                                .toTokenAmount()
+                                                .toString()
                                     }) {
                                         Text(
                                             text = "MAX",
                                             fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.onPrimary
+                                            color = MaterialTheme.colorScheme.onPrimary,
                                         )
                                     }
                                 }
                             },
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                                unfocusedTextColor = PubAddressDark,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                cursorColor = MaterialTheme.colorScheme.onBackground,
-                                selectionColors = TextSelectionColors(
-                                    handleColor = MaterialTheme.colorScheme.onBackground,
-                                    backgroundColor = Color.Transparent
-                                )
-                            )
+                            colors =
+                                TextFieldDefaults.colors(
+                                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                    unfocusedTextColor = PubAddressDark,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    cursorColor = MaterialTheme.colorScheme.onBackground,
+                                    selectionColors =
+                                        TextSelectionColors(
+                                            handleColor = MaterialTheme.colorScheme.onBackground,
+                                            backgroundColor = Color.Transparent,
+                                        ),
+                                ),
                         )
                     }
                 }
 //              Row 6
                 Row(
-                    modifier = Modifier
-                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                            .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Card(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .padding(vertical = 8.dp)
+                                .fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, RedColor)
-
+                        border = BorderStroke(1.dp, RedColor),
                     ) {
                         Text(
-                            modifier = Modifier
-                                .padding(horizontal = 12.dp, vertical = 8.dp),
-                            text = "После отправки введенных Вами значений, \n" +
+                            modifier =
+                                Modifier
+                                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                            text =
+                                "После отправки введенных Вами значений, \n" +
                                     "будет необходимо подтверждение от участников, экспертов.",
                             color = RedColor,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
                 }
@@ -326,26 +348,29 @@ fun bottomSheetAgreeAmount(
                                 viewModel.expertSetDecision(
                                     deal = contract,
                                     sellerValue = sellerValue,
-                                    buyerValue = buyerValue
+                                    buyerValue = buyerValue,
                                 )
                             }
                         }
                     },
-                    modifier = Modifier
-                        .padding(vertical = 4.dp, horizontal = 16.dp)
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min), colors = ButtonDefaults.buttonColors(
-                        containerColor = GreenColor,
-                        contentColor = BackgroundContainerButtonLight
-                    ), shape = RoundedCornerShape(12.dp)
+                    modifier =
+                        Modifier
+                            .padding(vertical = 4.dp, horizontal = 16.dp)
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = GreenColor,
+                            contentColor = BackgroundContainerButtonLight,
+                        ),
+                    shape = RoundedCornerShape(12.dp),
                 ) {
                     Text(
                         text = "Отправить на рассмотрение",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
-
             }
         }
     }

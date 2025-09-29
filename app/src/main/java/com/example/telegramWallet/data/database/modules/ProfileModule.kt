@@ -14,6 +14,8 @@ import com.example.telegramWallet.data.database.repositories.wallet.CentralAddre
 import com.example.telegramWallet.data.database.repositories.wallet.CentralAddressRepoImpl
 import com.example.telegramWallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.example.telegramWallet.data.database.repositories.wallet.ExchangeRatesRepoImpl
+import com.example.telegramWallet.data.database.repositories.wallet.PendingAmlTransactionRepo
+import com.example.telegramWallet.data.database.repositories.wallet.PendingAmlTransactionRepoImpl
 import com.example.telegramWallet.data.database.repositories.wallet.PendingTransactionRepo
 import com.example.telegramWallet.data.database.repositories.wallet.PendingTransactionRepoImpl
 import com.example.telegramWallet.data.database.repositories.wallet.SmartContractRepo
@@ -32,31 +34,42 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ProfileModule {
-
     @Binds
     abstract fun bindAddressRepo(addressRepoImpl: AddressRepoImpl): AddressRepo
+
     @Binds
     abstract fun bindTokenRepo(tokenRepoImpl: TokenRepoImpl): TokenRepo
+
     @Binds
     abstract fun bindWalletProfileRepo(walletProfileRepoImpl: WalletProfileRepoImpl): WalletProfileRepo
 
-
     @Binds
     abstract fun bindProfileRepo(profileRepoImpl: ProfileRepoImpl): ProfileRepo
+
     @Binds
     abstract fun bindSettingsRepo(settingsRepoImpl: SettingsRepoImpl): SettingsRepo
+
     @Binds
     abstract fun bindStatesRepo(statesRepoImpl: StatesRepoImpl): StatesRepo
+
     @Binds
     abstract fun bindTransactionsRepo(transactionsRepoImpl: TransactionsRepoImpl): TransactionsRepo
+
     @Binds
     abstract fun bindCentralAddressRepo(centralAddressRepoImpl: CentralAddressRepoImpl): CentralAddressRepo
+
     @Binds
     abstract fun bindSmartContractRepo(smartContractRepoImpl: SmartContractRepoImpl): SmartContractRepo
+
     @Binds
     abstract fun bindExchangeRatesRepo(exchangeRatesRepoImpl: ExchangeRatesRepoImpl): ExchangeRatesRepo
+
     @Binds
     abstract fun bindTradingInsightsRepo(tradingInsightsRepoIml: TradingInsightsRepoImpl): TradingInsightsRepo
+
     @Binds
     abstract fun bindPendingTransactionRepo(pendingTransactionRepoImpl: PendingTransactionRepoImpl): PendingTransactionRepo
+
+    @Binds
+    abstract fun bindPendingAmlTransactionRepo(pendingAmlTransactionRepoImpl: PendingAmlTransactionRepoImpl): PendingAmlTransactionRepo
 }

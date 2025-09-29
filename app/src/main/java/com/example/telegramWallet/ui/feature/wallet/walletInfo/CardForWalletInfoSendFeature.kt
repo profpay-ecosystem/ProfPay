@@ -22,42 +22,49 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CardForWalletInfoSendFeature(onClick: () -> Unit, paintIconId: Int, label: String) {
+fun CardForWalletInfoSendFeature(
+    onClick: () -> Unit,
+    paintIconId: Int,
+    label: String,
+) {
     Card(
-        modifier = Modifier
-            .padding(vertical = 0.dp)
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min),
-        onClick = { onClick() }
+        modifier =
+            Modifier
+                .padding(vertical = 0.dp)
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+        onClick = { onClick() },
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .weight(0.5f)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.Center
+                modifier =
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .weight(0.5f)
+                        .fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .paint(
-                                painterResource(id = paintIconId),
-                                contentScale = ContentScale.FillBounds
-                            ),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .size(40.dp)
+                                .paint(
+                                    painterResource(id = paintIconId),
+                                    contentScale = ContentScale.FillBounds,
+                                ),
+                        contentAlignment = Alignment.Center,
                     ) {}
                     Column(modifier = Modifier.padding(horizontal = 12.dp, 4.dp)) {
                         Text(
                             text = label,
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
                         )
-
                     }
                 }
             }

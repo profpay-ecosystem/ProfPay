@@ -36,13 +36,13 @@ fun AlertDialogWidget(
                     icon,
                     contentDescription = "Example Icon",
                     tint = colorIcon,
-                    modifier = Modifier.size(iconSize.dp)
+                    modifier = Modifier.size(iconSize.dp),
                 )
             } else if (icon != null) {
                 Icon(
                     icon,
                     contentDescription = "Example Icon",
-                    modifier = Modifier.size(iconSize.dp)
+                    modifier = Modifier.size(iconSize.dp),
                 )
             }
         },
@@ -67,7 +67,7 @@ fun AlertDialogWidget(
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onPrimary),
                 onClick = {
                     onDismissRequest()
-                }
+                },
             ) {
                 Text(textDismissButton)
             }
@@ -78,7 +78,7 @@ fun AlertDialogWidget(
                 onClick = {
                     onConfirmation()
                 },
-                enabled = confirmEnabled
+                enabled = confirmEnabled,
             ) {
                 Text(textConfirmButton)
             }

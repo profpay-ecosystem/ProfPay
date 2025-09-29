@@ -53,14 +53,15 @@ import kotlinx.coroutines.withContext
 fun RecoveringWalletAddingScreen(
     viewModel: RecoverWalletViewModel = hiltViewModel(),
     goToHome: () -> Unit,
-    goToBack: () -> Unit
+    goToBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    Scaffold() { padding ->
+    Scaffold { padding ->
         Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
+            modifier =
+                Modifier
+                    .padding(padding)
+                    .fillMaxSize(),
         ) {}
         when (state) {
             is RecoverWalletState.Loading ->
@@ -69,9 +70,9 @@ fun RecoveringWalletAddingScreen(
                         .fillMaxSize()
                         .paint(
                             painterResource(id = R.drawable.create_recovery_bg_end),
-                            contentScale = ContentScale.FillBounds
+                            contentScale = ContentScale.FillBounds,
                         ),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
@@ -85,7 +86,7 @@ fun RecoveringWalletAddingScreen(
                             goToHome = goToHome,
                             accountWasFound = result.accountWasFound,
                             userId = result.userId,
-                            clearState = { viewModel.clearAddressFromMnemonic() }
+                            clearState = { viewModel.clearAddressFromMnemonic() },
                         )
                     }
                     is RecoveryResult.AddressNotFound -> { /* handle */ }
@@ -106,39 +107,43 @@ fun RecoveringWalletAddingWidget(
     userId: Long?,
     goToHome: () -> Unit,
     clearState: () -> Unit,
-    viewModel: WalletAddedViewModel = hiltViewModel()
+    viewModel: WalletAddedViewModel = hiltViewModel(),
 ) {
     val sharedPref = sharedPref()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .paint(
-                painterResource(id = R.drawable.create_recovery_bg_end),
-                contentScale = ContentScale.FillBounds
-            ),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .paint(
+                    painterResource(id = R.drawable.create_recovery_bg_end),
+                    contentScale = ContentScale.FillBounds,
+                ),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 70.dp, horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 70.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Icon(
                 modifier = Modifier.size(170.dp),
                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_smart),
-                contentDescription = "", tint = BackgroundLight
+                contentDescription = "",
+                tint = BackgroundLight,
             )
             Text(
                 textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(vertical = 18.dp),
+                modifier =
+                    Modifier
+                        .padding(vertical = 18.dp),
                 text = "Всё готово!",
                 style = MaterialTheme.typography.displayMedium,
-                 color = BackgroundLight
+                color = BackgroundLight,
             )
             Button(
                 onClick = {
@@ -154,7 +159,7 @@ fun RecoveringWalletAddingWidget(
                                     viewModel.registerUserDevice(
                                         userId = userId,
                                         deviceToken = deviceToken,
-                                        sharedPref = sharedPref
+                                        sharedPref = sharedPref,
                                     )
                                     viewModel.insertNewCryptoAddresses(addressesWithKeysForM)
                                 } else {
@@ -182,31 +187,32 @@ fun RecoveringWalletAddingWidget(
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = BackgroundLight),
-                modifier = Modifier
-                    .padding(vertical = 16.dp),
-                shape = RoundedCornerShape(10.dp)
+                modifier =
+                    Modifier
+                        .padding(vertical = 16.dp),
+                shape = RoundedCornerShape(10.dp),
             ) {
                 Text(text = "Приступить к работе", style = MaterialTheme.typography.titleSmall, color = BackgroundDark)
             }
-
         }
     }
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.97f),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.97f),
         verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = "ProfPay",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.ExtraBold),
-            color = BackgroundDark
+            color = BackgroundDark,
         )
         Text(
             text = "ProfPay IO, 2024",
             style = MaterialTheme.typography.titleSmall,
-            color = BackgroundDark
+            color = BackgroundDark,
         )
     }
 }
@@ -219,4 +225,3 @@ fun RecoveringWalletAddingWidget(
 //            },
 //            textButton = "Принять и продолжить"
 //        )
-

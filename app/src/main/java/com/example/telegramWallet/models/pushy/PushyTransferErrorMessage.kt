@@ -12,5 +12,5 @@ data class PushyTransferErrorMessage(
     @SerialName("trs_type")
     val transactionType: String,
     @SerialName("tx_id")
-    val transactionId: String
+    val transactionId: String,
 )

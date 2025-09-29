@@ -7,11 +7,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 @HiltViewModel
-class GetContextViewModel @Inject constructor(
-    @ApplicationContext private val applicationContext: Context
-) : ViewModel() {
-    // Получение контекста
-    fun getAppContext(): Context {
-        return applicationContext
+class GetContextViewModel
+    @Inject
+    constructor(
+        @ApplicationContext private val applicationContext: Context,
+    ) : ViewModel() {
+        // Получение контекста
+        fun getAppContext(): Context = applicationContext
     }
-}

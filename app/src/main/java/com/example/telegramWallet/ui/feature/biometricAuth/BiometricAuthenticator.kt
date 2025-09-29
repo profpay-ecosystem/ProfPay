@@ -16,14 +16,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import com.example.telegramWallet.R
-import com.example.telegramWallet.ui.shared.sharedPref
-import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.telegramWallet.R
 import com.example.telegramWallet.bridge.view_model.pin_lock.PinLockViewModel
+import com.example.telegramWallet.ui.shared.sharedPref
 
 @Composable
-fun FaceIDAuthentication(toNavigate: () -> Unit, viewModel: PinLockViewModel = hiltViewModel()) {
+fun FaceIDAuthentication(
+    toNavigate: () -> Unit,
+    viewModel: PinLockViewModel = hiltViewModel(),
+) {
     if (sharedPref().getBoolean("useBiomAuth", true)) {
         val context = LocalContext.current
         val fragmentActivity = context as? FragmentActivity ?: return
@@ -38,36 +40,44 @@ fun FaceIDAuthentication(toNavigate: () -> Unit, viewModel: PinLockViewModel = h
             biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS
 
         if (isBiometricSupported) {
-            val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Biometric Authentication")
-                .setSubtitle("Authenticate using your face")
-                .setNegativeButtonText("Cancel")
-                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
-                .build()
+            val promptInfo =
+                BiometricPrompt.PromptInfo
+                    .Builder()
+                    .setTitle("Biometric Authentication")
+                    .setSubtitle("Authenticate using your face")
+                    .setNegativeButtonText("Cancel")
+                    .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+                    .build()
 
-            val biometricPrompt = BiometricPrompt(
-                fragmentActivity, executor,
-                object : BiometricPrompt.AuthenticationCallback() {
-                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        super.onAuthenticationSucceeded(result)
-                        viewModel.unlockSession()
-                        authResult = "Authentication succeeded!"
-                        toNavigate()
-                    }
-
-                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        super.onAuthenticationError(errorCode, errString)
-                        authResult = "Authentication error: $errString"
-                        if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-                            isAuthCancelled = true
+            val biometricPrompt =
+                BiometricPrompt(
+                    fragmentActivity,
+                    executor,
+                    object : BiometricPrompt.AuthenticationCallback() {
+                        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                            super.onAuthenticationSucceeded(result)
+                            viewModel.unlockSession()
+                            authResult = "Authentication succeeded!"
+                            toNavigate()
                         }
-                    }
 
-                    override fun onAuthenticationFailed() {
-                        super.onAuthenticationFailed()
-                        authResult = "Authentication failed. Try again."
-                    }
-                })
+                        override fun onAuthenticationError(
+                            errorCode: Int,
+                            errString: CharSequence,
+                        ) {
+                            super.onAuthenticationError(errorCode, errString)
+                            authResult = "Authentication error: $errString"
+                            if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+                                isAuthCancelled = true
+                            }
+                        }
+
+                        override fun onAuthenticationFailed() {
+                            super.onAuthenticationFailed()
+                            authResult = "Authentication failed. Try again."
+                        }
+                    },
+                )
 
             if (!isAuthCancelled && authResult != "Authentication succeeded!") {
                 biometricPrompt.authenticate(promptInfo)
@@ -75,15 +85,14 @@ fun FaceIDAuthentication(toNavigate: () -> Unit, viewModel: PinLockViewModel = h
 
             IconButton(
                 modifier = Modifier.fillMaxSize(0.7f),
-                onClick = { biometricPrompt.authenticate(promptInfo) }
+                onClick = { biometricPrompt.authenticate(promptInfo) },
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_face_scan),
                     contentDescription = "Face ID",
-                    tint = MaterialTheme.colorScheme.onPrimary
+                    tint = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         }
     }
 }
-

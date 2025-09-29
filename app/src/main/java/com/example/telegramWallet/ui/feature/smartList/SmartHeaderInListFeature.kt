@@ -43,6 +43,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.telegramWallet.AppConstants
 import com.example.telegramWallet.R
@@ -53,7 +54,6 @@ import com.example.telegramWallet.ui.feature.smartList.bottomSheets.bottomSheetR
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
-import androidx.core.net.toUri
 
 @Composable
 fun SmartHeaderInListFeature(
@@ -66,15 +66,18 @@ fun SmartHeaderInListFeature(
     var expandedDropdownMenu by remember { mutableStateOf(false) }
 
     val deployEstimateCommission by viewModel.stateEstimateResourcePrice.collectAsStateWithLifecycle()
-    val (commission, setCommission) = remember {
-        mutableStateOf(BigDecimal.ZERO)
-    }
-    val (openDeals, setOpenDeals) = remember {
-        mutableLongStateOf(0)
-    }
-    val (closedDeals, setClosedDeals) = remember {
-        mutableLongStateOf(0)
-    }
+    val (commission, setCommission) =
+        remember {
+            mutableStateOf(BigDecimal.ZERO)
+        }
+    val (openDeals, setOpenDeals) =
+        remember {
+            mutableLongStateOf(0)
+        }
+    val (closedDeals, setClosedDeals) =
+        remember {
+            mutableLongStateOf(0)
+        }
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
@@ -82,11 +85,13 @@ fun SmartHeaderInListFeature(
             viewModel.getResourceQuote(
                 address = generalAddress,
                 energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
-                bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED
+                bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
             )
 
             if (address != null) {
-                val contractStats = viewModel.tron.smartContracts.multiSigRead.getContractStats("", "", address)
+                val contractStats =
+                    viewModel.tron.smartContracts.multiSigRead
+                        .getContractStats("", "", address)
                 setOpenDeals(contractStats.first.toLong())
                 setClosedDeals(contractStats.second.toLong())
             }
@@ -103,43 +108,48 @@ fun SmartHeaderInListFeature(
     Column(modifier = Modifier.padding(8.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, end = 0.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp, end = 0.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = "Баланс контракта",
                         fontSize = LocalFontSize.Large.fS,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
-                    Row(modifier = Modifier
-                        .clip(RoundedCornerShape(30.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainer)
-                        .clickable { expandedDropdownMenu = !expandedDropdownMenu }
+                    Row(
+                        modifier =
+                            Modifier
+                                .clip(RoundedCornerShape(30.dp))
+                                .background(MaterialTheme.colorScheme.surfaceContainer)
+                                .clickable { expandedDropdownMenu = !expandedDropdownMenu },
                     ) {
                         Row(
                             modifier = Modifier.padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.Center,
                         ) {
                             Box(
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .paint(
-                                        painterResource(id = R.drawable.trx_tron),
-                                        contentScale = ContentScale.FillBounds
-                                    ),
-                                contentAlignment = Alignment.Center
+                                modifier =
+                                    Modifier
+                                        .size(20.dp)
+                                        .paint(
+                                            painterResource(id = R.drawable.trx_tron),
+                                            contentScale = ContentScale.FillBounds,
+                                        ),
+                                contentAlignment = Alignment.Center,
                             ) {}
                             Spacer(modifier = Modifier.size(4.dp))
                             Text(
-                                text = "${address?.take(4)}..." +
+                                text =
+                                    "${address?.take(4)}..." +
                                         "${address?.takeLast(4)} ",
                                 fontSize = LocalFontSize.Small.fS,
                                 fontWeight = FontWeight.SemiBold,
@@ -147,19 +157,19 @@ fun SmartHeaderInListFeature(
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_copy),
                                 contentDescription = "",
-                                tint = MaterialTheme.colorScheme.onSecondaryContainer
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             )
 
                             DropdownMenu(
                                 expanded = expandedDropdownMenu,
-                                onDismissRequest = { expandedDropdownMenu = false }
+                                onDismissRequest = { expandedDropdownMenu = false },
                             ) {
                                 DropdownMenuItem(
                                     onClick = {
                                         clipboardManager.setText(AnnotatedString(address ?: ""))
                                         expandedDropdownMenu = false
                                     },
-                                    text = { Text("Скопировать") }
+                                    text = { Text("Скопировать") },
                                 )
                                 HorizontalDivider()
                                 DropdownMenuItem(
@@ -167,7 +177,7 @@ fun SmartHeaderInListFeature(
                                         val intent =
                                             Intent(Intent.ACTION_VIEW).apply {
                                                 data =
-                                                    "https://tronscan.org/#/address/${address}".toUri()
+                                                    "https://tronscan.org/#/address/$address".toUri()
                                             }
                                         context.startActivity(intent)
                                         expandedDropdownMenu = false
@@ -177,42 +187,44 @@ fun SmartHeaderInListFeature(
                                             "Перейти в Tron Scan",
                                             fontWeight = FontWeight.SemiBold,
                                         )
-                                    }
+                                    },
                                 )
                             }
                         }
                     }
                 }
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, end = 4.dp, bottom = 4.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp, end = 4.dp, bottom = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = "$balance USDT",
                         fontSize = LocalFontSize.Huge.fS,
                         fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier
-                            .padding(end = 8.dp)
+                        modifier =
+                            Modifier
+                                .padding(end = 8.dp),
                     )
-
                 }
             }
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp, horizontal = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = "Открытых сделок",
                 fontSize = LocalFontSize.Small.fS,
-                )
+            )
             Text(
                 text = "$openDeals",
                 fontSize = LocalFontSize.Small.fS,
@@ -220,16 +232,17 @@ fun SmartHeaderInListFeature(
             )
         }
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 0.dp, horizontal = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 0.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = "Закрытых сделок",
                 fontSize = LocalFontSize.Small.fS,
-                )
+            )
             Text(
                 text = "$closedDeals",
                 fontSize = LocalFontSize.Small.fS,
@@ -237,40 +250,42 @@ fun SmartHeaderInListFeature(
             )
         }
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             Card(
-                modifier = Modifier
-                    .padding(start = 6.dp, end = 6.dp, top = 12.dp)
-                    .height(40.dp)
-                    .fillMaxWidth()
-                    .shadow(7.dp, RoundedCornerShape(10.dp))
-                    .clickable {
-                        setIsOpenCreateContractSheet(true)
-                    },
+                modifier =
+                    Modifier
+                        .padding(start = 6.dp, end = 6.dp, top = 12.dp)
+                        .height(40.dp)
+                        .fillMaxWidth()
+                        .shadow(7.dp, RoundedCornerShape(10.dp))
+                        .clickable {
+                            setIsOpenCreateContractSheet(true)
+                        },
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 4.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 4.dp),
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.icon_restart),
                         contentDescription = "",
                         modifier = Modifier.size(14.dp),
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
                         text = "Перевыпуск контракта",
                         fontSize = LocalFontSize.Small.fS,
-                        )
+                    )
                 }
-
             }
         }
     }

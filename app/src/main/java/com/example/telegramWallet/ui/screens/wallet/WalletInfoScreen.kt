@@ -1,6 +1,5 @@
 package com.example.telegramWallet.ui.screens.wallet
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -68,16 +67,12 @@ import com.example.telegramWallet.data.database.entities.wallet.TransactionEntit
 import com.example.telegramWallet.data.database.entities.wallet.TransactionType
 import com.example.telegramWallet.data.database.models.TransactionModel
 import com.example.telegramWallet.data.utils.toTokenAmount
-import com.example.telegramWallet.ui.app.navigation.graphs.Graph
-import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.SettingsS
-import com.example.telegramWallet.ui.app.navigation.graphs.navGraph.WalletInfo
 import com.example.telegramWallet.ui.app.theme.GreenColor
 import com.example.telegramWallet.ui.app.theme.RedColor
 import com.example.telegramWallet.ui.feature.wallet.walletInfo.CardForWalletInfoFeature
 import com.example.telegramWallet.ui.feature.wallet.walletInfo.bottomSheetChoiceTokenToSend
 import com.example.telegramWallet.ui.shared.sharedPref
 import com.example.telegramWallet.utils.decimalFormat
-import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -97,23 +92,26 @@ fun WalletInfoScreen(
     goToWalletSystemTRX: () -> Unit,
     goToWalletSots: () -> Unit,
     goToTXDetailsScreen: () -> Unit,
-    navController: NavController
+    navController: NavController,
 ) {
     val sharedPref = sharedPref()
     val walletId = sharedPref.getLong("wallet_id", 1)
 
-    val addressesSotsWithTokens by viewModel.getAddressesSotsWithTokens(
-        walletId = walletId
-    ).observeAsState(emptyList())
+    val addressesSotsWithTokens by viewModel
+        .getAddressesSotsWithTokens(
+            walletId = walletId,
+        ).observeAsState(emptyList())
 
-    val allRelatedTransaction by viewModel.getAllRelatedTransactions(
-        walletId = walletId
-    ).observeAsState(emptyList())
+    val allRelatedTransaction by viewModel
+        .getAllRelatedTransactions(
+            walletId = walletId,
+        ).observeAsState(emptyList())
 
     val (walletName, setWalletName) = remember { mutableStateOf("") }
-    val (listTokensWithTotalBalance, setListTokensWithTotalBalance) = remember {
-        mutableStateOf<List<TokenEntity?>>(listOf(null))
-    }
+    val (listTokensWithTotalBalance, setListTokensWithTotalBalance) =
+        remember {
+            mutableStateOf<List<TokenEntity?>>(listOf(null))
+        }
     val (totalBalance, setTotalBalance) = remember { mutableStateOf(BigInteger.ZERO) }
     val (totalPPercentage24, setTotalPPercentage24) = remember { mutableDoubleStateOf(0.0) }
 
@@ -159,9 +157,10 @@ fun WalletInfoScreen(
         setTotalPPercentage24(viewModel.getTotalPPercentage24(listTokensWithTotalBalance.filterNotNull()))
     }
 
-    val (groupedTransaction, setGroupedTransaction) = remember {
-        mutableStateOf<List<List<TransactionModel?>>>(listOf(listOf(null)))
-    }
+    val (groupedTransaction, setGroupedTransaction) =
+        remember {
+            mutableStateOf<List<List<TransactionModel?>>>(listOf(listOf(null)))
+        }
 
     LaunchedEffect(allRelatedTransaction) {
         withContext(Dispatchers.IO) {
@@ -169,10 +168,11 @@ fun WalletInfoScreen(
         }
     }
 
-    val (_, setIsOpenSheetChoiceTokenToSend) = bottomSheetChoiceTokenToSend(
-        listTokensWithTotalBalance = listTokensWithTotalBalance,
-        goToSendWalletInfo = goToSendWalletInfo
-    )
+    val (_, setIsOpenSheetChoiceTokenToSend) =
+        bottomSheetChoiceTokenToSend(
+            listTokensWithTotalBalance = listTokensWithTotalBalance,
+            goToSendWalletInfo = goToSendWalletInfo,
+        )
 
     val bottomPadding by remember { mutableFloatStateOf(sharedPref.getFloat("bottomPadding", 54f)) }
 
@@ -180,39 +180,42 @@ fun WalletInfoScreen(
         modifier = Modifier,
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .paint(
-                    painterResource(id = R.drawable.wallet_background),
-                    contentScale = ContentScale.FillBounds
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .paint(
+                        painterResource(id = R.drawable.wallet_background),
+                        contentScale = ContentScale.FillBounds,
+                    ),
             verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TopAppBar(
                 title = {
                     Row(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .clickable { goToWalletSystem() },
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable { goToWalletSystem() },
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             modifier = Modifier.padding(start = 2.dp),
                             text = walletName,
-                            style = MaterialTheme.typography.headlineSmall.copy(color = Color.White)
+                            style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
                         )
                         Icon(
                             modifier = Modifier.size(30.dp),
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = "Back",
-                            tint = Color.White
+                            tint = Color.White,
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
                 actions = {
                     run {
                         IconButton(onClick = { /*goToBack()*/ }) {
@@ -220,11 +223,11 @@ fun WalletInfoScreen(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
                                 contentDescription = "Back",
-                                tint = Color.White
+                                tint = Color.White,
                             )
                         }
                     }
-                }
+                },
             )
             WalletInfoCardInfoFeature(
                 totalBalance = totalBalance,
@@ -234,38 +237,42 @@ fun WalletInfoScreen(
             )
 
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                    .fillMaxHeight()
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                        .fillMaxHeight(),
 //                    .weight(0.5f),
             ) {
                 val pagerState = rememberPagerState(pageCount = { 2 })
                 Column(
-                    modifier = Modifier
-                        .padding(bottom = bottomPadding.dp)
-                        .padding(horizontal = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier =
+                        Modifier
+                            .padding(bottom = bottomPadding.dp)
+                            .padding(horizontal = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp),
-                        horizontalArrangement = Arrangement.Center
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(top = 4.dp),
+                        horizontalArrangement = Arrangement.Center,
                     ) {
                         for (i in 0..1) {
-                            val color = if (i == pagerState.currentPage) {
-                                MaterialTheme.colorScheme.onPrimary
-                            } else {
-                                MaterialTheme.colorScheme.surfaceBright
-                            }
+                            val color =
+                                if (i == pagerState.currentPage) {
+                                    MaterialTheme.colorScheme.onPrimary
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceBright
+                                }
                             Box(
-                                modifier = Modifier
-                                    .padding(horizontal = 4.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .size(10.dp)
-
+                                modifier =
+                                    Modifier
+                                        .padding(horizontal = 4.dp)
+                                        .clip(CircleShape)
+                                        .background(color)
+                                        .size(10.dp),
                             )
                         }
                     }
@@ -273,27 +280,28 @@ fun WalletInfoScreen(
                         when (page) {
                             0 -> {
                                 LazyColumn(
-                                    modifier = Modifier
-                                        .padding(
-                                            vertical = 8.dp,
-                                            horizontal = 8.dp
-                                        )
-                                        .fillMaxSize()
+                                    modifier =
+                                        Modifier
+                                            .padding(
+                                                vertical = 8.dp,
+                                                horizontal = 8.dp,
+                                            ).fillMaxSize(),
                                 ) {
                                     itemsIndexed(listTokensWithTotalBalance) { _, tokenEntity ->
                                         if (tokenEntity != null) {
-
-                                            val currentTokenName = TokenName.entries.stream()
-                                                .filter { it.tokenName == tokenEntity.tokenName }
-                                                .findFirst()
-                                                .orElse(TokenName.USDT)
+                                            val currentTokenName =
+                                                TokenName.entries
+                                                    .stream()
+                                                    .filter { it.tokenName == tokenEntity.tokenName }
+                                                    .findFirst()
+                                                    .orElse(TokenName.USDT)
 
                                             CardForWalletInfoFeature(
                                                 onClick = {
-                                                    sharedPref.edit() {
+                                                    sharedPref.edit {
                                                         putString(
                                                             "token_name",
-                                                            tokenEntity.tokenName
+                                                            tokenEntity.tokenName,
                                                         )
                                                     }
                                                     goToWalletSots()
@@ -303,7 +311,7 @@ fun WalletInfoScreen(
                                                 shortNameToken = currentTokenName.shortName,
                                                 balance = tokenEntity.balance,
                                                 balanceForLastMonth = 32.0,
-                                                viewModel = viewModel
+                                                viewModel = viewModel,
                                             )
                                         }
                                     }
@@ -313,11 +321,11 @@ fun WalletInfoScreen(
 
                             1 -> {
                                 Column(
-                                    modifier = Modifier.fillMaxSize()
+                                    modifier = Modifier.fillMaxSize(),
                                 ) {
                                     LazyListTransactionsFeature(
                                         groupedTransaction = groupedTransaction,
-                                        goToTXDetailsScreen = goToTXDetailsScreen
+                                        goToTXDetailsScreen = goToTXDetailsScreen,
                                     )
                                 }
                             }
@@ -329,87 +337,92 @@ fun WalletInfoScreen(
     }
 }
 
-
 @Composable
 fun WalletInfoCardInfoFeature(
     totalBalance: BigInteger,
     pricePercentage24h: Double,
     setIsOpenSheetChoiceTokenToSend: () -> Unit,
-    goToWalletSystemTRX: () -> Unit
+    goToWalletSystemTRX: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .clip(RoundedCornerShape(16.dp))
+        modifier =
+            Modifier
+                .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .clip(RoundedCornerShape(16.dp)),
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.CenterStart
+            contentAlignment = Alignment.CenterStart,
         ) {
-            if(totalBalance.toTokenAmount() > BigDecimal(0)){
+            if (totalBalance.toTokenAmount() > BigDecimal(0)) {
                 ColorBoxOnCardInfoFeature(pricePercentage24h)
             }
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 16.dp, horizontal = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 16.dp, horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
                 // row 1
                 Row(
-                    modifier = Modifier
-                        .padding()
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .padding()
+                            .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(modifier = Modifier.weight(0.8f)) {
                         Text(
                             text = "Total balance",
-                            style = MaterialTheme.typography.headlineSmall
+                            style = MaterialTheme.typography.headlineSmall,
                         )
                     }
-                    Row(modifier = Modifier
-                        .clip(RoundedCornerShape(30.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainer)
-                        .clickable { }
+                    Row(
+                        modifier =
+                            Modifier
+                                .clip(RoundedCornerShape(30.dp))
+                                .background(MaterialTheme.colorScheme.surfaceContainer)
+                                .clickable { },
                     ) {
                         Row(
                             modifier = Modifier.padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.Center,
                         ) {
                             Box(
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .paint(
-                                        painterResource(id = R.drawable.trx_tron),
-                                        contentScale = ContentScale.FillBounds
-                                    ),
-                                contentAlignment = Alignment.Center
+                                modifier =
+                                    Modifier
+                                        .size(20.dp)
+                                        .paint(
+                                            painterResource(id = R.drawable.trx_tron),
+                                            contentScale = ContentScale.FillBounds,
+                                        ),
+                                contentAlignment = Alignment.Center,
                             ) {}
                             Spacer(modifier = Modifier.size(4.dp))
                             Text(
                                 modifier = Modifier.padding(),
                                 text = "Tron",
-                                style = MaterialTheme.typography.titleSmall
+                                style = MaterialTheme.typography.titleSmall,
                             )
                         }
                     }
                 }
                 // row 2
                 Row(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .padding(vertical = 10.dp)
+                            .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Row(
                         modifier = Modifier,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Box(modifier = Modifier) {
 //                                Canvas(modifier = Modifier.size(width = 140.dp, height = 70.dp)) {
@@ -418,86 +431,87 @@ fun WalletInfoCardInfoFeature(
                             Text(
                                 text = "$${decimalFormat(totalBalance.toTokenAmount())}",
                                 fontSize = 35.sp,
-                                style = MaterialTheme.typography.displayMedium
+                                style = MaterialTheme.typography.displayMedium,
                             )
-
                         }
                     }
                     Column(
                         modifier = Modifier,
-                        horizontalAlignment = Alignment.End
+                        horizontalAlignment = Alignment.End,
                     ) {
                         Text(
                             text = "24 hours:",
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                         if (pricePercentage24h >= 0.0) {
                             Text(
                                 "+${decimalFormat(pricePercentage24h.toBigDecimal())}%",
                                 color = GreenColor,
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyLarge,
                             )
                         } else {
                             Text(
                                 "${decimalFormat(pricePercentage24h.toBigDecimal())}%",
                                 color = RedColor,
-                                style = MaterialTheme.typography.bodyLarge
+                                style = MaterialTheme.typography.bodyLarge,
                             )
                         }
                     }
                 }
                 // row 3
                 Row(
-                    modifier = Modifier
-                        .padding(top = 20.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier =
+                        Modifier
+                            .padding(top = 20.dp)
+                            .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Card(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .fillMaxWidth()
-                            .weight(0.5f)
-                            .height(50.dp)
-                            .shadow(7.dp, RoundedCornerShape(10.dp))
-                            .clickable {
-                                setIsOpenSheetChoiceTokenToSend()
-                            },
+                        modifier =
+                            Modifier
+                                .padding(end = 8.dp)
+                                .fillMaxWidth()
+                                .weight(0.5f)
+                                .height(50.dp)
+                                .shadow(7.dp, RoundedCornerShape(10.dp))
+                                .clickable {
+                                    setIsOpenSheetChoiceTokenToSend()
+                                },
                     ) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_send),
                                 contentDescription = "",
-                                tint = MaterialTheme.colorScheme.onBackground
+                                tint = MaterialTheme.colorScheme.onBackground,
                             )
                             Text(text = "Отправить")
                         }
-
                     }
                     Card(
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .fillMaxWidth()
-                            .weight(0.5f)
-                            .height(50.dp)
-                            .shadow(7.dp, RoundedCornerShape(10.dp))
-                            .clickable {
-                                goToWalletSystemTRX()
-                            },
+                        modifier =
+                            Modifier
+                                .padding(start = 8.dp)
+                                .fillMaxWidth()
+                                .weight(0.5f)
+                                .height(50.dp)
+                                .shadow(7.dp, RoundedCornerShape(10.dp))
+                                .clickable {
+                                    goToWalletSystemTRX()
+                                },
                     ) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_get),
                                 contentDescription = "",
-                                tint = MaterialTheme.colorScheme.onBackground
+                                tint = MaterialTheme.colorScheme.onBackground,
                             )
                             Text(text = "Системный TRX")
                         }
@@ -510,30 +524,31 @@ fun WalletInfoCardInfoFeature(
 
 @Composable
 fun ColorBoxOnCardInfoFeature(pricePercentage24h: Double) {
-    val color = if (pricePercentage24h >= 0.0) {
-        GreenColor.copy(alpha = 0.6f, green = 1f)
-    } else {
-        Color.Red.copy(alpha = 0.4f)
-    }
+    val color =
+        if (pricePercentage24h >= 0.0) {
+            GreenColor.copy(alpha = 0.6f, green = 1f)
+        } else {
+            Color.Red.copy(alpha = 0.4f)
+        }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize(0.7f)
-            .background(Color.Transparent),
-
-        ) {
+        modifier =
+            Modifier
+                .fillMaxSize(0.7f)
+                .background(Color.Transparent),
+    ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
-                brush = Brush.radialGradient(
-                    colors = listOf(color, Color.Transparent),
-                    center = Offset(size.width * 0.35f, size.height * 0.3f),
-                    radius = size.minDimension * 0.5f
-                ),
-                radius = size.minDimension * 0.8f
+                brush =
+                    Brush.radialGradient(
+                        colors = listOf(color, Color.Transparent),
+                        center = Offset(size.width * 0.35f, size.height * 0.3f),
+                        radius = size.minDimension * 0.5f,
+                    ),
+                radius = size.minDimension * 0.8f,
             )
         }
     }
-
 }
 
 @Composable
@@ -544,85 +559,91 @@ fun CardHistoryTransactionsFeature(
     amount: String,
     shortNameToken: String,
     transactionEntity: TransactionEntity,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     val sharedPref = sharedPref()
 
-    val label = when (typeTransaction) {
-        TransactionType.SEND.index -> "Отправлено"
-        TransactionType.RECEIVE.index -> "Получено"
-        TransactionType.BETWEEN_YOURSELF.index -> "Между своими"
-        else -> {
-            ""
+    val label =
+        when (typeTransaction) {
+            TransactionType.SEND.index -> "Отправлено"
+            TransactionType.RECEIVE.index -> "Получено"
+            TransactionType.BETWEEN_YOURSELF.index -> "Между своими"
+            else -> {
+                ""
+            }
         }
-    }
-    val label2 = when (typeTransaction) {
-        TransactionType.SEND.index -> "Куда: ${address.take(5)}...${address.takeLast(5)}"
-        TransactionType.RECEIVE.index -> "Откуда: ${address.take(5)}...${address.takeLast(5)}"
-        TransactionType.BETWEEN_YOURSELF.index -> "Откуда: ${transactionEntity.senderAddress.take(5)}..." +
-                "${transactionEntity.senderAddress.takeLast(5)}\n" +
-                "Куда: ${transactionEntity.receiverAddress.take(5)}..." +
-                transactionEntity.receiverAddress.takeLast(5)
+    val label2 =
+        when (typeTransaction) {
+            TransactionType.SEND.index -> "Куда: ${address.take(5)}...${address.takeLast(5)}"
+            TransactionType.RECEIVE.index -> "Откуда: ${address.take(5)}...${address.takeLast(5)}"
+            TransactionType.BETWEEN_YOURSELF.index ->
+                "Откуда: ${transactionEntity.senderAddress.take(5)}..." +
+                    "${transactionEntity.senderAddress.takeLast(5)}\n" +
+                    "Куда: ${transactionEntity.receiverAddress.take(5)}..." +
+                    transactionEntity.receiverAddress.takeLast(5)
 
-        else -> return
-    }
+            else -> return
+        }
 
     Card(
-        modifier = Modifier
-            .padding(vertical = 4.dp)
-            .fillMaxWidth()
-            .shadow(7.dp, RoundedCornerShape(10.dp)),
-        onClick = { onClick() }
+        modifier =
+            Modifier
+                .padding(vertical = 4.dp)
+                .fillMaxWidth()
+                .shadow(7.dp, RoundedCornerShape(10.dp)),
+        onClick = { onClick() },
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier =
+                Modifier
+                    .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column(
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 16.dp)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.Center
+                modifier =
+                    Modifier
+                        .padding(start = 10.dp, end = 16.dp)
+                        .fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .size(40.dp)
-                            .paint(
-                                painterResource(id = paintIconId),
-                                contentScale = ContentScale.FillBounds
-                            ),
-                        contentAlignment = Alignment.Center
+                        modifier =
+                            Modifier
+                                .padding(vertical = 8.dp)
+                                .size(40.dp)
+                                .paint(
+                                    painterResource(id = paintIconId),
+                                    contentScale = ContentScale.FillBounds,
+                                ),
+                        contentAlignment = Alignment.Center,
                     ) {}
                     Column(modifier = Modifier.padding(horizontal = 12.dp, 8.dp)) {
                         Text(
                             text = label,
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                         Text(text = label2, style = MaterialTheme.typography.labelLarge)
                     }
                 }
             }
             Column(
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
+                modifier =
+                    Modifier
+                        .padding(horizontal = 10.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.End
+                horizontalAlignment = Alignment.End,
             ) {
                 Text(
                     text = "$amount $shortNameToken",
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
                 )
-
             }
         }
     }
-
 }
 
 fun formatDate(inputDate: String): String {
@@ -630,7 +651,7 @@ fun formatDate(inputDate: String): String {
     val outputFormat =
         SimpleDateFormat(
             "dd MMMM",
-            Locale("ru", "RU")
+            Locale("ru", "RU"),
         ) // Устанавливаем локаль для русского языка
 
     val date = inputFormat.parse(inputDate)

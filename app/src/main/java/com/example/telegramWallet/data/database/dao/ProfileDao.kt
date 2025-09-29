@@ -41,7 +41,12 @@ interface ProfileDao {
     fun deleteProfileByTgId(tgId: Long)
 
     @Query("UPDATE profile SET active_tg_id = :valActive, access_token = :accessToken, expires_at = :expiresAt WHERE telegram_id = :tgId")
-    fun updateActiveTgId(valActive: Boolean, tgId: Long, accessToken: String, expiresAt: Long)
+    fun updateActiveTgId(
+        valActive: Boolean,
+        tgId: Long,
+        accessToken: String,
+        expiresAt: Long,
+    )
 
     @Query("SELECT active_tg_id FROM profile")
     fun isActiveTgId(): Flow<Boolean>
@@ -50,7 +55,10 @@ interface ProfileDao {
     fun getActiveProfile(): ProfileDto
 
     @Query("UPDATE profile SET telegram_id = :telegramId, username = :username")
-    fun updateProfileTelegramIdAndUsername(telegramId: Long, username: String)
+    fun updateProfileTelegramIdAndUsername(
+        telegramId: Long,
+        username: String,
+    )
 
     @Query("SELECT device_token FROM profile")
     fun getDeviceToken(): String?

@@ -64,7 +64,7 @@ import java.math.BigInteger
 @Composable
 fun SmartListScreen(
     viewModel: GetSmartContractViewModel = hiltViewModel(),
-    goToSystemTRX: () -> Unit
+    goToSystemTRX: () -> Unit,
 ) {
     val smartContractsState by viewModel.state.collectAsStateWithLifecycle()
     val smartModalState by viewModel.stateModal.collectAsStateWithLifecycle()
@@ -72,21 +72,23 @@ fun SmartListScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-        confirmValueChange = {
-            !smartModalState.isActive
-        }
-    )
+    val sheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+            confirmValueChange = {
+                !smartModalState.isActive
+            },
+        )
 
     var smartContractLD by remember { mutableStateOf<LiveData<SmartContractEntity?>?>(null) }
     val smartContract = smartContractLD?.observeAsState(initial = null)
 
     LaunchedEffect(Unit) {
         // Получаем LiveData внутри coroutine-контекста
-        smartContractLD = withContext(Dispatchers.IO) {
-            viewModel.smartContractDatabaseRepo.getSmartContractLiveData()
-        }
+        smartContractLD =
+            withContext(Dispatchers.IO) {
+                viewModel.smartContractDatabaseRepo.getSmartContractLiveData()
+            }
     }
 
     LaunchedEffect(smartContract?.value) {
@@ -106,8 +108,9 @@ fun SmartListScreen(
         snackbarHost = {
             StackedSnackbarHost(
                 hostState = stackedSnackbarHostState,
-                modifier = Modifier
-                    .padding(8.dp, 90.dp)
+                modifier =
+                    Modifier
+                        .padding(8.dp, 90.dp),
             )
         },
         topBar = {
@@ -115,12 +118,13 @@ fun SmartListScreen(
                 title = {
                     Text(
                         text = "Smart",
-                        style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
+                        style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.onPrimary),
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
                 navigationIcon = {},
                 actions = {
                     run {
@@ -129,48 +133,51 @@ fun SmartListScreen(
                                 modifier = Modifier.size(35.dp),
                                 imageVector = ImageVector.vectorResource(id = R.drawable.icon_help_quation),
                                 contentDescription = "Back",
-                                tint = MaterialTheme.colorScheme.onPrimary
+                                tint = MaterialTheme.colorScheme.onPrimary,
                             )
                         }
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable { keyboardController?.hide() }) {}
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clickable { keyboardController?.hide() },
+        ) {}
         Column(
-            modifier = Modifier
-                .padding(top = padding.calculateTopPadding(), bottom = bottomPadding.dp)
-                .background(MaterialTheme.colorScheme.primary)
-                .fillMaxSize()
+            modifier =
+                Modifier
+                    .padding(top = padding.calculateTopPadding(), bottom = bottomPadding.dp)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .fillMaxSize(),
         ) {
             AnimatedScrollToHideHeaderLazyColumn(
                 contentToHide = {
                     Column(
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.primary)
+                        modifier =
+                            Modifier
+                                .background(MaterialTheme.colorScheme.primary),
                     ) {
                         if (smartContract?.value != null) {
                             SmartHeaderInListFeature(
                                 balance = contractBalance.toTokenAmount(),
                                 address = smartContract.value?.contractAddress,
-                                viewModel = viewModel
+                                viewModel = viewModel,
                             )
                         } else {
                             SmartHeaderCreateContractInListFeature(
                                 viewModel = viewModel,
                                 snackbar = stackedSnackbarHostState,
-                                goToSystemTRX = goToSystemTRX
+                                goToSystemTRX = goToSystemTRX,
                             )
                         }
                         HorizontalDivider()
-
                     }
-
-                }) {
+                },
+            ) {
                 itemsIndexed(smartContractsState) { index, item ->
                     SmartCardFeature(index + 1, item, viewModel)
                 }
@@ -196,8 +203,8 @@ fun SmartListScreen(
                 setConfirm(
                     confirmationSmartModalFeature(
                         smartModalState = smartModalState,
-                        snackbar = stackedSnackbarHostState
-                    )
+                        snackbar = stackedSnackbarHostState,
+                    ),
                 )
             }
             Spacer(Modifier.height(10.dp))

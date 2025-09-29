@@ -23,37 +23,44 @@ import com.example.telegramWallet.ui.screens.wallet.formatDate
 import com.example.telegramWallet.utils.decimalFormat
 
 @Composable
-fun CATransactionListHistoryFeature(address: String, groupedTransaction: List<List<TransactionModel?>>) {
+fun CATransactionListHistoryFeature(
+    address: String,
+    groupedTransaction: List<List<TransactionModel?>>,
+) {
     if (groupedTransaction.isNotEmpty() && groupedTransaction[0].isNotEmpty()) {
         if (groupedTransaction[0][0] != null) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        horizontal = 8.dp
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(
+                            horizontal = 8.dp,
+                        ),
+                contentPadding =
+                    PaddingValues(
+                        horizontal = 0.dp,
+                        vertical = 0.dp,
                     ),
-                contentPadding = PaddingValues(
-                    horizontal = 0.dp,
-                    vertical = 0.dp
-                ),
             ) {
                 groupedTransaction.forEach { list ->
                     item {
                         Text(
                             text = formatDate(list[0]!!.transactionDate),
-                            modifier = Modifier.padding(
-                                start = 4.dp,
-                                top = 12.dp,
-                                bottom = 4.dp
-                            ),
-                            style = MaterialTheme.typography.titleMedium
+                            modifier =
+                                Modifier.padding(
+                                    start = 4.dp,
+                                    top = 12.dp,
+                                    bottom = 4.dp,
+                                ),
+                            style = MaterialTheme.typography.titleMedium,
                         )
                     }
 
                     itemsIndexed(list) { _, item ->
                         if (item != null) {
                             val currentTokenName =
-                                TokenName.entries.stream()
+                                TokenName.entries
+                                    .stream()
                                     .filter { it.tokenName == item.tokenName }
                                     .findFirst()
                                     .orElse(TokenName.USDT)
@@ -63,7 +70,7 @@ fun CATransactionListHistoryFeature(address: String, groupedTransaction: List<Li
                                 shortNameToken = currentTokenName.shortName,
                                 transactionEntity = item.toEntity(),
                                 amount = decimalFormat(item.amount.toTokenAmount()),
-                                address = address
+                                address = address,
                             )
                         }
                     }
@@ -76,12 +83,12 @@ fun CATransactionListHistoryFeature(address: String, groupedTransaction: List<Li
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Text(
                 text = "У вас пока нет транзакций...",
                 style = MaterialTheme.typography.titleMedium,
-                color = BackgroundIcon
+                color = BackgroundIcon,
             )
         }
     }

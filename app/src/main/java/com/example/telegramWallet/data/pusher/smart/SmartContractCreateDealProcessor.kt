@@ -8,8 +8,7 @@ class SmartContractCreateDealProcessor : PusherEventProcessor {
     override fun processEvent(
         eventData: PusherEvent,
         notificationFunction: (String, String) -> Unit,
-        di: PusherDI
+        di: PusherDI,
     ) {
-
     }
 }

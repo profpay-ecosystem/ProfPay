@@ -13,7 +13,11 @@ class MultiSigRead {
     /**
      * Получаем текущий адрес USDT смарт-контракта.
      */
-    fun getUsdt(ownerAddress: String, privateKey: String, contractAddress: String): String {
+    fun getUsdt(
+        ownerAddress: String,
+        privateKey: String,
+        contractAddress: String,
+    ): String {
         val wrapper: ApiWrapper = ApiWrapper.ofNile(privateKey)
 
         val usdtFunc = Function("USDT", emptyList(), listOf(object : TypeReference<Address?>() {}))
@@ -26,10 +30,15 @@ class MultiSigRead {
     }
 
     // returns openDeals, closedDeals 1
-    fun getContractStats(ownerAddress: String, privateKey: String, contractAddress: String): Pair<String, String> {
+    fun getContractStats(
+        ownerAddress: String,
+        privateKey: String,
+        contractAddress: String,
+    ): Pair<String, String> {
         val wrapper = ApiWrapper(AppConstants.Network.TRON_GRPC_ENDPOINT, AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY, privateKey)
 
-        val function = Function("getContractStats", emptyList(), listOf(object : TypeReference<Uint256?>() {}, object : TypeReference<Uint256?>() {}))
+        val function =
+            Function("getContractStats", emptyList(), listOf(object : TypeReference<Uint256?>() {}, object : TypeReference<Uint256?>() {}))
         val extension = wrapper.triggerConstantContract(ownerAddress, contractAddress, function)
         val result = Numeric.toHexString(extension.getConstantResult(0).toByteArray())
 

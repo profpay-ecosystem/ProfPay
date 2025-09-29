@@ -4,23 +4,30 @@ import org.example.protobuf.smart.SmartContractProto
 
 private const val TRON_ADDRESS_ZERO = "T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb"
 
-fun isBuyerRequestInitialized(deal: SmartContractProto.ContractDealListResponse, userId: Long): Boolean {
-    return deal.buyer.userId == userId && deal.dealBlockchainId == 0L
-}
+fun isBuyerRequestInitialized(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Boolean = deal.buyer.userId == userId && deal.dealBlockchainId == 0L
 
-fun isBuyerNotDeposited(deal: SmartContractProto.ContractDealListResponse, userId: Long): Boolean {
-    return deal.buyer.userId == userId && deal.dealBlockchainId != 0L && !deal.dealData.paymentStatus.buyerDepositAndExpertFeePaid
-}
+fun isBuyerNotDeposited(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Boolean = deal.buyer.userId == userId && deal.dealBlockchainId != 0L && !deal.dealData.paymentStatus.buyerDepositAndExpertFeePaid
 
-fun isSellerNotPayedExpertFee(deal: SmartContractProto.ContractDealListResponse, userId: Long): Boolean {
-    return deal.seller.userId == userId &&
-            deal.dealBlockchainId != 0L &&
-            !deal.dealData.paymentStatus.sellerExpertFeePaid &&
-            deal.dealData.paymentStatus.buyerDepositAndExpertFeePaid &&
-            !deal.dealData.agreementStatus.disputed
-}
+fun isSellerNotPayedExpertFee(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Boolean =
+    deal.seller.userId == userId &&
+        deal.dealBlockchainId != 0L &&
+        !deal.dealData.paymentStatus.sellerExpertFeePaid &&
+        deal.dealData.paymentStatus.buyerDepositAndExpertFeePaid &&
+        !deal.dealData.agreementStatus.disputed
 
-fun isContractAwaitingUserConfirmation(deal: SmartContractProto.ContractDealListResponse, userId: Long): Boolean {
+fun isContractAwaitingUserConfirmation(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Boolean {
     val isBuyer = deal.buyer.userId == userId
     val isSeller = deal.seller.userId == userId
     val buyerNotAgreed = !deal.dealData.agreementStatus.buyerAgreed
@@ -31,43 +38,63 @@ fun isContractAwaitingUserConfirmation(deal: SmartContractProto.ContractDealList
     val isAwaitingBuyerConfirmation = isBuyer && buyerNotAgreed
     val isAwaitingSellerConfirmation = isSeller && sellerNotAgreed
 
-    return ((isAwaitingBuyerConfirmation || isAwaitingSellerConfirmation) && sellerFeePaid && buyerFeePaid) && !deal.dealData.agreementStatus.disputed
+    return ((isAwaitingBuyerConfirmation || isAwaitingSellerConfirmation) && sellerFeePaid && buyerFeePaid) &&
+        !deal.dealData.agreementStatus.disputed
 }
 
-fun isAddressZero(address: String): Boolean {
-    return address == TRON_ADDRESS_ZERO
-}
+fun isAddressZero(address: String): Boolean = address == TRON_ADDRESS_ZERO
 
-fun isExpertNotDecision(deal: SmartContractProto.ContractDealListResponse, userId: Long): Boolean {
-    return deal.dealBlockchainId != 0L &&
-            deal.dealData.agreementStatus.disputed &&
-            isAddressZero(deal.disputeResolutionStatus.decisionAdmin) &&
-            isUserExpertComparison(deal, userId)
-}
+fun isExpertNotDecision(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Boolean =
+    deal.dealBlockchainId != 0L &&
+        deal.dealData.agreementStatus.disputed &&
+        isAddressZero(deal.disputeResolutionStatus.decisionAdmin) &&
+        isUserExpertComparison(deal, userId)
 
-fun isDisputeNotAgreed(deal: SmartContractProto.ContractDealListResponse, userId: Long): Boolean {
-    return deal.dealBlockchainId != 0L &&
-            deal.dealData.agreementStatus.disputed &&
-            !isAddressZero(deal.disputeResolutionStatus.decisionAdmin) &&
-            (isUserExpertComparison(deal, userId) &&
-            isExpertNotAgreedComparison(deal, userId)) ||
-            deal.dealData.agreementStatus.disputed &&
-            (deal.seller.userId == userId && !deal.disputeResolutionStatus.sellerAgreed ||
-                    deal.buyer.userId == userId && !deal.disputeResolutionStatus.buyerAgreed)
-}
+fun isDisputeNotAgreed(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Boolean =
+    deal.dealBlockchainId != 0L &&
+        deal.dealData.agreementStatus.disputed &&
+        !isAddressZero(deal.disputeResolutionStatus.decisionAdmin) &&
+        (
+            isUserExpertComparison(deal, userId) &&
+                isExpertNotAgreedComparison(deal, userId)
+        ) ||
+        deal.dealData.agreementStatus.disputed &&
+        (
+            deal.seller.userId == userId &&
+                !deal.disputeResolutionStatus.sellerAgreed ||
+                deal.buyer.userId == userId &&
+                !deal.disputeResolutionStatus.buyerAgreed
+        )
 
-fun isDisputeNotDeclined(deal: SmartContractProto.ContractDealListResponse, userId: Long): Boolean {
-    return deal.dealBlockchainId != 0L &&
-            deal.dealData.agreementStatus.disputed &&
-            !isAddressZero(deal.disputeResolutionStatus.decisionAdmin) &&
-            (isUserExpertComparison(deal, userId) &&
-            isExpertNotDeclinedComparison(deal, userId)) ||
-            deal.dealData.agreementStatus.disputed &&
-            (deal.seller.userId == userId && !deal.disputeResolutionStatus.sellerDeclined ||
-                    deal.buyer.userId == userId && !deal.disputeResolutionStatus.buyerDeclined)
-}
+fun isDisputeNotDeclined(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Boolean =
+    deal.dealBlockchainId != 0L &&
+        deal.dealData.agreementStatus.disputed &&
+        !isAddressZero(deal.disputeResolutionStatus.decisionAdmin) &&
+        (
+            isUserExpertComparison(deal, userId) &&
+                isExpertNotDeclinedComparison(deal, userId)
+        ) ||
+        deal.dealData.agreementStatus.disputed &&
+        (
+            deal.seller.userId == userId &&
+                !deal.disputeResolutionStatus.sellerDeclined ||
+                deal.buyer.userId == userId &&
+                !deal.disputeResolutionStatus.buyerDeclined
+        )
 
-private fun isExpertNotDeclinedComparison(deal: SmartContractProto.ContractDealListResponse, userId: Long): Boolean {
+private fun isExpertNotDeclinedComparison(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Boolean {
     // Найти администратора с соответствующим userId
     val admin = deal.adminsList.find { it.userId == userId }
 
@@ -77,7 +104,10 @@ private fun isExpertNotDeclinedComparison(deal: SmartContractProto.ContractDealL
     } ?: true
 }
 
-private fun isExpertNotAgreedComparison(deal: SmartContractProto.ContractDealListResponse, userId: Long): Boolean {
+private fun isExpertNotAgreedComparison(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Boolean {
     // Найти администратора с соответствующим userId
     val admin = deal.adminsList.find { it.userId == userId }
 
@@ -87,11 +117,18 @@ private fun isExpertNotAgreedComparison(deal: SmartContractProto.ContractDealLis
     } ?: true
 }
 
-private fun isUserExpertComparison(deal: SmartContractProto.ContractDealListResponse, userId: Long): Boolean {
-    return deal.adminsList.any { it.userId == userId }
-}
+private fun isUserExpertComparison(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Boolean =
+    deal.adminsList.any {
+        it.userId == userId
+    }
 
-fun getOppositeUserId(deal: SmartContractProto.ContractDealListResponse, userId: Long): Long {
+fun getOppositeUserId(
+    deal: SmartContractProto.ContractDealListResponse,
+    userId: Long,
+): Long {
     // Логика получения идентификатора противоположной стороны
     return if (deal.buyer.userId == userId) {
         deal.seller.userId

@@ -35,8 +35,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun SmartHeaderCreateContractInListFeature(viewModel: GetSmartContractViewModel,
-                                           snackbar: StackedSnakbarHostState, goToSystemTRX: () -> Unit) {
+fun SmartHeaderCreateContractInListFeature(
+    viewModel: GetSmartContractViewModel,
+    snackbar: StackedSnakbarHostState,
+    goToSystemTRX: () -> Unit,
+) {
     val (_, setIsOpenCreateContractSheet) = bottomSheetCreateContract(viewModel = viewModel)
     val (isGeneralAddressActivated, setIsGeneralAddressActivated) = remember { mutableStateOf(false) }
 
@@ -45,79 +48,81 @@ fun SmartHeaderCreateContractInListFeature(viewModel: GetSmartContractViewModel,
         setIsGeneralAddressActivated(
             withContext(Dispatchers.IO) {
                 viewModel.tron.addressUtilities.isAddressActivated(generalAddress)
-            }
+            },
         )
     }
 
     Column(modifier = Modifier.padding(8.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, end = 0.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 8.dp, end = 0.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = "У вас нет контракта",
                         fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
             }
         }
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             Card(
-                modifier = Modifier
-                    .padding(start = 6.dp, end = 6.dp, top = 12.dp)
-                    .fillMaxHeight(0.3f)
-                    .fillMaxWidth()
-                    .shadow(7.dp, RoundedCornerShape(10.dp))
-                    .clickable {
-                        if (isGeneralAddressActivated) {
-                            setIsOpenCreateContractSheet(true)
-                        } else {
-                            snackbar.showErrorSnackbar(
-                                "Создание контракта невозможно",
-                                "У Вас не активирован центральный адрес",
-                                "Перейти",
-                                action = goToSystemTRX
-                            )
-                        }
-                    },
+                modifier =
+                    Modifier
+                        .padding(start = 6.dp, end = 6.dp, top = 12.dp)
+                        .fillMaxHeight(0.3f)
+                        .fillMaxWidth()
+                        .shadow(7.dp, RoundedCornerShape(10.dp))
+                        .clickable {
+                            if (isGeneralAddressActivated) {
+                                setIsOpenCreateContractSheet(true)
+                            } else {
+                                snackbar.showErrorSnackbar(
+                                    "Создание контракта невозможно",
+                                    "У Вас не активирован центральный адрес",
+                                    "Перейти",
+                                    action = goToSystemTRX,
+                                )
+                            }
+                        },
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 4.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 4.dp),
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.icon_create),
                         contentDescription = "",
                         modifier = Modifier.size(14.dp),
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
                         text = "Создать контракт",
                         fontSize = 14.sp,
                     )
                 }
-
             }
         }
     }
 
     Spacer(modifier = Modifier.fillMaxHeight(0.1f))
-
 }
