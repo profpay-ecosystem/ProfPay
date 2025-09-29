@@ -1,6 +1,7 @@
 package com.profpay.wallet.ui.feature.wallet.tx_details
 
 import StackedSnakbarHostState
+import android.view.MotionEvent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +64,8 @@ fun bottomSheetTransOnGeneralReceipt(
     walletId: Long,
     balance: BigInteger? = null,
 ): Pair<Boolean, (Boolean) -> Unit> {
+    val context = LocalContext.current
+
     val sheetState =
         rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
@@ -298,6 +303,14 @@ fun bottomSheetTransOnGeneralReceipt(
                         },
                         modifier =
                             Modifier
+                                // Защищаемся от Tapjacking/Clickjacking
+                                .pointerInteropFilter { motionEvent ->
+                                    if (motionEvent.action == MotionEvent.ACTION_DOWN) {
+                                        val view = (context as? android.app.Activity)?.window?.decorView
+                                        isButtonEnabled = view?.filterTouchesWhenObscured ?: true
+                                    }
+                                    false
+                                }
                                 .padding(vertical = 24.dp, horizontal = 16.dp)
                                 .fillMaxWidth()
                                 .height(50.dp),

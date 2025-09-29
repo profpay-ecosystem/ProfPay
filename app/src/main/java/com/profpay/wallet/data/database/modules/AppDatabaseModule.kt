@@ -53,7 +53,7 @@ class AppDatabaseModule {
     fun provideCentralAddressDao(appDatabase: AppDatabase): CentralAddressDao = appDatabase.getCentralAddressDao()
 
     @Provides
-    fun proviceSmartContractDao(appDatabase: AppDatabase): SmartContractDao = appDatabase.getSmartContractDao()
+    fun provideSmartContractDao(appDatabase: AppDatabase): SmartContractDao = appDatabase.getSmartContractDao()
 
     @Provides
     fun provideExchangeRatesDao(appDatabase: AppDatabase): ExchangeRatesDao = appDatabase.getExchangeRatesDao()
