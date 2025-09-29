@@ -64,7 +64,7 @@ ksp {
 }
 
 android {
-    namespace = "com.example.telegramWallet"
+    namespace = "com.profpay.wallet"
     compileSdk = 36
 
     signingConfigs {
@@ -77,7 +77,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.telegramWallet"
+        applicationId = "com.profpay.wallet"
         minSdk = 29
         targetSdk = 35
         versionCode = 5
