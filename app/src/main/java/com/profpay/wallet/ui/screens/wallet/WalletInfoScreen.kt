@@ -574,8 +574,8 @@ fun CardHistoryTransactionsFeature(
         }
     val label2 =
         when (typeTransaction) {
-            TransactionType.SEND.index -> "Куда: ${address.take(5)}...${address.takeLast(5)}"
-            TransactionType.RECEIVE.index -> "Откуда: ${address.take(5)}...${address.takeLast(5)}"
+            TransactionType.SEND.index -> "Куда: ${transactionEntity.receiverAddress.take(5)}...${transactionEntity.receiverAddress.takeLast(5)}"
+            TransactionType.RECEIVE.index -> "Откуда: ${transactionEntity.senderAddress.take(5)}...${transactionEntity.senderAddress.takeLast(5)}"
             TransactionType.BETWEEN_YOURSELF.index ->
                 "Откуда: ${transactionEntity.senderAddress.take(5)}..." +
                     "${transactionEntity.senderAddress.takeLast(5)}\n" +

@@ -21,9 +21,6 @@ interface WalletProfileDao {
     @Query("SELECT COUNT(*) FROM wallet_profile")
     fun getCountRecords(): Long
 
-    @Query("SELECT priv_key_bytes, chain_code FROM wallet_profile WHERE id = :id")
-    fun getWalletPrivateKeyAndChainCodeById(id: Long): WalletPrivateKeyAndChainCodeModel
-
     @Query("UPDATE wallet_profile SET name = :newName WHERE id = :id")
     suspend fun updateNameById(
         id: Long,
@@ -33,11 +30,11 @@ interface WalletProfileDao {
     @Query("DELETE FROM wallet_profile WHERE id = :id")
     suspend fun deleteWalletProfile(id: Long)
 
-    @Query("SELECT entropy FROM wallet_profile WHERE id = :id")
-    suspend fun getWalletEncryptedEntropy(id: Long): ByteArray?
-
     @Query("SELECT EXISTS(SELECT 1 FROM wallet_profile LIMIT 1)")
     suspend fun hasAnyWalletProfile(): Boolean
+
+    @Query("SELECT iv, cipher_text FROM wallet_profile WHERE id = :id")
+    suspend fun getWalletCipherData(id: Long): WalletProfileCipher
 }
 
 data class WalletProfileModel(
@@ -45,7 +42,25 @@ data class WalletProfileModel(
     @ColumnInfo(name = "name") val name: String,
 )
 
-data class WalletPrivateKeyAndChainCodeModel(
-    @ColumnInfo(name = "priv_key_bytes") val privKeyBytes: ByteArray,
-    @ColumnInfo(name = "chain_code") val chainCode: ByteArray,
-)
+data class WalletProfileCipher(
+    @ColumnInfo(name = "iv") val iv: ByteArray,
+    @ColumnInfo(name = "cipher_text") val cipherText: ByteArray
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as WalletProfileCipher
+
+        if (!iv.contentEquals(other.iv)) return false
+        if (!cipherText.contentEquals(other.cipherText)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = iv.contentHashCode()
+        result = 31 * result + cipherText.contentHashCode()
+        return result
+    }
+}

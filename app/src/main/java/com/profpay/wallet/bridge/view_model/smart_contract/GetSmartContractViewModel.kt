@@ -166,11 +166,11 @@ class GetSmartContractViewModel
             sellerValue: BigInteger,
             buyerValue: BigInteger,
         ) {
-            processSmartContractUseCase.expertSetDecision(
-                deal = deal,
-                sellerValue = sellerValue,
-                buyerValue = buyerValue,
-            )
+//            processSmartContractUseCase.expertSetDecision(
+//                deal = deal,
+//                sellerValue = sellerValue,
+//                buyerValue = buyerValue,
+//            )
         }
 
         suspend fun isButtonVisible(deal: SmartContractProto.ContractDealListResponse): ContractButtonVisibleType {
@@ -317,49 +317,49 @@ class GetSmartContractViewModel
                     },
                 )
 
-            val signedCommissionTransaction: SignedTransactionData =
-                tron.transactions.getSignedTrxTransaction(
-                    fromAddress = centralAddressEntity.address,
-                    toAddress = trxFeeAddress,
-                    privateKey = centralAddressEntity.privateKey,
-                    amount = commission.toSunAmount(),
-                )
-            val signedDeployContractTransaction: ByteString? =
-                tron.smartContracts.getSignedDeployMultiSigContract(
-                    ownerAddress = addressEntity.address,
-                    privateKey = addressEntity.privateKey,
-                )
-            val estimateBandwidthCommission =
-                tron.transactions.estimateBandwidthTrxTransaction(
-                    fromAddress = centralAddressEntity.address,
-                    toAddress = trxFeeAddress,
-                    privateKey = centralAddressEntity.privateKey,
-                    amount = commission.toSunAmount(),
-                )
-
-            smartContractRepo.deploySmartContract(
-                DeploySmartContractRequest
-                    .newBuilder()
-                    .setUserId(userId)
-                    .setContract(
-                        DeployTransactionData
-                            .newBuilder()
-                            .setAddress(addressEntity.address)
-                            .setAmount(commission.toSunAmount().toByteString())
-                            .setEstimateEnergy(energy)
-                            .setBandwidthRequired(bandwidth)
-                            .setTxnBytes(signedDeployContractTransaction)
-                            .build(),
-                    ).setCommission(
-                        DeployTransactionData
-                            .newBuilder()
-                            .setAddress(centralAddressEntity.address)
-                            .setAmount(commission.toSunAmount().toByteString())
-                            .setBandwidthRequired(estimateBandwidthCommission.bandwidth)
-                            .setTxnBytes(signedCommissionTransaction.signedTxn)
-                            .build(),
-                    ).build(),
-            )
+//            val signedCommissionTransaction: SignedTransactionData =
+//                tron.transactions.getSignedTrxTransaction(
+//                    fromAddress = centralAddressEntity.address,
+//                    toAddress = trxFeeAddress,
+//                    privateKey = centralAddressEntity.privateKey,
+//                    amount = commission.toSunAmount(),
+//                )
+//            val signedDeployContractTransaction: ByteString? =
+//                tron.smartContracts.getSignedDeployMultiSigContract(
+//                    ownerAddress = addressEntity.address,
+//                    privateKey = addressEntity.privateKey,
+//                )
+//            val estimateBandwidthCommission =
+//                tron.transactions.estimateBandwidthTrxTransaction(
+//                    fromAddress = centralAddressEntity.address,
+//                    toAddress = trxFeeAddress,
+//                    privateKey = centralAddressEntity.privateKey,
+//                    amount = commission.toSunAmount(),
+//                )
+//
+//            smartContractRepo.deploySmartContract(
+//                DeploySmartContractRequest
+//                    .newBuilder()
+//                    .setUserId(userId)
+//                    .setContract(
+//                        DeployTransactionData
+//                            .newBuilder()
+//                            .setAddress(addressEntity.address)
+//                            .setAmount(commission.toSunAmount().toByteString())
+//                            .setEstimateEnergy(energy)
+//                            .setBandwidthRequired(bandwidth)
+//                            .setTxnBytes(signedDeployContractTransaction)
+//                            .build(),
+//                    ).setCommission(
+//                        DeployTransactionData
+//                            .newBuilder()
+//                            .setAddress(centralAddressEntity.address)
+//                            .setAmount(commission.toSunAmount().toByteString())
+//                            .setBandwidthRequired(estimateBandwidthCommission.bandwidth)
+//                            .setTxnBytes(signedCommissionTransaction.signedTxn)
+//                            .build(),
+//                    ).build(),
+//            )
         }
     }
 

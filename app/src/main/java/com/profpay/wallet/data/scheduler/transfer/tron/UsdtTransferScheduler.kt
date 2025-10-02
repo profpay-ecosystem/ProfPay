@@ -3,7 +3,6 @@ package com.profpay.wallet.data.scheduler.transfer.tron
 import android.content.SharedPreferences
 import android.database.sqlite.SQLiteConstraintException
 import com.profpay.wallet.PrefKeys
-import com.profpay.wallet.backend.grpc.AmlGrpcClient
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.data.database.entities.wallet.TransactionStatusCode
 import com.profpay.wallet.data.database.entities.wallet.TransactionType
@@ -41,7 +40,6 @@ class UsdtTransferScheduler(
     private var notificationFunction: (String, String) -> Unit,
     private var tron: Tron,
     private var pendingTransactionRepo: PendingTransactionRepo,
-    private var amlClient: AmlGrpcClient,
     private var amlProcessorService: AmlProcessorService,
     private var sharedPrefs: SharedPreferences,
 ) {

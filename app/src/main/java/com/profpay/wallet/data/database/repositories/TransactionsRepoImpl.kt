@@ -46,6 +46,7 @@ interface TransactionsRepo {
     )
 
     suspend fun isTransactionSuccessful(txid: String): Boolean
+    suspend fun deleteTransactionByTxId(txid: String)
 }
 
 @Singleton
@@ -130,4 +131,10 @@ class TransactionsRepoImpl
                 return@withContext transactionsDao.isTransactionSuccessful(txid)
             }
         }
-    }
+
+        override suspend fun deleteTransactionByTxId(txid: String) {
+            return withContext(Dispatchers.IO) {
+                return@withContext transactionsDao.deleteTransactionByTxId(txid)
+            }
+        }
+}

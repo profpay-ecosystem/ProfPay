@@ -60,7 +60,7 @@ class CommissionFeeBuilder
                     tron.transactions.getSignedTrxTransaction(
                         fromAddress = addressData.address,
                         toAddress = trxFeeAddress,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey".toByteArray(),
                         amount = commission,
                     )
                 }
@@ -70,7 +70,7 @@ class CommissionFeeBuilder
                     tron.transactions.estimateBandwidthTrxTransaction(
                         fromAddress = addressData.address,
                         toAddress = trxFeeAddress,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey".toByteArray(),
                         amount = commission,
                     )
                 }

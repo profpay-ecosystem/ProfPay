@@ -63,28 +63,28 @@ fun confirmationSmartModalFeature(
         val estimateResourcePrice by viewModel.stateEstimateResourcePrice.collectAsStateWithLifecycle()
 
         LaunchedEffect(Unit) {
-            var transactionEstimatorResult =
-                if (smartModalState.buttonType == SmartContractButtonType.ACCEPT) {
-                    viewModel.estimateCompleteContract(smartModalState.deal)
-                } else if (smartModalState.buttonType == SmartContractButtonType.REJECT) {
-                    viewModel.estimateRejectContract(smartModalState.deal)
-                } else {
-                    return@LaunchedEffect
-                }
-
-            if (transactionEstimatorResult != null) {
-                viewModel.getResourceQuote(
-                    address = transactionEstimatorResult.executorAddress!!,
-                    energy = transactionEstimatorResult.requiredEnergy!!,
-                    bandwidth = transactionEstimatorResult.requiredBandwidth!!,
-                )
-
-                if (transactionEstimatorResult.estimateType == EstimateType.APPROVE) {
-                    setFunctionMessage(
-                        "\n\nДля работы данной функции необходим approve, сначала выполнится он, после повторите вызов еще раз.",
-                    )
-                }
-            }
+//            var transactionEstimatorResult =
+//                if (smartModalState.buttonType == SmartContractButtonType.ACCEPT) {
+//                    viewModel.estimateCompleteContract(smartModalState.deal)
+//                } else if (smartModalState.buttonType == SmartContractButtonType.REJECT) {
+//                    viewModel.estimateRejectContract(smartModalState.deal)
+//                } else {
+//                    return@LaunchedEffect
+//                }
+//
+//            if (transactionEstimatorResult != null) {
+//                viewModel.getResourceQuote(
+//                    address = transactionEstimatorResult.executorAddress!!,
+//                    energy = transactionEstimatorResult.requiredEnergy!!,
+//                    bandwidth = transactionEstimatorResult.requiredBandwidth!!,
+//                )
+//
+//                if (transactionEstimatorResult.estimateType == EstimateType.APPROVE) {
+//                    setFunctionMessage(
+//                        "\n\nДля работы данной функции необходим approve, сначала выполнится он, после повторите вызов еще раз.",
+//                    )
+//                }
+//            }
         }
 
         LaunchedEffect(estimateResourcePrice) {

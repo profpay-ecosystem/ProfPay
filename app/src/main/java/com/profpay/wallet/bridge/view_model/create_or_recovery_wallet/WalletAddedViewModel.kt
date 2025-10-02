@@ -18,6 +18,7 @@ import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.security.KeystoreEncryptionUtils
 import com.profpay.wallet.tron.AddressesWithKeysForM
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +26,7 @@ import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
+import java.security.InvalidAlgorithmParameterException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +37,7 @@ class WalletAddedViewModel
         private val addressRepo: AddressRepo,
         private val tokenRepo: TokenRepo,
         private val profileRepo: ProfileRepo,
+        private val keystoreCryptoManager: KeystoreCryptoManager,
         grpcClientFactory: GrpcClientFactory,
     ) : ViewModel() {
         private val keystore = KeystoreEncryptionUtils()
@@ -49,14 +52,27 @@ class WalletAddedViewModel
             grpcClientFactory.getGrpcClient(
                 UserGrpcClient::class.java,
                 AppConstants.Network.GRPC_ENDPOINT,
-                AppConstants.Network.GRPC_PORT,
+                AppConstants.Network.GRPC_PORT
             )
 
+        // Получение alias главного адреса
+        fun getWalletAlias(addressesWithKeys: AddressesWithKeysForM): String? {
+            val mainAddress = addressesWithKeys.addresses
+                .firstOrNull { it.indexDerivationSot == 0 }
+
+            return mainAddress?.address // используем адрес главного кошелька как alias
+        }
+
         suspend fun insertNewCryptoAddresses(addressesWithKeysForM: AddressesWithKeysForM) {
+            val walletAlias = getWalletAlias(addressesWithKeysForM) ?: throw IllegalStateException("Главный адрес кошелька не найден")
+
+            keystoreCryptoManager.createAesKey(walletAlias)
+            val (iv, cipherText) = keystoreCryptoManager.encrypt(walletAlias, addressesWithKeysForM.entropy)
+
             val walletId =
                 withContext(Dispatchers.IO) {
                     val number = walletProfileRepo.getCountRecords() + 1
-                    walletProfileRepo.insertNewWalletProfileEntity(name = "Wallet $number", addressesWithKeysForM = addressesWithKeysForM)
+                    walletProfileRepo.insertNewWalletProfileEntity(name = "Wallet $number", iv = iv, cipherText = cipherText)
                 }
             withContext(Dispatchers.IO) {
                 try {
@@ -71,7 +87,6 @@ class WalletAddedViewModel
                                         blockchainName = blockchain.blockchainName,
                                         address = currentAddress.address,
                                         publicKey = currentAddress.publicKey,
-                                        privateKey = currentAddress.privateKey,
                                         isGeneralAddress = currentAddress.indexDerivationSot == 0,
                                         sotIndex = currentAddress.indexSot,
                                         sotDerivationIndex = currentAddress.indexDerivationSot,

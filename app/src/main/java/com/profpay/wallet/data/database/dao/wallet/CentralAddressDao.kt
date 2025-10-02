@@ -24,21 +24,12 @@ interface CentralAddressDao {
         return if (existingEntity != null) {
             existingEntity
         } else {
-            val address = tron.addressUtilities.generateAddressAndMnemonic()
+            val address = tron.addressUtilities.generateSingleAddress()
             insertNewCentralAddress(
                 CentralAddressEntity(
-                    address =
-                        address.addressesWithKeysForM.addresses
-                            .get(0)
-                            .address,
-                    publicKey =
-                        address.addressesWithKeysForM.addresses
-                            .get(0)
-                            .publicKey,
-                    privateKey =
-                        address.addressesWithKeysForM.addresses
-                            .get(0)
-                            .privateKey,
+                    address = address.address,
+                    publicKey = address.publicKey,
+                    privateKey = address.privateKey
                 ),
             )
             getCentralAddress()

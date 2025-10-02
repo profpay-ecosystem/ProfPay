@@ -29,11 +29,11 @@ import java.math.BigInteger
 )
 class CentralAddressEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "central_id") val centralId: Long,
-    @ColumnInfo(name = "address") override val address: String,
+    @ColumnInfo(name = "address") val address: String,
     @ColumnInfo(name = "public_key") val publicKey: String,
-    @ColumnInfo(name = "private_key") override val privateKey: String,
+    @ColumnInfo(name = "private_key") val privateKey: String,
     @ColumnInfo(name = "balance", defaultValue = "0") val balance: BigInteger,
-) : HasTronCredentials {
+) {
     constructor(address: String, publicKey: String, privateKey: String) : this(
         centralId = 0L,
         address = address,

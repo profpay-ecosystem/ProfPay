@@ -93,7 +93,7 @@ class TransactionFeeEstimator
                 tron.accounts.isAllowanceUnlimited(
                     spender = deal.smartContractAddress,
                     ownerAddress = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey",
                 )
 
             val approveCostResult =
@@ -165,7 +165,7 @@ class TransactionFeeEstimator
                 tron.accounts.allowance(
                     spender = deal.smartContractAddress,
                     ownerAddress = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey",
                 )
 
             val approveAmount = deal.dealData.totalExpertCommissions / 2
@@ -512,14 +512,14 @@ class TransactionFeeEstimator
                     function = function,
                     contractAddress = contractAddress,
                     address = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey".toByteArray(),
                 )
             val estimateBandwidth =
                 tron.transactions.estimateBandwidth(
                     function = function,
                     contractAddress = contractAddress,
                     address = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey".toByteArray(),
                 )
             return EstimateResult(
                 requiredEnergyInTrx = estimateEnergy.energyInTrx,

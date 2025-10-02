@@ -62,7 +62,7 @@ class BlockchainOperations
                     tron.smartContracts.multiSigWrite.createDeal(
                         ownerAddress = addressData.address,
                         contractAddress = deal.smartContractAddress,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey",
                         params = params,
                     )
                 }
@@ -79,7 +79,7 @@ class BlockchainOperations
                 tron.accounts.isAllowanceUnlimited(
                     spender = deal.smartContractAddress,
                     ownerAddress = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey",
                 )
 
             if (!isAllowanceUnlimited) {
@@ -87,7 +87,7 @@ class BlockchainOperations
                     withContext(Dispatchers.IO) {
                         tron.smartContracts.multiSigWrite.approve(
                             ownerAddress = deal.buyer.address,
-                            privateKey = addressData.privateKey,
+                            privateKey = "addressData.privateKey",
                             contractAddress = deal.smartContractAddress,
                         )
                     }
@@ -99,7 +99,7 @@ class BlockchainOperations
                     tron.smartContracts.multiSigWrite.depositDeal(
                         id = deal.dealBlockchainId,
                         ownerAddress = deal.buyer.address,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey",
                         contractAddress = deal.smartContractAddress,
                     )
                 }
@@ -126,7 +126,7 @@ class BlockchainOperations
                 tron.accounts.allowance(
                     spender = deal.smartContractAddress,
                     ownerAddress = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey",
                 )
 
             val approveAmount = deal.dealData.totalExpertCommissions / 2
@@ -137,7 +137,7 @@ class BlockchainOperations
                     withContext(Dispatchers.IO) {
                         tron.smartContracts.multiSigWrite.approve(
                             ownerAddress = address,
-                            privateKey = addressData.privateKey,
+                            privateKey = "addressData.privateKey",
                             contractAddress = deal.smartContractAddress,
                         )
                     }
@@ -149,7 +149,7 @@ class BlockchainOperations
                     tron.smartContracts.multiSigWrite.paySellerExpertFee(
                         id = deal.dealBlockchainId,
                         ownerAddress = address,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey",
                         contractAddress = deal.smartContractAddress,
                     )
                 }
@@ -179,7 +179,7 @@ class BlockchainOperations
                     tron.smartContracts.multiSigWrite.voteDeal(
                         id = deal.dealBlockchainId,
                         ownerAddress = address,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey",
                         contractAddress = deal.smartContractAddress!!,
                     )
                 }
@@ -209,7 +209,7 @@ class BlockchainOperations
                     tron.smartContracts.multiSigWrite.cancelDeal(
                         id = deal.dealBlockchainId,
                         ownerAddress = addressData.address,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey",
                         contractAddress = deal.smartContractAddress,
                     )
                 }
@@ -239,7 +239,7 @@ class BlockchainOperations
                     tron.smartContracts.multiSigWrite.executeDisputed(
                         id = deal.dealBlockchainId,
                         ownerAddress = address,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey",
                         contractAddress = deal.smartContractAddress,
                     )
                 }
@@ -266,7 +266,7 @@ class BlockchainOperations
                     tron.smartContracts.multiSigWrite.assignDecisionAdminAndSetAmounts(
                         id = deal.dealBlockchainId,
                         ownerAddress = admin.address,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey",
                         contractAddress = deal.smartContractAddress,
                         sellerValue = sellerValue,
                         buyerValue = buyerValue,
@@ -301,7 +301,7 @@ class BlockchainOperations
                     tron.smartContracts.multiSigWrite.voteOnDisputeResolution(
                         id = deal.dealBlockchainId,
                         ownerAddress = address,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey",
                         contractAddress = deal.smartContractAddress,
                     )
                 }
@@ -334,7 +334,7 @@ class BlockchainOperations
                     tron.smartContracts.multiSigWrite.declineDisputeResolution(
                         id = deal.dealBlockchainId,
                         ownerAddress = address,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey",
                         contractAddress = deal.smartContractAddress,
                     )
                 }
@@ -351,7 +351,7 @@ class BlockchainOperations
                     function = function,
                     contractAddress = contractAddress,
                     address = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey".toByteArray(),
                 )
             return estimate.energyInTrx
         }

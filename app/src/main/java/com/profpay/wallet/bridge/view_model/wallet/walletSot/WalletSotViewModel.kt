@@ -14,6 +14,7 @@ import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
 import com.profpay.wallet.data.flow_db.repo.WalletSotRepo
+import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +32,7 @@ class WalletSotViewModel
         private val profileRepo: ProfileRepo,
         private val centralAddressRepo: CentralAddressRepo,
         private val tron: Tron,
+        private val keystoreCryptoManager: KeystoreCryptoManager,
     ) : ViewModel() {
         // Получение списка адресов и балансов в формате Flow
         fun getAddressesSotsWithTokensByBlockchainLD(
@@ -45,15 +47,21 @@ class WalletSotViewModel
             walletId: Long,
             addressEntity: AddressEntity,
         ) {
-            val walletData = walletProfileRepo.getWalletPrivateKeyAndChainCodeById(walletId)
-            val newSotDerivationIndex = addressRepo.getMaxSotDerivationIndex(walletId) + 1
             val generalAddress = addressRepo.getGeneralAddressByWalletId(walletId)
+            val cipherData = walletProfileRepo.getWalletCipherData(walletId)
+
+            val entropy = keystoreCryptoManager.decrypt(
+                alias = generalAddress,
+                iv = cipherData.iv,
+                cipherText = cipherData.cipherText
+            )
+
+            val newSotDerivationIndex = addressRepo.getMaxSotDerivationIndex(walletId) + 1
             val userAppId = profileRepo.getProfileAppId()
 
             val result =
                 tron.addressUtilities.creationOfANewCell(
-                    privKeyBytes = walletData.privKeyBytes,
-                    chainCode = walletData.chainCode,
+                    entropy = entropy,
                     index = newSotDerivationIndex.toLong(),
                 )
 
@@ -86,7 +94,6 @@ class WalletSotViewModel
                             blockchainName = blockchain.blockchainName,
                             address = address,
                             publicKey = result.publicKeyAsHex,
-                            privateKey = result.privateKeyAsHex,
                             isGeneralAddress = false,
                             sotIndex = addressEntity.sotIndex,
                             sotDerivationIndex = newSotDerivationIndex,

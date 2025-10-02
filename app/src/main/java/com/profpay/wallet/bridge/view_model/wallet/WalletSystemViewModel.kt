@@ -32,8 +32,9 @@ class WalletSystemViewModel
         }
 
         suspend fun getSeedPhrase(walletId: Long): String? {
-            val decryptedEntropy = walletProfileRepo.getWalletDecryptedEntropy(walletId) ?: return null
-            return tron.addressUtilities.getSeedPhraseByEntropy(decryptedEntropy)
+//            val decryptedEntropy = walletProfileRepo.getWalletDecryptedEntropy(walletId) ?: return null
+//            return tron.addressUtilities.getSeedPhraseByEntropy(decryptedEntropy)
+            return "empty11"
         }
 
         suspend fun deleteWalletProfile(walletId: Long) {

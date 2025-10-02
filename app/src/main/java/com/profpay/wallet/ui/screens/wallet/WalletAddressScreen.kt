@@ -783,7 +783,6 @@ fun CardHistoryTransactionsForWAFeature(
 
     val (_, setIsOpenTransOnGeneralReceiptSheet) =
         bottomSheetTransOnGeneralReceipt(
-            viewModel = viewModel,
             addressWithTokens = addressWithTokens,
             snackbar = stackedSnackbarHostState,
             tokenName = transactionEntity.tokenName,

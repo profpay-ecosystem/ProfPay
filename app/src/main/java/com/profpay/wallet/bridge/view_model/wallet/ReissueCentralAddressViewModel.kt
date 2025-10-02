@@ -14,20 +14,11 @@ class ReissueCentralAddressViewModel
         private val tron: Tron,
     ) : ViewModel() {
         suspend fun reissueCentralAddress() {
-            val address = tron.addressUtilities.generateAddressAndMnemonic()
+            val address = tron.addressUtilities.generateSingleAddress()
             centralAddressRepo.changeCentralAddress(
-                address =
-                    address.addressesWithKeysForM.addresses
-                        .get(0)
-                        .address,
-                publicKey =
-                    address.addressesWithKeysForM.addresses
-                        .get(0)
-                        .publicKey,
-                privateKey =
-                    address.addressesWithKeysForM.addresses
-                        .get(0)
-                        .privateKey,
+                address = address.address,
+                publicKey = address.publicKey,
+                privateKey = address.privateKey,
             )
         }
     }

@@ -131,8 +131,6 @@ class PushReceiver :
                 null
             }
 
-        Log.e("ERR", amlPaymentSuccessfullyMessage.toString())
-        Log.e("ERR", amlPaymentErrorMessage.toString())
         if (amlPaymentSuccessfullyMessage != null) {
             val pushyObj = localJson.decodeFromString<AmlPaymentSuccessfullyMessage>(amlPaymentSuccessfullyMessage)
             launch {
@@ -152,6 +150,8 @@ class PushReceiver :
             launch {
                 val address = addressRepo.getAddressEntityByAddress(pushyObj.senderAddress)
                 pendingTransactionRepo.deletePendingTransactionByTxId(pushyObj.transactionId)
+                transactionRepo.deleteTransactionByTxId(pushyObj.transactionId)
+
                 if (address?.addressId != null) {
                     transactionRepo.transactionSetProcessedUpdateFalseByTxId(pushyObj.transactionId)
                 }

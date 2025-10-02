@@ -17,12 +17,12 @@ interface AddressDao {
     fun isGeneralAddress(address: String): Boolean
 
     @Query(
-        "SELECT address_id, wallet_id, blockchain_name, address, is_general_address, sot_index, sot_derivation_index, private_key, public_key FROM addresses WHERE address =:address",
+        "SELECT address_id, wallet_id, blockchain_name, address, is_general_address, sot_index, sot_derivation_index, public_key FROM addresses WHERE address =:address",
     )
     fun getAddressEntityByAddress(address: String): AddressEntity?
 
     @Query(
-        "SELECT address_id, wallet_id, blockchain_name, address, is_general_address, sot_index, sot_derivation_index, private_key, public_key FROM addresses WHERE address_id =:id",
+        "SELECT address_id, wallet_id, blockchain_name, address, is_general_address, sot_index, sot_derivation_index, public_key FROM addresses WHERE address_id =:id",
     )
     fun getAddressEntityById(id: Long): AddressEntity?
 

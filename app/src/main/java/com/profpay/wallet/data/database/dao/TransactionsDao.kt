@@ -81,4 +81,7 @@ interface TransactionsDao {
 
     @Query("SELECT EXISTS(SELECT * FROM transactions WHERE tx_id = :txid AND status_code = 1)")
     suspend fun isTransactionSuccessful(txid: String): Boolean
+
+    @Query("DELETE FROM transactions WHERE tx_id = :txid")
+    suspend fun deleteTransactionByTxId(txid: String)
 }
