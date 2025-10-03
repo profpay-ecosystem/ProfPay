@@ -29,7 +29,6 @@ import io.sentry.android.core.SentryAndroid
 import kotlinx.coroutines.launch
 import me.pushy.sdk.Pushy
 import me.pushy.sdk.util.exceptions.PushyNetworkException
-import java.net.Socket
 import javax.inject.Inject
 
 @AndroidEntryPoint

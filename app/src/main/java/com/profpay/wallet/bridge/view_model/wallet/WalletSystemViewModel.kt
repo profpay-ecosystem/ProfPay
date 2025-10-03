@@ -6,10 +6,10 @@ import androidx.lifecycle.liveData
 import com.profpay.wallet.data.database.dao.wallet.WalletProfileModel
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,10 +19,10 @@ class WalletSystemViewModel
         private val walletProfileRepo: WalletProfileRepo,
         private val addressRepo: AddressRepo,
         private val tron: Tron,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         fun getListAllWallets(): LiveData<List<WalletProfileModel>> =
-            liveData(dispatcher) {
+            liveData(ioDispatcher) {
                 emitSource(walletProfileRepo.getListAllWallets())
             }
 

@@ -1,7 +1,7 @@
 package com.profpay.wallet.tron.smart_contract
 
-import com.profpay.wallet.AppConstants
 import com.google.protobuf.ByteString
+import com.profpay.wallet.AppConstants
 import org.tron.trident.abi.TypeReference
 import org.tron.trident.abi.datatypes.Address
 import org.tron.trident.abi.datatypes.Bool

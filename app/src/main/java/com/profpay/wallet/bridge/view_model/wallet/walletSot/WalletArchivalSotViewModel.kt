@@ -7,9 +7,9 @@ import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -20,13 +20,13 @@ class WalletArchivalSotViewModel
         private val addressRepo: AddressRepo,
         private val walletProfileRepo: WalletProfileRepo,
         private val tokenRepo: TokenRepo,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         fun getAddressWithTokensArchivalByBlockchainLD(
             walletId: Long,
             blockchainName: String,
         ): LiveData<List<AddressWithTokens>> =
-            liveData(dispatcher) {
+            liveData(ioDispatcher) {
                 emitSource(addressRepo.getAddressesWithTokensArchivalByBlockchainLD(walletId, blockchainName))
             }
 

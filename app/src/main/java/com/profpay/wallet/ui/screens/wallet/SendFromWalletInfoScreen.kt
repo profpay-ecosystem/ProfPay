@@ -2,7 +2,6 @@ package com.profpay.wallet.ui.screens.wallet
 
 import StackedSnackbarHost
 import StackedSnakbarHostState
-import android.view.MotionEvent
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -61,7 +60,6 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController

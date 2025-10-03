@@ -26,12 +26,8 @@ import com.profpay.wallet.data.flow_db.repo.EstimateResourcePriceResult
 import com.profpay.wallet.data.flow_db.repo.SmartContractButtonType
 import com.profpay.wallet.data.flow_db.repo.SmartContractModalData
 import com.profpay.wallet.data.flow_db.repo.SmartContractRepo
-import com.profpay.wallet.data.utils.toByteString
-import com.profpay.wallet.data.utils.toSunAmount
 import com.profpay.wallet.data.utils.toTokenAmount
-import com.profpay.wallet.tron.SignedTransactionData
 import com.profpay.wallet.tron.Tron
-import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,8 +35,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.example.protobuf.smart.SmartContractProto
-import org.example.protobuf.smart.SmartContractProto.DeploySmartContractRequest
-import org.example.protobuf.smart.SmartContractProto.DeployTransactionData
 import org.example.protobuf.smart.SmartContractProto.ResourceQuoteRequest
 import java.math.BigDecimal
 import java.math.BigInteger

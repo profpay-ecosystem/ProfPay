@@ -12,7 +12,7 @@ import org.server.protobuf.aml.AmlServiceGrpc
 class AmlGrpcClient(
     private val channel: ManagedChannel,
     val token: SharedPrefsTokenProvider,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val stub: AmlServiceGrpc.AmlServiceBlockingStub = AmlServiceGrpc.newBlockingStub(channel)
 
@@ -23,7 +23,7 @@ class AmlGrpcClient(
         tokenName: String,
     ): Result<AmlProto.GetAmlByTxIdResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     AmlProto.GetAmlByTxIdRequest
                         .newBuilder()
@@ -45,7 +45,7 @@ class AmlGrpcClient(
         tokenName: String,
     ): Result<AmlProto.GetAmlByTxIdResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     AmlProto.GetAmlByTxIdRequest
                         .newBuilder()
@@ -62,7 +62,7 @@ class AmlGrpcClient(
 
     suspend fun processAmlPayment(request: AmlProto.AmlPaymentRequest): Result<AmlProto.AmlPaymentResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val response = stub.processAmlPayment(request)
                 Result.success(response)
             }

@@ -2,9 +2,9 @@ package com.profpay.wallet.tron.smart_contract
 
 import android.content.Context
 import android.content.res.AssetManager
+import com.google.protobuf.ByteString
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.utils.convertInputStreamToString
-import com.google.protobuf.ByteString
 import org.tron.trident.core.ApiWrapper
 import org.tron.trident.core.contract.Contract
 import org.tron.trident.core.transaction.TransactionBuilder

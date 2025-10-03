@@ -8,6 +8,7 @@ import com.profpay.wallet.data.database.models.TokenWithPendingTransactions
 import com.profpay.wallet.data.database.repositories.TransactionsRepo
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.flow_db.repo.EstimateCommissionResult
 import com.profpay.wallet.data.flow_db.repo.WalletAddressRepo
 import com.profpay.wallet.data.services.TransactionProcessorService
@@ -17,7 +18,6 @@ import com.profpay.wallet.utils.ResolvePrivateKeyDeps
 import com.profpay.wallet.utils.resolvePrivateKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +37,7 @@ constructor(
     private val transactionProcessorService: TransactionProcessorService,
     private val keystoreCryptoManager: KeystoreCryptoManager,
     private val walletProfileRepo: WalletProfileRepo,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val _stateCommission =
         MutableStateFlow<EstimateCommissionResult>(EstimateCommissionResult.Empty)
@@ -66,7 +66,7 @@ constructor(
         tokenEntity: TokenWithPendingTransactions?,
         balance: BigInteger?
     ) {
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch(ioDispatcher) {
             val generalAddress = addressRepo.getGeneralAddressByWalletId(walletId)
 
             val privKeyBytes = resolvePrivateKey(

@@ -36,7 +36,6 @@ import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.bridge.view_model.smart_contract.CompleteReturnData
 import com.profpay.wallet.bridge.view_model.smart_contract.CompleteStatusesEnum
 import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
-import com.profpay.wallet.bridge.view_model.smart_contract.usecases.estimate.EstimateType
 import com.profpay.wallet.data.flow_db.repo.SmartContractButtonType
 import com.profpay.wallet.data.flow_db.repo.SmartContractModalData
 import com.profpay.wallet.data.utils.toTokenAmount

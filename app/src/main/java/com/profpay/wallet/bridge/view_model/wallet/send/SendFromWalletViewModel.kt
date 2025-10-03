@@ -12,6 +12,7 @@ import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.flow_db.repo.EstimateCommissionResult
 import com.profpay.wallet.data.flow_db.repo.SendFromWalletRepo
 import com.profpay.wallet.data.services.TransactionProcessorService
@@ -25,13 +26,11 @@ import com.profpay.wallet.utils.resolvePrivateKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.example.protobuf.transfer.TransferProto
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -62,7 +61,7 @@ class SendFromWalletViewModel
         private val transactionProcessorService: TransactionProcessorService,
         private val walletProfileRepo: WalletProfileRepo,
         private val keystoreCryptoManager: KeystoreCryptoManager,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         private val _stateCommission =
             MutableStateFlow<EstimateCommissionResult>(EstimateCommissionResult.Empty)
@@ -190,7 +189,7 @@ class SendFromWalletViewModel
             addressSending: String,
             tokenNameModel: TokenName,
         ) {
-            viewModelScope.launch(dispatcher) {
+            viewModelScope.launch(ioDispatcher) {
                 if (addressWithTokens == null ||
                     sumSending.isEmpty() ||
                     !tron.addressUtilities.isValidTronAddress(

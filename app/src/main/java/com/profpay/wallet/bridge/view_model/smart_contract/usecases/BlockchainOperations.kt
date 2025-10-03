@@ -1,14 +1,12 @@
 package com.profpay.wallet.bridge.view_model.smart_contract.usecases
 
-import android.content.Context
+import com.google.protobuf.ByteString
 import com.profpay.wallet.data.database.entities.wallet.AddressEntity
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.utils.toBigInteger
 import com.profpay.wallet.tron.Tron
-import com.google.protobuf.ByteString
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.protobuf.smart.SmartContractProto
 import org.tron.trident.abi.datatypes.Address
@@ -25,11 +23,11 @@ class BlockchainOperations
     constructor(
         private val addressRepo: AddressRepo,
         private val tron: Tron,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) {
         suspend fun createDeal(deal: SmartContractProto.ContractDealListResponse): DealActionResult {
             val addressData =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(deal.buyer.address)
                 }
 
@@ -59,7 +57,7 @@ class BlockchainOperations
                 }
 
             val signedTransaction: ByteString =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     tron.smartContracts.multiSigWrite.createDeal(
                         ownerAddress = addressData.address,
                         contractAddress = deal.smartContractAddress,
@@ -72,7 +70,7 @@ class BlockchainOperations
 
         suspend fun approveAndDepositDeal(deal: SmartContractProto.ContractDealListResponse): DealActionResult {
             val addressData =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(deal.buyer.address)
                 } ?: return DealActionResult.Error("Address data is null")
 
@@ -85,7 +83,7 @@ class BlockchainOperations
 
             if (!isAllowanceUnlimited) {
                 val signedTransaction: ByteString =
-                    withContext(dispatcher) {
+                    withContext(ioDispatcher) {
                         tron.smartContracts.multiSigWrite.approve(
                             ownerAddress = deal.buyer.address,
                             privateKey = "addressData.privateKey",
@@ -96,7 +94,7 @@ class BlockchainOperations
             }
 
             val signedTransaction: ByteString =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     tron.smartContracts.multiSigWrite.depositDeal(
                         id = deal.dealBlockchainId,
                         ownerAddress = deal.buyer.address,
@@ -119,7 +117,7 @@ class BlockchainOperations
                 }
 
             val addressData =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 } ?: return DealActionResult.Error("Address data is null")
 
@@ -135,7 +133,7 @@ class BlockchainOperations
 
             if (approveCompare) {
                 val signedTransaction: ByteString =
-                    withContext(dispatcher) {
+                    withContext(ioDispatcher) {
                         tron.smartContracts.multiSigWrite.approve(
                             ownerAddress = address,
                             privateKey = "addressData.privateKey",
@@ -146,7 +144,7 @@ class BlockchainOperations
             }
 
             val signedTransaction: ByteString =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     tron.smartContracts.multiSigWrite.paySellerExpertFee(
                         id = deal.dealBlockchainId,
                         ownerAddress = address,
@@ -169,14 +167,14 @@ class BlockchainOperations
                 }
 
             val addressData =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 }
 
             if (addressData == null) return DealActionResult.Error("Address data is null")
 
             val signedTransaction: ByteString =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     tron.smartContracts.multiSigWrite.voteDeal(
                         id = deal.dealBlockchainId,
                         ownerAddress = address,
@@ -199,14 +197,14 @@ class BlockchainOperations
                 }
 
             val addressData =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 }
 
             if (addressData == null) return DealActionResult.Error("Address data is null")
 
             val signedTransaction: ByteString =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     tron.smartContracts.multiSigWrite.cancelDeal(
                         id = deal.dealBlockchainId,
                         ownerAddress = addressData.address,
@@ -229,14 +227,14 @@ class BlockchainOperations
                 }
 
             val addressData =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 }
 
             if (addressData == null) return DealActionResult.Error("Address data is null")
 
             val signedTransaction: ByteString =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     tron.smartContracts.multiSigWrite.executeDisputed(
                         id = deal.dealBlockchainId,
                         ownerAddress = address,
@@ -256,14 +254,14 @@ class BlockchainOperations
             val admin = deal.adminsList.find { it.userId == userId } ?: return DealActionResult.Error("None admin")
 
             val addressData =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(admin.address)
                 }
 
             if (addressData == null) return DealActionResult.Error("Address data is null")
 
             val signedTransaction: ByteString =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     tron.smartContracts.multiSigWrite.assignDecisionAdminAndSetAmounts(
                         id = deal.dealBlockchainId,
                         ownerAddress = admin.address,
@@ -291,14 +289,14 @@ class BlockchainOperations
                     }
 
             val addressData =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 }
 
             if (addressData == null) return DealActionResult.Error("Address data is null")
 
             val signedTransaction: ByteString =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     tron.smartContracts.multiSigWrite.voteOnDisputeResolution(
                         id = deal.dealBlockchainId,
                         ownerAddress = address,
@@ -324,14 +322,14 @@ class BlockchainOperations
                     }
 
             val addressData =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 }
 
             if (addressData == null) return DealActionResult.Error("Address data is null")
 
             val signedTransaction: ByteString =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     tron.smartContracts.multiSigWrite.declineDisputeResolution(
                         id = deal.dealBlockchainId,
                         ownerAddress = address,

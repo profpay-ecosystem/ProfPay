@@ -10,6 +10,11 @@ import kotlinx.coroutines.Dispatchers
 @Module
 @InstallIn(SingletonComponent::class)
 object DispatcherModule {
+    @IoDispatcher
     @Provides
-    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    fun provideIoDispatcher(): @JvmSuppressWildcards CoroutineDispatcher = Dispatchers.IO
+
+    @MainDispatcher
+    @Provides
+    fun provideMainDispatcher(): @JvmSuppressWildcards CoroutineDispatcher = Dispatchers.Main
 }

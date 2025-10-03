@@ -43,10 +43,10 @@ class UsdtTransferScheduler(
     private var pendingTransactionRepo: PendingTransactionRepo,
     private var amlProcessorService: AmlProcessorService,
     private var sharedPrefs: SharedPreferences,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     suspend fun scheduleAddresses() =
-        withContext(dispatcher) {
+        withContext(ioDispatcher) {
             val addressList = addressRepo.getAddressesSotsWithTokensByBlockchain("Tron")
             val centralAddress = centralAddressRepo.getCentralAddress()
             for (address in addressList) {

@@ -5,6 +5,7 @@ import com.profpay.wallet.backend.grpc.CryptoAddressGrpcClient
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.tron.AddressGenerateFromSeedPhr
 import com.profpay.wallet.tron.AddressGenerateResult
 import com.profpay.wallet.tron.Tron
@@ -40,7 +41,7 @@ class AddressAndMnemonicRepoImpl
         val addressRepo: AddressRepo,
         private val tron: Tron,
         grpcClientFactory: GrpcClientFactory,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : AddressAndMnemonicRepo {
         private val cryptoAddressGrpcClient: CryptoAddressGrpcClient =
             grpcClientFactory.getGrpcClient(

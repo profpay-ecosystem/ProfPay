@@ -12,7 +12,7 @@ import org.server.protobuf.auth.AuthServiceGrpc
 class AuthGrpcClient(
     private val channel: ManagedChannel,
     val token: SharedPrefsTokenProvider,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val stub: AuthServiceGrpc.AuthServiceBlockingStub = AuthServiceGrpc.newBlockingStub(channel)
 
@@ -22,7 +22,7 @@ class AuthGrpcClient(
         deviceToken: String,
     ): Result<AuthProto.IssueTokensResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     AuthProto.IssueTokensRequest
                         .newBuilder()
@@ -42,7 +42,7 @@ class AuthGrpcClient(
         deviceToken: String,
     ): Result<AuthProto.RefreshTokenPairResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     AuthProto.RefreshTokenPairRequest
                         .newBuilder()

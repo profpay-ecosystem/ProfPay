@@ -18,12 +18,12 @@ import com.profpay.wallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.TradingInsightsRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.flow_db.repo.WalletInfoRepo
 import com.profpay.wallet.data.utils.toSunAmount
 import com.profpay.wallet.data.utils.toTokenAmount
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -45,14 +45,14 @@ class WalletInfoViewModel
         val tradingInsightsRepo: TradingInsightsRepo,
         private val profileRepo: ProfileRepo,
         private val walletInfoRepo: WalletInfoRepo,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         suspend fun getProfileTelegramId(): Long? = profileRepo.getProfileTelegramId()
 
         suspend fun getWalletNameById(walletId: Long): String? = walletProfileRepo.getWalletNameById(walletId)
 
         fun getAddressesSotsWithTokens(walletId: Long): LiveData<List<AddressWithTokens>> =
-            liveData(dispatcher) {
+            liveData(ioDispatcher) {
                 emitSource(addressRepo.getAddressesSotsWithTokensLD(walletId))
             }
 
@@ -70,7 +70,7 @@ class WalletInfoViewModel
         suspend fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel?>> {
             var listListTransactions: List<List<TransactionModel>> = listOf(emptyList())
 
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 if (listTransactions.isEmpty()) return@withContext
                 listListTransactions =
                     listTransactions
@@ -83,7 +83,7 @@ class WalletInfoViewModel
         }
 
         fun getAllRelatedTransactions(walletId: Long): LiveData<List<TransactionModel>> =
-            liveData(dispatcher) {
+            liveData(ioDispatcher) {
                 emitSource(transactionsRepo.getAllRelatedTransactions(walletId))
             }
 
@@ -103,7 +103,7 @@ class WalletInfoViewModel
 
         suspend fun getListTokensWithTotalBalance(listAddressWithTokens: List<AddressWithTokens>): List<TokenEntity> {
             val listTokensWithTotalBalance = mutableListOf<TokenEntity>()
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 if (listAddressWithTokens.isEmpty()) return@withContext
                 TokenName.entries.forEach { token ->
                     val gAddressId =

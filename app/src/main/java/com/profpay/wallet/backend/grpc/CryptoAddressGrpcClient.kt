@@ -12,7 +12,7 @@ import org.example.protobuf.address.CryptoAddressServiceGrpc
 class CryptoAddressGrpcClient(
     private val channel: ManagedChannel,
     val token: SharedPrefsTokenProvider,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val stub: CryptoAddressServiceGrpc.CryptoAddressServiceBlockingStub = CryptoAddressServiceGrpc.newBlockingStub(channel)
 
@@ -23,7 +23,7 @@ class CryptoAddressGrpcClient(
         derivedIndices: Iterable<Int>,
     ): Result<CryptoAddressProto.AddCryptoAddressResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     CryptoAddressProto.AddCryptoAddressRequest
                         .newBuilder()
@@ -44,7 +44,7 @@ class CryptoAddressGrpcClient(
         generalAddress: String,
     ): Result<CryptoAddressProto.UpdateDerivedIndexResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     CryptoAddressProto.UpdateDerivedIndexRequest
                         .newBuilder()
@@ -64,7 +64,7 @@ class CryptoAddressGrpcClient(
         derivedIndices: Iterable<Int>,
     ): Result<CryptoAddressProto.SetDerivedIndicesResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     CryptoAddressProto.SetDerivedIndicesRequest
                         .newBuilder()
@@ -79,7 +79,7 @@ class CryptoAddressGrpcClient(
 
     suspend fun getWalletData(address: String): Result<CryptoAddressProto.GetWalletDataResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     CryptoAddressProto.GetWalletDataRequest
                         .newBuilder()

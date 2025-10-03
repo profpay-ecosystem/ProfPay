@@ -8,11 +8,10 @@ import com.profpay.wallet.data.database.entities.wallet.CentralAddressEntity
 import com.profpay.wallet.data.database.models.TransactionModel
 import com.profpay.wallet.data.database.repositories.TransactionsRepo
 import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +20,7 @@ class CentralAddressTxHistoryViewModel
     constructor(
         private val transactionsRepo: TransactionsRepo,
         private val centralAddressRepo: CentralAddressRepo,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         fun getTransactionsByAddressAndTokenLD(
             walletId: Long,
@@ -30,7 +29,7 @@ class CentralAddressTxHistoryViewModel
             isSender: Boolean,
             isCentralAddress: Boolean,
         ): LiveData<List<TransactionModel>> =
-            liveData(dispatcher) {
+            liveData(ioDispatcher) {
                 emitSource(
                     transactionsRepo.getTransactionsByAddressAndTokenLD(
                         walletId = walletId,
@@ -45,7 +44,7 @@ class CentralAddressTxHistoryViewModel
         fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel?>> {
             var listListTransactions: List<List<TransactionModel>> = listOf(emptyList())
 
-            viewModelScope.launch(dispatcher) {
+            viewModelScope.launch(ioDispatcher) {
                 if (listTransactions.isEmpty()) return@launch
                 listListTransactions =
                     listTransactions
@@ -58,7 +57,7 @@ class CentralAddressTxHistoryViewModel
         }
 
         fun getCentralAddressLiveData(): LiveData<CentralAddressEntity?> =
-            liveData(dispatcher) {
+            liveData(ioDispatcher) {
                 emitSource(centralAddressRepo.getCentralAddressLiveData())
             }
     }

@@ -2,8 +2,8 @@ package com.profpay.wallet.data.database.repositories
 
 import com.profpay.wallet.data.database.dao.StatesDao
 import com.profpay.wallet.data.database.entities.StatesEntity
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,16 +20,16 @@ class StatesRepoImpl
     @Inject
     constructor(
         private val statesDao: StatesDao,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : StatesRepo {
         override suspend fun saveData(statesEntity: StatesEntity) {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 statesDao.saveData(statesEntity)
             }
         }
 
         override suspend fun loadData(key: String): String? {
-            return withContext(dispatcher) {
+            return withContext(ioDispatcher) {
                 return@withContext statesDao.loadData(key)
             }
         }

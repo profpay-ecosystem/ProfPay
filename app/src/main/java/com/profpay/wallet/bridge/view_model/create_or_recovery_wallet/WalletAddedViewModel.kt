@@ -18,6 +18,7 @@ import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.security.KeystoreEncryptionUtils
 import com.profpay.wallet.tron.AddressesWithKeysForM
@@ -27,7 +28,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
-import java.security.InvalidAlgorithmParameterException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,7 +40,7 @@ class WalletAddedViewModel
         private val profileRepo: ProfileRepo,
         private val keystoreCryptoManager: KeystoreCryptoManager,
         grpcClientFactory: GrpcClientFactory,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : ViewModel() {
         private val keystore = KeystoreEncryptionUtils()
         private val cryptoAddressGrpcClient: CryptoAddressGrpcClient =
@@ -72,11 +72,11 @@ class WalletAddedViewModel
             val (iv, cipherText) = keystoreCryptoManager.encrypt(walletAlias, addressesWithKeysForM.entropy)
 
             val walletId =
-                withContext(dispatcher) {
+                withContext(ioDispatcher) {
                     val number = walletProfileRepo.getCountRecords() + 1
                     walletProfileRepo.insertNewWalletProfileEntity(name = "Wallet $number", iv = iv, cipherText = cipherText)
                 }
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 try {
                     BlockchainName.entries.map { blockchain ->
                         // Проходим по списку блокчейнов
@@ -143,7 +143,7 @@ class WalletAddedViewModel
             deviceToken: String,
             sharedPref: SharedPreferences,
         ): Boolean =
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 try {
                     val uuidString =
                         java.util.UUID
@@ -185,7 +185,7 @@ class WalletAddedViewModel
             userId: Long,
             deviceToken: String,
             sharedPref: SharedPreferences,
-        ) = withContext(dispatcher) {
+        ) = withContext(ioDispatcher) {
             try {
                 val uuidString =
                     java.util.UUID

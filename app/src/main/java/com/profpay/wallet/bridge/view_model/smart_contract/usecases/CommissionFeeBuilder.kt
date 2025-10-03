@@ -1,11 +1,12 @@
 package com.profpay.wallet.bridge.view_model.smart_contract.usecases
 
+import com.google.protobuf.ByteString
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.backend.grpc.ProfPayServerGrpcClient
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.tron.Tron
-import com.google.protobuf.ByteString
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ class CommissionFeeBuilder
         private val addressRepo: AddressRepo,
         private val tron: Tron,
         grpcClientFactory: GrpcClientFactory,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+        @IoDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) {
         private val profPayServerGrpcClient: ProfPayServerGrpcClient =
             grpcClientFactory.getGrpcClient(

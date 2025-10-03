@@ -7,13 +7,14 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.flow_db.module.MainDispatcher
 import com.profpay.wallet.data.services.AppLockManager
 import com.profpay.wallet.security.KeystoreEncryptionUtils
 import com.profpay.wallet.security.SecureDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -29,8 +30,8 @@ class PinLockViewModel
     constructor(
         @param:ApplicationContext val context: Context,
         private val dataStore: DataStore<Preferences>,
-        private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
-        private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+        @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         private val _navigationEvents = MutableSharedFlow<LockState>(replay = 1)
         val navigationEvents = _navigationEvents.asSharedFlow()

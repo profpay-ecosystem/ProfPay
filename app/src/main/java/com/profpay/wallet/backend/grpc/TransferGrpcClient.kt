@@ -15,7 +15,7 @@ import org.example.protobuf.transfer.TransferServiceGrpc
 class TransferGrpcClient(
     private val channel: ManagedChannel,
     val token: SharedPrefsTokenProvider,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val stub: TransferServiceGrpc.TransferServiceBlockingStub = TransferServiceGrpc.newBlockingStub(channel)
 
@@ -28,7 +28,7 @@ class TransferGrpcClient(
         txId: String? = null,
     ): Result<TransferProto.SendUsdtTransactionResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     TransferProto.SendUsdtTransactionRequest
                         .newBuilder()
@@ -52,7 +52,7 @@ class TransferGrpcClient(
         energy: Long,
     ): Result<TransferProto.EstimateCommissionResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     TransferProto.EstimateCommissionRequest
                         .newBuilder()
@@ -69,7 +69,7 @@ class TransferGrpcClient(
 
     suspend fun getTransactionStatus(txId: String): Result<TransferProto.TransactionStatusResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     TransferProto.TransactionStatusRequest
                         .newBuilder()

@@ -17,10 +17,10 @@ import com.profpay.wallet.data.database.entities.wallet.ExchangeRatesEntity
 import com.profpay.wallet.data.database.entities.wallet.TradingInsightsEntity
 import com.profpay.wallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.profpay.wallet.data.database.repositories.wallet.TradingInsightsRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.services.foreground.PusherService
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.pushy.sdk.Pushy
 import me.pushy.sdk.util.exceptions.PushyNetworkException
@@ -36,7 +36,7 @@ class AppInitializer
     constructor(
         private val exchangeRatesRepo: ExchangeRatesRepo,
         private val tradingInsightsRepo: TradingInsightsRepo,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher
     ) {
         suspend fun initialize(
             sharedPrefs: SharedPreferences,
@@ -48,7 +48,7 @@ class AppInitializer
             if (firstStarted) {
                 val deviceToken =
                     try {
-                        withContext(dispatcher) {
+                        withContext(ioDispatcher) {
                             Pushy.register(context)
                         }
                     } catch (e: PushyNetworkException) {

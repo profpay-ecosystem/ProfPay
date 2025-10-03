@@ -3,9 +3,9 @@ package com.profpay.wallet.data.database.repositories.wallet
 import com.profpay.wallet.bridge.view_model.dto.TokenName
 import com.profpay.wallet.data.database.dao.wallet.TokenDao
 import com.profpay.wallet.data.database.entities.wallet.TokenEntity
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.tron.Tron
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import javax.inject.Inject
@@ -39,7 +39,7 @@ class TokenRepoImpl
         private val tokenDao: TokenDao,
         private val tron: Tron,
         private val addressRepo: AddressRepo,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : TokenRepo {
         override suspend fun insertNewTokenEntity(tokenEntity: TokenEntity): Long = tokenDao.insertNewTokenEntity(tokenEntity)
 
@@ -53,7 +53,7 @@ class TokenRepoImpl
             address: String,
             token: TokenName,
         ) {
-            return withContext(dispatcher) {
+            return withContext(ioDispatcher) {
                 val addressId = addressRepo.getAddressEntityByAddress(address)?.addressId ?: return@withContext
                 val balance =
                     if (token == TokenName.USDT) {
@@ -70,7 +70,7 @@ class TokenRepoImpl
             addressId: Long,
             tokenName: String,
         ): Long {
-            return withContext(dispatcher) {
+            return withContext(ioDispatcher) {
                 return@withContext tokenDao.getTokenIdByAddressIdAndTokenName(addressId, tokenName)
             }
         }

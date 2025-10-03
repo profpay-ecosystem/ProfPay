@@ -12,13 +12,13 @@ import org.example.protobuf.user.UserServiceGrpc
 class UserGrpcClient(
     private val channel: ManagedChannel,
     val token: SharedPrefsTokenProvider,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val stub: UserServiceGrpc.UserServiceBlockingStub = UserServiceGrpc.newBlockingStub(channel)
 
     suspend fun setUserLegalConsentsTrue(appId: String): Result<UserProto.UserLegalConsentsResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     UserProto.UserLegalConsentsRequest
                         .newBuilder()
@@ -34,7 +34,7 @@ class UserGrpcClient(
         deviceToken: String,
     ): Result<UserProto.RegisterUserResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     UserProto.RegisterUserRequest
                         .newBuilder()
@@ -51,7 +51,7 @@ class UserGrpcClient(
         deviceToken: String,
     ): Result<UserProto.UserTelegramDataResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     UserProto.UpdateUserDeviceTokenRequest
                         .newBuilder()
@@ -65,7 +65,7 @@ class UserGrpcClient(
 
     suspend fun getUserTelegramData(appId: String): Result<UserProto.UserTelegramDataResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     UserProto.UserTelegramDataRequest
                         .newBuilder()
@@ -82,7 +82,7 @@ class UserGrpcClient(
         deviceToken: String,
     ): Result<UserProto.RegisterUserDeviceResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     UserProto.RegisterUserDeviceRequest
                         .newBuilder()
@@ -97,7 +97,7 @@ class UserGrpcClient(
 
     suspend fun isUserExists(userId: Long): Result<UserProto.IsUserExistsResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     UserProto.IsUserExistsRequest
                         .newBuilder()
@@ -113,7 +113,7 @@ class UserGrpcClient(
         deviceToken: String,
     ): Result<UserProto.GetUserPermissionsResponse> =
         token.safeGrpcCall {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val request =
                     UserProto.GetUserPermissionsRequest
                         .newBuilder()

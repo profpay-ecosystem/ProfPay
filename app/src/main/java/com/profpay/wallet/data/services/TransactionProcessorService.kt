@@ -19,6 +19,7 @@ import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.PendingTransactionRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.flow_db.repo.WalletAddressRepo
 import com.profpay.wallet.data.utils.toByteString
 import com.profpay.wallet.data.utils.toTokenAmount
@@ -57,7 +58,7 @@ class TransactionProcessorService
         private val keystoreCryptoManager: KeystoreCryptoManager,
         private val walletProfileRepo: WalletProfileRepo,
         val tron: Tron,
-        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
         grpcClientFactory: GrpcClientFactory,
     ) {
         private val profPayServerGrpcClient: ProfPayServerGrpcClient =
