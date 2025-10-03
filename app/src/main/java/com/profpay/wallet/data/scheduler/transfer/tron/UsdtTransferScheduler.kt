@@ -21,6 +21,7 @@ import com.profpay.wallet.tron.http.TrxTransactionsApi
 import com.profpay.wallet.tron.http.models.Trc20TransactionsDataResponse
 import com.profpay.wallet.tron.http.models.TrxTransactionDataResponse
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -42,9 +43,10 @@ class UsdtTransferScheduler(
     private var pendingTransactionRepo: PendingTransactionRepo,
     private var amlProcessorService: AmlProcessorService,
     private var sharedPrefs: SharedPreferences,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     suspend fun scheduleAddresses() =
-        withContext(Dispatchers.IO) {
+        withContext(dispatcher) {
             val addressList = addressRepo.getAddressesSotsWithTokensByBlockchain("Tron")
             val centralAddress = centralAddressRepo.getCentralAddress()
             for (address in addressList) {

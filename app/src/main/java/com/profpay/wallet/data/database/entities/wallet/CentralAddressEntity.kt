@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.profpay.wallet.data.database.models.HasTronCredentials
 import java.math.BigInteger
 
 @Entity(

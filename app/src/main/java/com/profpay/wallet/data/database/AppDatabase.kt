@@ -1,12 +1,8 @@
 package com.profpay.wallet.data.database
 
-import androidx.room.AutoMigration
 import androidx.room.Database
-import androidx.room.DeleteColumn
-import androidx.room.RenameColumn
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.AutoMigrationSpec
 import com.profpay.wallet.data.database.dao.ProfileDao
 import com.profpay.wallet.data.database.dao.SettingsDao
 import com.profpay.wallet.data.database.dao.StatesDao

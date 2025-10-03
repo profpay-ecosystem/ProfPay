@@ -55,7 +55,7 @@ class BinancePriceConverterService {
                 ) {
                     response.use {
                         try {
-                            val responseBody = response.body!!.string()
+                            val responseBody = response.body.string()
                             val obj =
                                 localJson
                                     .decodeFromString<BinancePriceConverterResponse>(responseBody)

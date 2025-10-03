@@ -9,8 +9,8 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.media.RingtoneManager
-import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.google.protobuf.ByteString
 import com.profpay.wallet.MainActivity
 import com.profpay.wallet.data.database.entities.wallet.SmartContractEntity
 import com.profpay.wallet.data.database.repositories.ProfileRepo
@@ -25,7 +25,6 @@ import com.profpay.wallet.models.pushy.AmlPaymentSuccessfullyMessage
 import com.profpay.wallet.models.pushy.PushyDeployContractSuccessfullyMessage
 import com.profpay.wallet.models.pushy.PushyTransferErrorMessage
 import com.profpay.wallet.models.pushy.PushyTransferSuccessfullyMessage
-import com.google.protobuf.ByteString
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

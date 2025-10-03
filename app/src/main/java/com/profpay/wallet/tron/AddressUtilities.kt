@@ -5,7 +5,6 @@ import cash.z.ecc.android.bip39.Mnemonics
 import cash.z.ecc.android.bip39.toEntropy
 import cash.z.ecc.android.bip39.toSeed
 import com.profpay.wallet.AppConstants
-import com.profpay.wallet.data.database.dao.wallet.WalletProfileCipher
 import io.sentry.Sentry
 import kotlinx.coroutines.withTimeout
 import org.bitcoinj.base.Base58
@@ -195,7 +194,7 @@ class AddressUtilities {
 
         val addressGenerateFromSeedPhrList = mutableListOf<AddressDataWithoutPrivKey>()
         // Добавляем индекс 0 (используется для "первого" адреса по стандарту BIP44)
-        val derivedIndicesWithZero = derivedIndices.toMutableList().apply { add(0, 0) }
+        val derivedIndicesWithZero = listOf(0) + derivedIndices
 
         try {
             derivedIndicesWithZero
@@ -298,6 +297,7 @@ class AddressUtilities {
                     AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
                     KeyPair.generate().toPrivateKey(),
                 )
+
             val balanceInSun: BigInteger = BigInteger.valueOf(wrapper.getAccountBalance(accountAddr))
             wrapper.close()
             return balanceInSun
@@ -352,7 +352,7 @@ class AddressUtilities {
     // Переводим массив байт в SHA256
     private fun sha256(input: ByteArray): ByteArray =
         try {
-            val digest = MessageDigest.getInstance("SHA-256")
+            val digest = MessageDigest.getInstance(AppConstants.Application.HASH_ALGORITHM)
             digest.update(input)
             digest.digest()
         } catch (err: NoSuchAlgorithmException) {
@@ -378,8 +378,6 @@ class AddressUtilities {
         }
         return data
     }
-
-    private fun ByteArray.toHexString(): String = joinToString("") { String.format("%02x", it) }
 
     // Этот код реализует функцию public2Address, которая принимает публичный ключ в виде массива байтов и преобразует его в адрес в формате Tron.
     fun public2Address(publicKey: ByteArray): String? {
@@ -429,14 +427,14 @@ class AddressUtilities {
             val decoded = Base58.decode(address)
             val checksum = decoded.copyOfRange(decoded.size - 4, decoded.size)
 
-            val sha256_1 =
+            val sha256First =
                 MessageDigest
                     .getInstance("SHA-256")
                     .digest(decoded.copyOfRange(0, decoded.size - 4))
-            val sha256_2 = MessageDigest.getInstance("SHA-256").digest(sha256_1)
+            val sha256Second = MessageDigest.getInstance("SHA-256").digest(sha256First)
 
             // Проверяем контрольную сумму
-            val calculatedChecksum = sha256_2.copyOfRange(0, 4)
+            val calculatedChecksum = sha256Second.copyOfRange(0, 4)
 
             return checksum.contentEquals(calculatedChecksum)
         } catch (_: Exception) {

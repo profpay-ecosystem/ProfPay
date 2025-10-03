@@ -7,6 +7,7 @@ import com.profpay.wallet.data.database.entities.wallet.CentralAddressEntity
 import com.profpay.wallet.data.database.repositories.TransactionsRepo
 import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
@@ -16,9 +17,10 @@ class WalletSystemTRXScreenViewModel
     constructor(
         val centralAddressRepo: CentralAddressRepo,
         val transactionsRepo: TransactionsRepo,
+        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : ViewModel() {
         fun getCentralAddressLiveData(): LiveData<CentralAddressEntity?> =
-            liveData(Dispatchers.IO) {
+            liveData(dispatcher) {
                 emitSource(centralAddressRepo.getCentralAddressLiveData())
             }
     }

@@ -22,6 +22,7 @@ import com.profpay.wallet.data.flow_db.repo.WalletInfoRepo
 import com.profpay.wallet.data.utils.toSunAmount
 import com.profpay.wallet.data.utils.toTokenAmount
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -44,13 +45,14 @@ class WalletInfoViewModel
         val tradingInsightsRepo: TradingInsightsRepo,
         private val profileRepo: ProfileRepo,
         private val walletInfoRepo: WalletInfoRepo,
+        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : ViewModel() {
         suspend fun getProfileTelegramId(): Long? = profileRepo.getProfileTelegramId()
 
         suspend fun getWalletNameById(walletId: Long): String? = walletProfileRepo.getWalletNameById(walletId)
 
         fun getAddressesSotsWithTokens(walletId: Long): LiveData<List<AddressWithTokens>> =
-            liveData(Dispatchers.IO) {
+            liveData(dispatcher) {
                 emitSource(addressRepo.getAddressesSotsWithTokensLD(walletId))
             }
 
@@ -68,7 +70,7 @@ class WalletInfoViewModel
         suspend fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel?>> {
             var listListTransactions: List<List<TransactionModel>> = listOf(emptyList())
 
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 if (listTransactions.isEmpty()) return@withContext
                 listListTransactions =
                     listTransactions
@@ -81,7 +83,7 @@ class WalletInfoViewModel
         }
 
         fun getAllRelatedTransactions(walletId: Long): LiveData<List<TransactionModel>> =
-            liveData(Dispatchers.IO) {
+            liveData(dispatcher) {
                 emitSource(transactionsRepo.getAllRelatedTransactions(walletId))
             }
 
@@ -101,7 +103,7 @@ class WalletInfoViewModel
 
         suspend fun getListTokensWithTotalBalance(listAddressWithTokens: List<AddressWithTokens>): List<TokenEntity> {
             val listTokensWithTotalBalance = mutableListOf<TokenEntity>()
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 if (listAddressWithTokens.isEmpty()) return@withContext
                 TokenName.entries.forEach { token ->
                     val gAddressId =

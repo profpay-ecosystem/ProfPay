@@ -1,7 +1,6 @@
 package com.profpay.wallet.data.services
 
 import android.database.sqlite.SQLiteConstraintException
-import android.util.Log
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.backend.grpc.ProfPayServerGrpcClient
@@ -31,6 +30,7 @@ import com.profpay.wallet.tron.Tron
 import com.profpay.wallet.utils.ResolvePrivateKeyDeps
 import com.profpay.wallet.utils.resolvePrivateKey
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.bitcoinj.base.internal.ByteUtils
@@ -57,6 +57,7 @@ class TransactionProcessorService
         private val keystoreCryptoManager: KeystoreCryptoManager,
         private val walletProfileRepo: WalletProfileRepo,
         val tron: Tron,
+        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
         grpcClientFactory: GrpcClientFactory,
     ) {
         private val profPayServerGrpcClient: ProfPayServerGrpcClient =
@@ -244,13 +245,13 @@ class TransactionProcessorService
             val signedTxn =
                 when (token) {
                     TransferToken.USDT_TRC20 ->
-                        withContext(Dispatchers.IO) {
+                        withContext(dispatcher) {
                             energy = tron.transactions.estimateEnergy(sender, receiver, privateKey, amount)
                             bandwidth = tron.transactions.estimateBandwidth(sender, receiver, privateKey, amount)
                             tron.transactions.getSignedUsdtTransaction(sender, receiver, privateKey, amount)
                         }
                     TransferToken.TRX ->
-                        withContext(Dispatchers.IO) {
+                        withContext(dispatcher) {
                             bandwidth = tron.transactions.estimateBandwidthTrxTransaction(sender, receiver, privateKey, amount)
                             tron.transactions.getSignedTrxTransaction(sender, receiver, privateKey, amount)
                         }
@@ -274,7 +275,7 @@ class TransactionProcessorService
             addressEntity: AddressEntity,
             commissionResult: TransferProto.EstimateCommissionResponse,
         ): TransferResult =
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 val userId = profileRepo.getProfileUserId()
                 try {
                     walletAddressRepo.sendTronTransactionRequestGrpc(

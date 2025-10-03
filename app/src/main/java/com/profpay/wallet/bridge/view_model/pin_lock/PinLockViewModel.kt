@@ -12,6 +12,7 @@ import com.profpay.wallet.security.KeystoreEncryptionUtils
 import com.profpay.wallet.security.SecureDataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -28,6 +29,8 @@ class PinLockViewModel
     constructor(
         @param:ApplicationContext val context: Context,
         private val dataStore: DataStore<Preferences>,
+        private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+        private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main,
     ) : ViewModel() {
         private val _navigationEvents = MutableSharedFlow<LockState>(replay = 1)
         val navigationEvents = _navigationEvents.asSharedFlow()
@@ -38,7 +41,7 @@ class PinLockViewModel
         }
 
         private fun launchIO(block: suspend () -> Unit) =
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(ioDispatcher) {
                 block()
             }
 
@@ -93,7 +96,7 @@ class PinLockViewModel
 
             enteredBytes.fill(0)
 
-            withContext(Dispatchers.Main) {
+            withContext(mainDispatcher) {
                 callback(isCorrect)
             }
         }

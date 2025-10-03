@@ -8,6 +8,7 @@ import com.profpay.wallet.backend.grpc.UserGrpcClient
 import com.profpay.wallet.data.database.repositories.ProfileRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -18,6 +19,7 @@ class WelcomingViewModel
     constructor(
         private val profileRepo: ProfileRepo,
         grpcClientFactory: GrpcClientFactory,
+        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : ViewModel() {
         private val userGrpcClient: UserGrpcClient =
             grpcClientFactory.getGrpcClient(
@@ -29,11 +31,11 @@ class WelcomingViewModel
         suspend fun setUserLegalConsentsTrue() {
             try {
                 val appId = profileRepo.getProfileAppId()
-                return withContext(Dispatchers.IO) {
+                return withContext(dispatcher) {
                     try {
                         val result = userGrpcClient.setUserLegalConsentsTrue(appId)
                         result.fold(
-                            onSuccess = { response ->
+                            onSuccess = { _ ->
                                 true
                             },
                             onFailure = { exception ->

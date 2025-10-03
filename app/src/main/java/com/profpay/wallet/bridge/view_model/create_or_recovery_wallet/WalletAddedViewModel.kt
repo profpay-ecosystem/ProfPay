@@ -23,6 +23,7 @@ import com.profpay.wallet.security.KeystoreEncryptionUtils
 import com.profpay.wallet.tron.AddressesWithKeysForM
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
@@ -39,6 +40,7 @@ class WalletAddedViewModel
         private val profileRepo: ProfileRepo,
         private val keystoreCryptoManager: KeystoreCryptoManager,
         grpcClientFactory: GrpcClientFactory,
+        private val dispatcher: CoroutineDispatcher = Dispatchers.IO
     ) : ViewModel() {
         private val keystore = KeystoreEncryptionUtils()
         private val cryptoAddressGrpcClient: CryptoAddressGrpcClient =
@@ -70,11 +72,11 @@ class WalletAddedViewModel
             val (iv, cipherText) = keystoreCryptoManager.encrypt(walletAlias, addressesWithKeysForM.entropy)
 
             val walletId =
-                withContext(Dispatchers.IO) {
+                withContext(dispatcher) {
                     val number = walletProfileRepo.getCountRecords() + 1
                     walletProfileRepo.insertNewWalletProfileEntity(name = "Wallet $number", iv = iv, cipherText = cipherText)
                 }
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 try {
                     BlockchainName.entries.map { blockchain ->
                         // Проходим по списку блокчейнов
@@ -141,7 +143,7 @@ class WalletAddedViewModel
             deviceToken: String,
             sharedPref: SharedPreferences,
         ): Boolean =
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 try {
                     val uuidString =
                         java.util.UUID
@@ -183,7 +185,7 @@ class WalletAddedViewModel
             userId: Long,
             deviceToken: String,
             sharedPref: SharedPreferences,
-        ) = withContext(Dispatchers.IO) {
+        ) = withContext(dispatcher) {
             try {
                 val uuidString =
                     java.util.UUID

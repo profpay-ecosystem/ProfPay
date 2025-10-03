@@ -20,6 +20,7 @@ import com.profpay.wallet.tron.Tron
 import com.profpay.wallet.utils.ResolvePrivateKeyDeps
 import com.profpay.wallet.utils.resolvePrivateKey
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +42,7 @@ constructor(
     private val transactionProcessorService: TransactionProcessorService,
     private val keystoreCryptoManager: KeystoreCryptoManager,
     private val walletProfileRepo: WalletProfileRepo,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
     private val _isActivated = MutableStateFlow(false)
     val isActivated: StateFlow<Boolean> = _isActivated
@@ -52,7 +54,7 @@ constructor(
     fun checkActivation(address: String) {
         viewModelScope.launch {
             _isActivated.value =
-                withContext(Dispatchers.IO) {
+                withContext(dispatcher) {
                     tron.addressUtilities.isAddressActivated(address)
                 }
         }
@@ -94,7 +96,7 @@ constructor(
             try {
                 val amount = valueAmount.toBigDecimal().toSunAmount()
 
-                val requiredEnergy = withContext(Dispatchers.IO) {
+                val requiredEnergy = withContext(dispatcher) {
                     tron.transactions.estimateEnergy(
                         fromAddress = addressWithTokens.addressEntity.address,
                         toAddress = addressSending,
@@ -103,7 +105,7 @@ constructor(
                     )
                 }
 
-                val requiredBandwidth = withContext(Dispatchers.IO) {
+                val requiredBandwidth = withContext(dispatcher) {
                     tron.transactions.estimateBandwidth(
                         fromAddress = addressWithTokens.addressEntity.address,
                         toAddress = addressSending,
@@ -112,7 +114,7 @@ constructor(
                     )
                 }
 
-                val hasEnoughBandwidth = withContext(Dispatchers.IO) {
+                val hasEnoughBandwidth = withContext(dispatcher) {
                     tron.accounts.hasEnoughBandwidth(
                         addressWithTokens.addressEntity.address,
                         requiredBandwidth.bandwidth
@@ -130,7 +132,7 @@ constructor(
     }
 
     fun getAddressWithTokensByAddressLD(address: String): LiveData<AddressWithTokens> =
-        liveData(Dispatchers.IO) {
+        liveData(dispatcher) {
             emitSource(addressRepo.getAddressWithTokensByAddressLD(address))
         }
 
@@ -143,7 +145,7 @@ constructor(
         isSender: Boolean,
         isCentralAddress: Boolean,
     ): LiveData<List<TransactionModel>> =
-        liveData(Dispatchers.IO) {
+        liveData(dispatcher) {
             emitSource(
                 transactionsRepo.getTransactionsByAddressAndTokenLD(
                     walletId = walletId,
@@ -158,7 +160,7 @@ constructor(
     suspend fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel?>> {
         var listListTransactions: List<List<TransactionModel>> = listOf(emptyList())
 
-        withContext(Dispatchers.IO) {
+        withContext(dispatcher) {
             if (listTransactions.isEmpty()) return@withContext
             listListTransactions =
                 listTransactions

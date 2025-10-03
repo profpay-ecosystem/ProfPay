@@ -16,6 +16,7 @@ import com.profpay.wallet.tron.Tron
 import com.profpay.wallet.utils.ResolvePrivateKeyDeps
 import com.profpay.wallet.utils.resolvePrivateKey
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,6 +37,7 @@ constructor(
     private val transactionProcessorService: TransactionProcessorService,
     private val keystoreCryptoManager: KeystoreCryptoManager,
     private val walletProfileRepo: WalletProfileRepo,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
     private val _stateCommission =
         MutableStateFlow<EstimateCommissionResult>(EstimateCommissionResult.Empty)
@@ -64,7 +66,7 @@ constructor(
         tokenEntity: TokenWithPendingTransactions?,
         balance: BigInteger?
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             val generalAddress = addressRepo.getGeneralAddressByWalletId(walletId)
 
             val privKeyBytes = resolvePrivateKey(

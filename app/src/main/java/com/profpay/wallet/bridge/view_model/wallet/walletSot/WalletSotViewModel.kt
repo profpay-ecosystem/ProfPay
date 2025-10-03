@@ -17,6 +17,7 @@ import com.profpay.wallet.data.flow_db.repo.WalletSotRepo
 import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import java.math.BigInteger
 import javax.inject.Inject
@@ -33,13 +34,14 @@ class WalletSotViewModel
         private val centralAddressRepo: CentralAddressRepo,
         private val tron: Tron,
         private val keystoreCryptoManager: KeystoreCryptoManager,
+        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : ViewModel() {
         // Получение списка адресов и балансов в формате Flow
         fun getAddressesSotsWithTokensByBlockchainLD(
             walletId: Long,
             blockchainName: String,
         ): LiveData<List<AddressWithTokens>> =
-            liveData(Dispatchers.IO) {
+            liveData(dispatcher) {
                 emitSource(addressRepo.getAddressesSotsWithTokensByBlockchainLD(walletId, blockchainName))
             }
 

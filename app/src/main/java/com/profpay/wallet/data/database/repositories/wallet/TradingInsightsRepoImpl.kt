@@ -2,6 +2,7 @@ package com.profpay.wallet.data.database.repositories.wallet
 
 import com.profpay.wallet.data.database.dao.wallet.TradingInsightsDao
 import com.profpay.wallet.data.database.entities.wallet.TradingInsightsEntity
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -26,15 +27,16 @@ class TradingInsightsRepoImpl
     @Inject
     constructor(
         private val tradingInsightsDao: TradingInsightsDao,
+        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : TradingInsightsRepo {
         override suspend fun insert(tradingInsightsEntity: TradingInsightsEntity): Long {
-            return withContext(Dispatchers.IO) {
+            return withContext(dispatcher) {
                 return@withContext tradingInsightsDao.insert(tradingInsightsEntity)
             }
         }
 
         override suspend fun doesSymbolExist(symbol: String): Boolean {
-            return withContext(Dispatchers.IO) {
+            return withContext(dispatcher) {
                 return@withContext tradingInsightsDao.doesSymbolExist(symbol)
             }
         }
@@ -43,13 +45,13 @@ class TradingInsightsRepoImpl
             symbol: String,
             priceChangePercentage24h: Double,
         ) {
-            return withContext(Dispatchers.IO) {
+            return withContext(dispatcher) {
                 return@withContext tradingInsightsDao.updatePriceChangePercentage24h(symbol, priceChangePercentage24h)
             }
         }
 
         override suspend fun getPriceChangePercentage24h(symbol: String): Double {
-            return withContext(Dispatchers.IO) {
+            return withContext(dispatcher) {
                 return@withContext tradingInsightsDao.getPriceChangePercentage24h(symbol)
             }
         }

@@ -6,6 +6,7 @@ import com.profpay.wallet.data.database.dao.wallet.WalletProfileDao
 import com.profpay.wallet.data.database.dao.wallet.WalletProfileModel
 import com.profpay.wallet.data.database.entities.wallet.WalletProfileEntity
 import com.profpay.wallet.security.KeystoreEncryptionUtils
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -42,6 +43,7 @@ class WalletProfileRepoImpl
     @Inject
     constructor(
         private val walletProfileDao: WalletProfileDao,
+        private val dispatcher: CoroutineDispatcher = Dispatchers.IO
     ) : WalletProfileRepo {
     override suspend fun insertNewWalletProfileEntity(
         name: String,
@@ -71,14 +73,14 @@ class WalletProfileRepoImpl
     }
 
     override suspend fun deleteWalletProfile(id: Long) {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             return@withContext walletProfileDao.deleteWalletProfile(id)
         }
     }
 
     override suspend fun hasAnyWalletProfile(): Boolean = walletProfileDao.hasAnyWalletProfile()
     override suspend fun getWalletCipherData(id: Long): WalletProfileCipher {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             return@withContext walletProfileDao.getWalletCipherData(id)
         }
     }

@@ -3,6 +3,7 @@ package com.profpay.wallet.backend.grpc
 import com.profpay.wallet.data.flow_db.token.SharedPrefsTokenProvider
 import com.profpay.wallet.utils.safeGrpcCall
 import io.grpc.ManagedChannel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.protobuf.address.CryptoAddressProto
@@ -11,6 +12,7 @@ import org.example.protobuf.address.CryptoAddressServiceGrpc
 class CryptoAddressGrpcClient(
     private val channel: ManagedChannel,
     val token: SharedPrefsTokenProvider,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     private val stub: CryptoAddressServiceGrpc.CryptoAddressServiceBlockingStub = CryptoAddressServiceGrpc.newBlockingStub(channel)
 
@@ -21,7 +23,7 @@ class CryptoAddressGrpcClient(
         derivedIndices: Iterable<Int>,
     ): Result<CryptoAddressProto.AddCryptoAddressResponse> =
         token.safeGrpcCall {
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 val request =
                     CryptoAddressProto.AddCryptoAddressRequest
                         .newBuilder()
@@ -42,7 +44,7 @@ class CryptoAddressGrpcClient(
         generalAddress: String,
     ): Result<CryptoAddressProto.UpdateDerivedIndexResponse> =
         token.safeGrpcCall {
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 val request =
                     CryptoAddressProto.UpdateDerivedIndexRequest
                         .newBuilder()
@@ -62,7 +64,7 @@ class CryptoAddressGrpcClient(
         derivedIndices: Iterable<Int>,
     ): Result<CryptoAddressProto.SetDerivedIndicesResponse> =
         token.safeGrpcCall {
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 val request =
                     CryptoAddressProto.SetDerivedIndicesRequest
                         .newBuilder()
@@ -77,7 +79,7 @@ class CryptoAddressGrpcClient(
 
     suspend fun getWalletData(address: String): Result<CryptoAddressProto.GetWalletDataResponse> =
         token.safeGrpcCall {
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 val request =
                     CryptoAddressProto.GetWalletDataRequest
                         .newBuilder()

@@ -1,10 +1,11 @@
 package com.profpay.wallet.backend.http.models
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class CrystalMonitorTxAddRequest(
-    val token_id: Long, // 9 usdt, 0 trx - wtf?
+    @SerialName("token_id") val tokenId: Long, // 9 usdt, 0 trx - wtf?
     val tx: String, // transaction hash
     val direction: String, // deposit
     val address: String, // customer address
@@ -16,5 +17,5 @@ data class CrystalMonitorTxAddRequest(
 data class AmlStatisticsModelResponse(
     val result: Boolean,
     val message: String,
-    val check_id: Long,
+    @SerialName("check_id") val checkId: Long,
 )

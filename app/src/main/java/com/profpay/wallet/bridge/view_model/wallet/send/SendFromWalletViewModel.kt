@@ -24,6 +24,7 @@ import com.profpay.wallet.utils.ResolvePrivateKeyDeps
 import com.profpay.wallet.utils.resolvePrivateKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -61,6 +62,7 @@ class SendFromWalletViewModel
         private val transactionProcessorService: TransactionProcessorService,
         private val walletProfileRepo: WalletProfileRepo,
         private val keystoreCryptoManager: KeystoreCryptoManager,
+        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : ViewModel() {
         private val _stateCommission =
             MutableStateFlow<EstimateCommissionResult>(EstimateCommissionResult.Empty)
@@ -188,7 +190,7 @@ class SendFromWalletViewModel
             addressSending: String,
             tokenNameModel: TokenName,
         ) {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(dispatcher) {
                 if (addressWithTokens == null ||
                     sumSending.isEmpty() ||
                     !tron.addressUtilities.isValidTronAddress(
@@ -236,13 +238,11 @@ class SendFromWalletViewModel
                         requiredBandwidth.bandwidth,
                     )
 
-                withContext(Dispatchers.Main) {
-                    estimateCommission(
-                        address = addressWithTokens.addressEntity.address,
-                        bandwidth = if (hasEnoughBandwidth) 0 else requiredBandwidth.bandwidth,
-                        energy = requiredEnergy,
-                    )
-                }
+                estimateCommission(
+                    address = addressWithTokens.addressEntity.address,
+                    bandwidth = if (hasEnoughBandwidth) 0 else requiredBandwidth.bandwidth,
+                    energy = requiredEnergy,
+                )
             }
         }
     }

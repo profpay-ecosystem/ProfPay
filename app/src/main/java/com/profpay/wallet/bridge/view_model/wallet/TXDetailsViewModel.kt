@@ -28,6 +28,7 @@ import com.profpay.wallet.tron.Tron
 import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +55,7 @@ class TXDetailsViewModel
         val centralAddressRepo: CentralAddressRepo,
         private val amlProcessorService: AmlProcessorService,
         private val pendingAmlTransactionRepo: PendingAmlTransactionRepo,
+        private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
         grpcClientFactory: GrpcClientFactory,
     ) : ViewModel() {
         private val _state = MutableStateFlow<AmlResult>(AmlResult.Empty)
@@ -78,7 +80,7 @@ class TXDetailsViewModel
         fun getAmlFeeResult() {
             viewModelScope.launch {
                 val result =
-                    withContext(Dispatchers.IO) {
+                    withContext(dispatcher) {
                         profPayServerGrpcClient.getServerParameters()
                     }
 
@@ -103,7 +105,7 @@ class TXDetailsViewModel
         fun checkActivation(address: String) {
             viewModelScope.launch {
                 _isActivated.value =
-                    withContext(Dispatchers.IO) {
+                    withContext(dispatcher) {
                         tron.addressUtilities.isAddressActivated(address)
                     }
             }
@@ -128,7 +130,7 @@ class TXDetailsViewModel
         }
 
         fun getTransactionLiveDataById(transactionId: Long): LiveData<TransactionEntity> =
-            liveData(Dispatchers.IO) {
+            liveData(dispatcher) {
                 emitSource(transactionsRepo.getTransactionLiveDataById(transactionId))
             }
 

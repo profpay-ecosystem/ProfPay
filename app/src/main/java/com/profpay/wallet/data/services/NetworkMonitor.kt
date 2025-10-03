@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +17,7 @@ import java.net.Socket
 class NetworkMonitor(
     context: Context,
     sharedPref: SharedPreferences,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -61,7 +63,7 @@ class NetworkMonitor(
     }
 
     suspend fun isInternetAvailable(): Boolean =
-        withContext(Dispatchers.IO) {
+        withContext(dispatcher) {
             return@withContext try {
                 Socket().use {
                     it.connect(InetSocketAddress("1.1.1.1", 443), 1500)
