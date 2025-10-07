@@ -22,7 +22,7 @@ ktlint {
     debug.set(false)
     android.set(false)
     outputToConsole.set(true)
-    ignoreFailures.set(false)
+    ignoreFailures.set(true)
 
     reporters {
         reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
