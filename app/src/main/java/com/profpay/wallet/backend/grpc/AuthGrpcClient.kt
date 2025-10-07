@@ -3,6 +3,7 @@ package com.profpay.wallet.backend.grpc
 import com.profpay.wallet.data.flow_db.token.SharedPrefsTokenProvider
 import com.profpay.wallet.utils.safeGrpcCall
 import io.grpc.ManagedChannel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.server.protobuf.auth.AuthProto
@@ -11,6 +12,7 @@ import org.server.protobuf.auth.AuthServiceGrpc
 class AuthGrpcClient(
     private val channel: ManagedChannel,
     val token: SharedPrefsTokenProvider,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val stub: AuthServiceGrpc.AuthServiceBlockingStub = AuthServiceGrpc.newBlockingStub(channel)
 
@@ -20,7 +22,7 @@ class AuthGrpcClient(
         deviceToken: String,
     ): Result<AuthProto.IssueTokensResponse> =
         token.safeGrpcCall {
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 val request =
                     AuthProto.IssueTokensRequest
                         .newBuilder()
@@ -40,7 +42,7 @@ class AuthGrpcClient(
         deviceToken: String,
     ): Result<AuthProto.RefreshTokenPairResponse> =
         token.safeGrpcCall {
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 val request =
                     AuthProto.RefreshTokenPairRequest
                         .newBuilder()

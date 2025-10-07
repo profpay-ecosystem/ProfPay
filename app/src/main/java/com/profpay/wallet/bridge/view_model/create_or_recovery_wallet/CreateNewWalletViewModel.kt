@@ -48,4 +48,4 @@ sealed interface CreateNewWalletState {
         val addressGenerateResult: AddressGenerateResult,
     ) : CreateNewWalletState
 }
-// blue hood bus tone fall modify public affair olive talent rude lend
+

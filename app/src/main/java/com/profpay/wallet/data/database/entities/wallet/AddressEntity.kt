@@ -17,10 +17,6 @@ import com.profpay.wallet.data.database.models.HasTronCredentials
             value = ["public_key"],
             unique = true,
         ),
-        Index(
-            value = ["private_key"],
-            unique = true,
-        ),
     ],
 )
 data class AddressEntity(
@@ -29,7 +25,6 @@ data class AddressEntity(
     @ColumnInfo(name = "blockchain_name") val blockchainName: String,
     @ColumnInfo(name = "address") override val address: String,
     @ColumnInfo(name = "public_key") val publicKey: String,
-    @ColumnInfo(name = "private_key") override val privateKey: String,
     @ColumnInfo(name = "is_general_address") val isGeneralAddress: Boolean,
     @ColumnInfo(name = "sot_index") val sotIndex: Byte,
     @ColumnInfo(name = "sot_derivation_index") val sotDerivationIndex: Int,

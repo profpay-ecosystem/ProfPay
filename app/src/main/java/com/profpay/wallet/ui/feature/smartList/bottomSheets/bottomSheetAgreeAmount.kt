@@ -345,11 +345,11 @@ fun bottomSheetAgreeAmount(
                             val buyerValue = amountBuyer.toBigDecimalOrNull()?.toSunAmount() ?: BigInteger.ZERO
 
                             if ((sellerValue + buyerValue) == contract.amount.toBigInteger()) {
-                                viewModel.expertSetDecision(
-                                    deal = contract,
-                                    sellerValue = sellerValue,
-                                    buyerValue = buyerValue,
-                                )
+//                                viewModel.expertSetDecision(
+//                                    deal = contract,
+//                                    sellerValue = sellerValue,
+//                                    buyerValue = buyerValue,
+//                                )
                             }
                         }
                     },

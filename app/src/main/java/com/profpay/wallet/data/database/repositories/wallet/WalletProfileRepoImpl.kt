@@ -1,13 +1,12 @@
 package com.profpay.wallet.data.database.repositories.wallet
 
 import androidx.lifecycle.LiveData
-import com.profpay.wallet.data.database.dao.wallet.WalletPrivateKeyAndChainCodeModel
+import com.profpay.wallet.data.database.dao.wallet.WalletProfileCipher
 import com.profpay.wallet.data.database.dao.wallet.WalletProfileDao
 import com.profpay.wallet.data.database.dao.wallet.WalletProfileModel
 import com.profpay.wallet.data.database.entities.wallet.WalletProfileEntity
-import com.profpay.wallet.security.KeystoreEncryptionUtils
-import com.profpay.wallet.tron.AddressesWithKeysForM
-import kotlinx.coroutines.Dispatchers
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,7 +15,8 @@ import javax.inject.Singleton
 interface WalletProfileRepo {
     suspend fun insertNewWalletProfileEntity(
         name: String,
-        addressesWithKeysForM: AddressesWithKeysForM,
+        iv: ByteArray,
+        cipherText: ByteArray,
     ): Long
 
     suspend fun getWalletNameById(walletId: Long): String?
@@ -25,8 +25,6 @@ interface WalletProfileRepo {
 
     suspend fun getCountRecords(): Long
 
-    suspend fun getWalletPrivateKeyAndChainCodeById(id: Long): WalletPrivateKeyAndChainCodeModel
-
     suspend fun updateNameById(
         id: Long,
         newName: String,
@@ -34,9 +32,9 @@ interface WalletProfileRepo {
 
     suspend fun deleteWalletProfile(id: Long)
 
-    suspend fun getWalletDecryptedEntropy(id: Long): ByteArray?
-
     suspend fun hasAnyWalletProfile(): Boolean
+
+    suspend fun getWalletCipherData(id: Long): WalletProfileCipher
 }
 
 @Singleton
@@ -44,54 +42,45 @@ class WalletProfileRepoImpl
     @Inject
     constructor(
         private val walletProfileDao: WalletProfileDao,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : WalletProfileRepo {
-        override suspend fun insertNewWalletProfileEntity(
-            name: String,
-            addressesWithKeysForM: AddressesWithKeysForM,
-        ): Long {
-            val keystore = KeystoreEncryptionUtils()
-            val encodedEntropy = keystore.encrypt(addressesWithKeysForM.entropy)
-
-            return walletProfileDao.insertNewWalletProfileEntity(
-                WalletProfileEntity(
-                    name = name,
-                    privKeyBytes = addressesWithKeysForM.privKeyBytes,
-                    entropy = encodedEntropy,
-                    chainCode = addressesWithKeysForM.chainCode,
-                ),
-            )
-        }
-
-        override suspend fun getWalletNameById(walletId: Long): String? = walletProfileDao.getWalletNameById(walletId)
-
-        override suspend fun getListAllWallets(): LiveData<List<WalletProfileModel>> = walletProfileDao.getListAllWallets()
-
-        override suspend fun getCountRecords(): Long = walletProfileDao.getCountRecords()
-
-        override suspend fun getWalletPrivateKeyAndChainCodeById(id: Long): WalletPrivateKeyAndChainCodeModel =
-            walletProfileDao.getWalletPrivateKeyAndChainCodeById(id)
-
-        override suspend fun updateNameById(
-            id: Long,
-            newName: String,
-        ) {
-            walletProfileDao.updateNameById(id, newName)
-        }
-
-        override suspend fun deleteWalletProfile(id: Long) {
-            return withContext(Dispatchers.IO) {
-                return@withContext walletProfileDao.deleteWalletProfile(id)
-            }
-        }
-
-        override suspend fun getWalletDecryptedEntropy(id: Long): ByteArray? {
-            return withContext(Dispatchers.IO) {
-                val keystore = KeystoreEncryptionUtils()
-                val encryptedEntropy = walletProfileDao.getWalletEncryptedEntropy(id) ?: return@withContext null
-
-                return@withContext keystore.decrypt(encryptedEntropy)
-            }
-        }
-
-        override suspend fun hasAnyWalletProfile(): Boolean = walletProfileDao.hasAnyWalletProfile()
+    override suspend fun insertNewWalletProfileEntity(
+        name: String,
+        iv: ByteArray,
+        cipherText: ByteArray,
+    ): Long {
+        return walletProfileDao.insertNewWalletProfileEntity(
+            WalletProfileEntity(
+                name = name,
+                iv = iv,
+                cipherText = cipherText
+            ),
+        )
     }
+
+    override suspend fun getWalletNameById(walletId: Long): String? = walletProfileDao.getWalletNameById(walletId)
+
+    override suspend fun getListAllWallets(): LiveData<List<WalletProfileModel>> = walletProfileDao.getListAllWallets()
+
+    override suspend fun getCountRecords(): Long = walletProfileDao.getCountRecords()
+
+    override suspend fun updateNameById(
+        id: Long,
+        newName: String,
+    ) {
+        walletProfileDao.updateNameById(id, newName)
+    }
+
+    override suspend fun deleteWalletProfile(id: Long) {
+        return withContext(ioDispatcher) {
+            return@withContext walletProfileDao.deleteWalletProfile(id)
+        }
+    }
+
+    override suspend fun hasAnyWalletProfile(): Boolean = walletProfileDao.hasAnyWalletProfile()
+    override suspend fun getWalletCipherData(id: Long): WalletProfileCipher {
+        return withContext(ioDispatcher) {
+            return@withContext walletProfileDao.getWalletCipherData(id)
+        }
+    }
+}

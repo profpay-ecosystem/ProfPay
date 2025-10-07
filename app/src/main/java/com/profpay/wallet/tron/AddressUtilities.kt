@@ -29,19 +29,42 @@ data class AddressGenerateResult(
 )
 
 data class AddressesWithKeysForM(
-    val addresses: List<AddressData>,
-    val privKeyBytes: ByteArray,
-    val chainCode: ByteArray,
+    val addresses: List<AddressDataWithoutPrivKey>,
     val entropy: ByteArray,
     val derivedIndices: Iterable<Int>,
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-data class AddressData(
+        other as AddressesWithKeysForM
+
+        if (addresses != other.addresses) return false
+        if (!entropy.contentEquals(other.entropy)) return false
+        if (derivedIndices != other.derivedIndices) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = addresses.hashCode()
+        result = 31 * result + entropy.contentHashCode()
+        result = 31 * result + derivedIndices.hashCode()
+        return result
+    }
+}
+
+data class AddressDataWithoutPrivKey(
     val address: String,
-    val privateKey: String,
     val publicKey: String,
     val indexDerivationSot: Int,
     val indexSot: Byte,
+)
+
+data class AddressDataWithPrivKey(
+    val address: String,
+    val publicKey: String,
+    val privateKey: String,
 )
 
 // Сущность с данными восстановленного адреса по мнемонике(сид-фразе)
@@ -50,11 +73,75 @@ data class AddressGenerateFromSeedPhr(
 )
 
 class AddressUtilities {
-    // Получение сид фразы по энтропии юзера.
     fun getSeedPhraseByEntropy(entropy: ByteArray): String {
         val mnemonicCode = Mnemonics.MnemonicCode(entropy)
         val mnemonic = mnemonicCode.words.joinToString(" ") { String(it) }
         return mnemonic
+    }
+
+    /**
+     * Генерирует один новый адрес вместе с приватным и публичным ключом.
+     *
+     * В процессе выполняются следующие шаги:
+     * 1. Генерация случайной энтропии (по стандарту BIP-39, 12 слов).
+     * 2. Преобразование энтропии в мнемоническую фразу.
+     * 3. Получение seed из мнемоники.
+     * 4. Деривация детерминированного ключа для первого индекса (index = 0).
+     * 5. Генерация адреса из публичного ключа.
+     *
+     * @return [AddressDataWithPrivKey] — объект, содержащий адрес, публичный и приватный ключ.
+     *
+     * @throws IllegalStateException если не удалось корректно сгенерировать адрес.
+     */
+    fun generateSingleAddress(): AddressDataWithPrivKey {
+        // Генерация энтропии для 12-словной мнемонической фразы (BIP-39)
+        val entropy: ByteArray = Mnemonics.WordCount.COUNT_12.toEntropy()
+
+        // Создание мнемоники из энтропии
+        val mnemonicCode = Mnemonics.MnemonicCode(entropy)
+
+        // Индекс в дереве деривации (для первого ключа = 0)
+        val index = 0
+
+        // Получение детерминированного ключа (приватного + публичного)
+        val deterministicKey: DeterministicKey = generateKeys(mnemonicCode.toSeed(validate = true), index)
+
+        // Генерация адреса из публичного ключа
+        val address = public2Address(deterministicKey.pubKeyPoint.getEncoded(false))
+            ?: throw IllegalStateException("Не удалось создать публичный адрес")
+
+        return AddressDataWithPrivKey(
+            address = address,
+            publicKey = deterministicKey.publicKeyAsHex,
+            privateKey = deterministicKey.privateKeyAsHex,
+        )
+    }
+
+    /**
+     * Получает приватный ключ из энтропии и индекса деривации.
+     *
+     * Функция преобразует энтропию в мнемонику (BIP-39), затем генерирует seed
+     * и на его основе получает детерминированный ключ по указанному индексу.
+     *
+     * @param entropy Байтовый массив энтропии.
+     * @param index   Индекс в иерархическом пути деривации.
+     * @return [ByteArray] — байтовое представление приватного ключа.
+     *
+     * @throws IllegalArgumentException если энтропия некорректна или не удалось сгенерировать мнемонику.
+     */
+    fun derivePrivateKeyFromEntropy(entropy: ByteArray, index: Int): ByteArray {
+        // Генерация мнемонической фразы из энтропии по стандарту BIP-39
+        val mnemonicCode = Mnemonics.MnemonicCode(entropy)
+
+        // Получение seed из мнемоники (с проверкой контрольной суммы)
+        val seed = mnemonicCode.toSeed(validate = true)
+
+        // Деривация детерминированного ключа по указанному индексу
+        val deterministicKey: DeterministicKey = generateKeys(seed, index)
+        deterministicKey.privateKeyAsHex
+
+        // Возврат приватного ключа в виде байтового массива
+        return deterministicKey.privKeyBytes
     }
 
     /**
@@ -64,7 +151,7 @@ class AddressUtilities {
         val entropy: ByteArray = Mnemonics.WordCount.COUNT_12.toEntropy()
         val mnemonicCode = Mnemonics.MnemonicCode(entropy)
 
-        val addressDataList = mutableListOf<AddressData>()
+        val addressDataList = mutableListOf<AddressDataWithoutPrivKey>()
 
         repeat(7) { index ->
             val deterministicKeyForSots: DeterministicKey =
@@ -74,9 +161,8 @@ class AddressUtilities {
                     ?: throw Exception("The public address has not been created!")
 
             addressDataList.add(
-                AddressData(
+                AddressDataWithoutPrivKey(
                     address = addressForSots,
-                    privateKey = deterministicKeyForSots.privateKeyAsHex,
                     publicKey = deterministicKeyForSots.publicKeyAsHex,
                     indexDerivationSot = index,
                     indexSot = index.toByte(),
@@ -84,12 +170,9 @@ class AddressUtilities {
             )
         }
 
-        val masterKey = generateMasterPrivateKey(mnemonicCode.toSeed(validate = true))
         val addressesWithKeysForM =
             AddressesWithKeysForM(
                 addresses = addressDataList,
-                privKeyBytes = masterKey.privKeyBytes,
-                chainCode = masterKey.chainCode,
                 entropy = entropy,
                 derivedIndices = (1..6),
             )
@@ -109,9 +192,9 @@ class AddressUtilities {
         val charArray = seed.toCharArray()
         val mnemonicCode = Mnemonics.MnemonicCode(chars = charArray)
 
-        val addressGenerateFromSeedPhrList = mutableListOf<AddressData>()
+        val addressGenerateFromSeedPhrList = mutableListOf<AddressDataWithoutPrivKey>()
         // Добавляем индекс 0 (используется для "первого" адреса по стандарту BIP44)
-        val derivedIndicesWithZero = derivedIndices.toMutableList().apply { add(0, 0) }
+        val derivedIndicesWithZero = listOf(0) + derivedIndices
 
         try {
             derivedIndicesWithZero
@@ -127,12 +210,9 @@ class AddressUtilities {
             throw Exception("Failed generate, may be uncorrect mnemonic")
         }
 
-        val masterKey = generateMasterPrivateKey(mnemonicCode.toSeed(validate = true))
         val addressesWithKeysForM =
             AddressesWithKeysForM(
                 addresses = addressGenerateFromSeedPhrList,
-                privKeyBytes = masterKey.privKeyBytes,
-                chainCode = masterKey.chainCode,
                 entropy = mnemonicCode.toEntropy(),
                 derivedIndices = derivedIndicesWithZero.filter { it != 0 },
             )
@@ -145,7 +225,7 @@ class AddressUtilities {
     fun generateKeysAndAddressBySeedPhrase(seed: String): AddressGenerateFromSeedPhr {
         val charArray = seed.toCharArray()
         val mnemonicCode = Mnemonics.MnemonicCode(chars = charArray)
-        val addressGenerateFromSeedPhrList = mutableListOf<AddressData>()
+        val addressGenerateFromSeedPhrList = mutableListOf<AddressDataWithoutPrivKey>()
 
         try {
             repeat(7) { item ->
@@ -157,12 +237,9 @@ class AddressUtilities {
             throw Exception("Failed generate, may be uncorrect mnemonic")
         }
 
-        val masterKey = generateMasterPrivateKey(mnemonicCode.toSeed(validate = true))
         val addressesWithKeysForM =
             AddressesWithKeysForM(
                 addresses = addressGenerateFromSeedPhrList,
-                privKeyBytes = masterKey.privKeyBytes,
-                chainCode = masterKey.chainCode,
                 entropy = mnemonicCode.toEntropy(),
                 derivedIndices = (1..6),
             )
@@ -220,6 +297,7 @@ class AddressUtilities {
                     AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
                     KeyPair.generate().toPrivateKey(),
                 )
+
             val balanceInSun: BigInteger = BigInteger.valueOf(wrapper.getAccountBalance(accountAddr))
             wrapper.close()
             return balanceInSun
@@ -248,13 +326,13 @@ class AddressUtilities {
     }
 
     fun creationOfANewCell(
-        privKeyBytes: ByteArray,
-        chainCode: ByteArray,
+        entropy: ByteArray,
         index: Long,
     ): DeterministicKey? {
-        val masterPrivateKey: DeterministicKey =
-            HDKeyDerivation.createMasterPrivKeyFromBytes(privKeyBytes, chainCode)
-        val dh = DeterministicHierarchy(masterPrivateKey)
+        val mnemonicCode = Mnemonics.MnemonicCode(entropy)
+        val masterKey = generateMasterPrivateKey(mnemonicCode.toSeed(validate = true))
+
+        val dh = DeterministicHierarchy(masterKey)
 
         val path: List<ChildNumber> = HDPath.parsePath("M/44H/195H/0H/0/$index")
 
@@ -274,7 +352,7 @@ class AddressUtilities {
     // Переводим массив байт в SHA256
     private fun sha256(input: ByteArray): ByteArray =
         try {
-            val digest = MessageDigest.getInstance("SHA-256")
+            val digest = MessageDigest.getInstance(AppConstants.Application.HASH_ALGORITHM)
             digest.update(input)
             digest.digest()
         } catch (err: NoSuchAlgorithmException) {
@@ -300,8 +378,6 @@ class AddressUtilities {
         }
         return data
     }
-
-    private fun ByteArray.toHexString(): String = joinToString("") { String.format("%02x", it) }
 
     // Этот код реализует функцию public2Address, которая принимает публичный ключ в виде массива байтов и преобразует его в адрес в формате Tron.
     fun public2Address(publicKey: ByteArray): String? {
@@ -351,14 +427,14 @@ class AddressUtilities {
             val decoded = Base58.decode(address)
             val checksum = decoded.copyOfRange(decoded.size - 4, decoded.size)
 
-            val sha256_1 =
+            val sha256First =
                 MessageDigest
                     .getInstance("SHA-256")
                     .digest(decoded.copyOfRange(0, decoded.size - 4))
-            val sha256_2 = MessageDigest.getInstance("SHA-256").digest(sha256_1)
+            val sha256Second = MessageDigest.getInstance("SHA-256").digest(sha256First)
 
             // Проверяем контрольную сумму
-            val calculatedChecksum = sha256_2.copyOfRange(0, 4)
+            val calculatedChecksum = sha256Second.copyOfRange(0, 4)
 
             return checksum.contentEquals(calculatedChecksum)
         } catch (_: Exception) {
@@ -414,15 +490,14 @@ class AddressUtilities {
         mnemonicCode: Mnemonics.MnemonicCode,
         index: Int,
         indexSot: Byte,
-    ): AddressData {
+    ): AddressDataWithoutPrivKey {
         val key = generateKeys(mnemonicCode.toSeed(validate = true), index)
         val address =
             public2Address(key.pubKeyPoint.getEncoded(false))
                 ?: throw Exception("The public address has not been created!")
 
-        return AddressData(
+        return AddressDataWithoutPrivKey(
             address = address,
-            privateKey = key.privateKeyAsHex,
             publicKey = key.publicKeyAsHex,
             indexDerivationSot = index,
             indexSot = indexSot,

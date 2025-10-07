@@ -3,13 +3,15 @@ package com.profpay.wallet.bridge.view_model.wallet.transaction
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.data.database.entities.wallet.CentralAddressEntity
 import com.profpay.wallet.data.database.models.TransactionModel
 import com.profpay.wallet.data.database.repositories.TransactionsRepo
 import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,6 +20,7 @@ class CentralAddressTxHistoryViewModel
     constructor(
         private val transactionsRepo: TransactionsRepo,
         private val centralAddressRepo: CentralAddressRepo,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         fun getTransactionsByAddressAndTokenLD(
             walletId: Long,
@@ -26,7 +29,7 @@ class CentralAddressTxHistoryViewModel
             isSender: Boolean,
             isCentralAddress: Boolean,
         ): LiveData<List<TransactionModel>> =
-            liveData(Dispatchers.IO) {
+            liveData(ioDispatcher) {
                 emitSource(
                     transactionsRepo.getTransactionsByAddressAndTokenLD(
                         walletId = walletId,
@@ -38,11 +41,11 @@ class CentralAddressTxHistoryViewModel
                 )
             }
 
-        suspend fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel?>> {
+        fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel?>> {
             var listListTransactions: List<List<TransactionModel>> = listOf(emptyList())
 
-            withContext(Dispatchers.IO) {
-                if (listTransactions.isEmpty()) return@withContext
+            viewModelScope.launch(ioDispatcher) {
+                if (listTransactions.isEmpty()) return@launch
                 listListTransactions =
                     listTransactions
                         .sortedByDescending { it.timestamp }
@@ -54,7 +57,7 @@ class CentralAddressTxHistoryViewModel
         }
 
         fun getCentralAddressLiveData(): LiveData<CentralAddressEntity?> =
-            liveData(Dispatchers.IO) {
+            liveData(ioDispatcher) {
                 emitSource(centralAddressRepo.getCentralAddressLiveData())
             }
     }

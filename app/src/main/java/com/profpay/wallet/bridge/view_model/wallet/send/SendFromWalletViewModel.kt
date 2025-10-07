@@ -11,22 +11,26 @@ import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
+import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.flow_db.repo.EstimateCommissionResult
 import com.profpay.wallet.data.flow_db.repo.SendFromWalletRepo
 import com.profpay.wallet.data.services.TransactionProcessorService
 import com.profpay.wallet.data.utils.toBigInteger
 import com.profpay.wallet.data.utils.toSunAmount
 import com.profpay.wallet.data.utils.toTokenAmount
+import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.tron.Tron
+import com.profpay.wallet.utils.ResolvePrivateKeyDeps
+import com.profpay.wallet.utils.resolvePrivateKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.example.protobuf.transfer.TransferProto
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -55,6 +59,9 @@ class SendFromWalletViewModel
         val tron: Tron,
         val exchangeRatesRepo: ExchangeRatesRepo,
         private val transactionProcessorService: TransactionProcessorService,
+        private val walletProfileRepo: WalletProfileRepo,
+        private val keystoreCryptoManager: KeystoreCryptoManager,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         private val _stateCommission =
             MutableStateFlow<EstimateCommissionResult>(EstimateCommissionResult.Empty)
@@ -182,7 +189,7 @@ class SendFromWalletViewModel
             addressSending: String,
             tokenNameModel: TokenName,
         ) {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(ioDispatcher) {
                 if (addressWithTokens == null ||
                     sumSending.isEmpty() ||
                     !tron.addressUtilities.isValidTronAddress(
@@ -192,11 +199,22 @@ class SendFromWalletViewModel
                     return@launch
                 }
 
+                val privKeyBytes = resolvePrivateKey(
+                    walletId = addressWithTokens.addressEntity.walletId,
+                    addressEntity = addressWithTokens.addressEntity,
+                    resolvePrivateKeyDeps = ResolvePrivateKeyDeps(
+                        addressRepo = addressRepo,
+                        walletProfileRepo = walletProfileRepo,
+                        keystoreCryptoManager = keystoreCryptoManager,
+                        tron = tron
+                    )
+                )
+
                 val requiredBandwidth =
                     tron.transactions.estimateBandwidth(
                         fromAddress = addressWithTokens.addressEntity.address,
                         toAddress = addressSending,
-                        privateKey = addressWithTokens.addressEntity.privateKey,
+                        privateKey = privKeyBytes,
                         amount = sumSending.toBigDecimal().toSunAmount(),
                     )
 
@@ -206,7 +224,7 @@ class SendFromWalletViewModel
                             .estimateEnergy(
                                 fromAddress = addressWithTokens.addressEntity.address,
                                 toAddress = addressSending,
-                                privateKey = addressWithTokens.addressEntity.privateKey,
+                                privateKey = privKeyBytes,
                                 amount = sumSending.toBigDecimal().toSunAmount(),
                             ).energy
                     } else {
@@ -219,13 +237,11 @@ class SendFromWalletViewModel
                         requiredBandwidth.bandwidth,
                     )
 
-                withContext(Dispatchers.Main) {
-                    estimateCommission(
-                        address = addressWithTokens.addressEntity.address,
-                        bandwidth = if (hasEnoughBandwidth) 0 else requiredBandwidth.bandwidth,
-                        energy = requiredEnergy,
-                    )
-                }
+                estimateCommission(
+                    address = addressWithTokens.addressEntity.address,
+                    bandwidth = if (hasEnoughBandwidth) 0 else requiredBandwidth.bandwidth,
+                    energy = requiredEnergy,
+                )
             }
         }
     }

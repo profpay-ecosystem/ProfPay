@@ -2,9 +2,10 @@ package com.profpay.wallet.bridge.view_model.smart_contract.usecases.estimate
 
 import com.profpay.wallet.data.database.entities.wallet.AddressEntity
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.utils.toBigInteger
 import com.profpay.wallet.tron.Tron
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.example.protobuf.smart.SmartContractProto
 import org.tron.trident.abi.TypeReference
@@ -23,10 +24,11 @@ class TransactionFeeEstimator
     constructor(
         private val addressRepo: AddressRepo,
         private val tron: Tron,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) {
         suspend fun createDeal(deal: SmartContractProto.ContractDealListResponse): TransactionEstimatorResult {
             val addressData =
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(deal.buyer.address)
                 }
 
@@ -84,7 +86,7 @@ class TransactionFeeEstimator
 
         suspend fun approveAndDepositDeal(deal: SmartContractProto.ContractDealListResponse): TransactionEstimatorResult {
             val addressData =
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(deal.buyer.address)
                 } ?: return TransactionEstimatorResult.Error(EstimateType.DEFAULT, "Address data is null")
 
@@ -93,7 +95,7 @@ class TransactionFeeEstimator
                 tron.accounts.isAllowanceUnlimited(
                     spender = deal.smartContractAddress,
                     ownerAddress = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey",
                 )
 
             val approveCostResult =
@@ -156,7 +158,7 @@ class TransactionFeeEstimator
                 }
 
             val addressData =
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 } ?: return TransactionEstimatorResult.Error(EstimateType.DEFAULT, "Address data is null")
 
@@ -165,7 +167,7 @@ class TransactionFeeEstimator
                 tron.accounts.allowance(
                     spender = deal.smartContractAddress,
                     ownerAddress = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey",
                 )
 
             val approveAmount = deal.dealData.totalExpertCommissions / 2
@@ -233,7 +235,7 @@ class TransactionFeeEstimator
                 }
 
             val addressData =
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 }
 
@@ -278,7 +280,7 @@ class TransactionFeeEstimator
                 }
 
             val addressData =
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 }
 
@@ -323,7 +325,7 @@ class TransactionFeeEstimator
                 }
 
             val addressData =
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 }
 
@@ -369,7 +371,7 @@ class TransactionFeeEstimator
                 )
 
             val addressData =
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(admin.address)
                 }
 
@@ -421,7 +423,7 @@ class TransactionFeeEstimator
                     }
 
             val addressData =
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 }
 
@@ -469,7 +471,7 @@ class TransactionFeeEstimator
                     }
 
             val addressData =
-                withContext(Dispatchers.IO) {
+                withContext(ioDispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 }
 
@@ -512,14 +514,14 @@ class TransactionFeeEstimator
                     function = function,
                     contractAddress = contractAddress,
                     address = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey".toByteArray(),
                 )
             val estimateBandwidth =
                 tron.transactions.estimateBandwidth(
                     function = function,
                     contractAddress = contractAddress,
                     address = addressData.address,
-                    privateKey = addressData.privateKey,
+                    privateKey = "addressData.privateKey".toByteArray(),
                 )
             return EstimateResult(
                 requiredEnergyInTrx = estimateEnergy.energyInTrx,

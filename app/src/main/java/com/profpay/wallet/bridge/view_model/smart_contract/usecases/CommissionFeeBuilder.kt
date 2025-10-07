@@ -1,12 +1,14 @@
 package com.profpay.wallet.bridge.view_model.smart_contract.usecases
 
+import com.google.protobuf.ByteString
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.backend.grpc.ProfPayServerGrpcClient
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.tron.Tron
-import com.google.protobuf.ByteString
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.protobuf.smart.SmartContractProto
@@ -19,6 +21,7 @@ class CommissionFeeBuilder
         private val addressRepo: AddressRepo,
         private val tron: Tron,
         grpcClientFactory: GrpcClientFactory,
+        @IoDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) {
         private val profPayServerGrpcClient: ProfPayServerGrpcClient =
             grpcClientFactory.getGrpcClient(
@@ -40,7 +43,7 @@ class CommissionFeeBuilder
                 }
 
             val addressData =
-                withContext(Dispatchers.IO) {
+                withContext(dispatcher) {
                     addressRepo.getAddressEntityByAddress(address)
                 } ?: return CommissionFeeBuilderResult.Error("Address data is null")
 
@@ -56,21 +59,21 @@ class CommissionFeeBuilder
                 )
 
             val signedTxnBytesCommission =
-                withContext(Dispatchers.IO) {
+                withContext(dispatcher) {
                     tron.transactions.getSignedTrxTransaction(
                         fromAddress = addressData.address,
                         toAddress = trxFeeAddress,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey".toByteArray(),
                         amount = commission,
                     )
                 }
 
             val estimateCommissionBandwidth =
-                withContext(Dispatchers.IO) {
+                withContext(dispatcher) {
                     tron.transactions.estimateBandwidthTrxTransaction(
                         fromAddress = addressData.address,
                         toAddress = trxFeeAddress,
-                        privateKey = addressData.privateKey,
+                        privateKey = "addressData.privateKey".toByteArray(),
                         amount = commission,
                     )
                 }

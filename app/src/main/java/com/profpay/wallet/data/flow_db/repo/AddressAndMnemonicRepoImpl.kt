@@ -5,10 +5,12 @@ import com.profpay.wallet.backend.grpc.CryptoAddressGrpcClient
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.tron.AddressGenerateFromSeedPhr
 import com.profpay.wallet.tron.AddressGenerateResult
 import com.profpay.wallet.tron.Tron
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -39,6 +41,7 @@ class AddressAndMnemonicRepoImpl
         val addressRepo: AddressRepo,
         private val tron: Tron,
         grpcClientFactory: GrpcClientFactory,
+        @IoDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     ) : AddressAndMnemonicRepo {
         private val cryptoAddressGrpcClient: CryptoAddressGrpcClient =
             grpcClientFactory.getGrpcClient(
@@ -54,7 +57,7 @@ class AddressAndMnemonicRepoImpl
 
         // Триггер на обновление данных нового кошелька
         override suspend fun generateNewAddressAndMnemonic() {
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 val addressAndMnemonic = tron.addressUtilities.generateAddressAndMnemonic()
                 _addressAndMnemonic.emit(addressAndMnemonic)
             }
@@ -72,7 +75,7 @@ class AddressAndMnemonicRepoImpl
 
         // Триггер на обновление данных восстановленного кошелька по мнемонике(сид-фразе)
         override suspend fun generateAddressFromMnemonic(mnemonic: String) {
-            withContext(Dispatchers.IO) {
+            withContext(dispatcher) {
                 try {
                     val generalAddress = tron.addressUtilities.getGeneralAddressBySeedPhrase(mnemonic)
 
@@ -110,19 +113,18 @@ class AddressAndMnemonicRepoImpl
                                     accountWasFound = true,
                                     userId = walletData.userId,
                                 )
-                            } catch (e: Exception) {
+                            } catch (_: Exception) {
                                 RecoveryResult.InvalidMnemonic
                             }
 
                         _addressFromMnemonic.emit(recoveryResult)
                     },
                     onFailure = { error ->
-                        // TODO: Создать enum на стороне gPRC
                         if (error.message == "INTERNAL: Address not found in database") {
                             val address =
                                 try {
                                     tron.addressUtilities.generateKeysAndAddressBySeedPhrase(mnemonic)
-                                } catch (e: Exception) {
+                                } catch (_: Exception) {
                                     _addressFromMnemonic.emit(RecoveryResult.InvalidMnemonic)
                                     return
                                 }

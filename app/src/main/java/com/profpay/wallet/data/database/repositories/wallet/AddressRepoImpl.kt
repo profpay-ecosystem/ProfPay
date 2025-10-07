@@ -4,7 +4,8 @@ import androidx.lifecycle.LiveData
 import com.profpay.wallet.data.database.dao.wallet.AddressDao
 import com.profpay.wallet.data.database.entities.wallet.AddressEntity
 import com.profpay.wallet.data.database.models.AddressWithTokens
-import kotlinx.coroutines.Dispatchers
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -75,17 +76,18 @@ class AddressRepoImpl
     @Inject
     constructor(
         private val addressDao: AddressDao,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : AddressRepo {
         override suspend fun insertNewAddress(addressEntity: AddressEntity): Long = addressDao.insertNewAddress(addressEntity)
 
         override suspend fun getAddressEntityByAddress(address: String): AddressEntity? {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext addressDao.getAddressEntityByAddress(address)
             }
         }
 
         override suspend fun isGeneralAddress(address: String): Boolean {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext addressDao.isGeneralAddress(address)
             }
         }
@@ -102,7 +104,7 @@ class AddressRepoImpl
             addressDao.getAddressesSotsWithTokensLD(walletId)
 
         override suspend fun getAddressEntityById(id: Long): AddressEntity? {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext addressDao.getAddressEntityById(id)
             }
         }
@@ -111,7 +113,7 @@ class AddressRepoImpl
             addressId: Long,
             blockchainName: String,
         ): LiveData<AddressWithTokens> {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext addressDao.getGeneralAddressWithTokensLiveData(addressId, blockchainName)
             }
         }
@@ -120,7 +122,7 @@ class AddressRepoImpl
             addressId: Long,
             blockchainName: String,
         ): AddressWithTokens {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext addressDao.getGeneralAddressWithTokens(addressId, blockchainName)
             }
         }
@@ -131,7 +133,7 @@ class AddressRepoImpl
         ): LiveData<AddressWithTokens> = addressDao.getAddressWithTokens(addressId, blockchainName)
 
         override suspend fun getGeneralAddressByWalletId(walletId: Long): String {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext addressDao.getGeneralAddressByWalletId(walletId)
             }
         }
@@ -159,13 +161,13 @@ class AddressRepoImpl
             addressDao.getGeneralAddressEntityByWalletId(walletId)
 
         override suspend fun getGeneralAddresses(): List<AddressEntity> {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext addressDao.getGeneralAddresses()
             }
         }
 
         override suspend fun getSortedDerivationIndices(walletId: Long): List<Int> {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext addressDao.getSortedDerivationIndices(walletId)
             }
         }

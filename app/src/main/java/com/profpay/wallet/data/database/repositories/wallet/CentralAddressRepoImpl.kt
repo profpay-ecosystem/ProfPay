@@ -3,8 +3,9 @@ package com.profpay.wallet.data.database.repositories.wallet
 import androidx.lifecycle.LiveData
 import com.profpay.wallet.data.database.dao.wallet.CentralAddressDao
 import com.profpay.wallet.data.database.entities.wallet.CentralAddressEntity
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.tron.Tron
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import javax.inject.Inject
@@ -35,6 +36,7 @@ class CentralAddressRepoImpl
     constructor(
         private val centralAddressDao: CentralAddressDao,
         private val tron: Tron,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : CentralAddressRepo {
         override suspend fun insertNewCentralAddress(addressEntity: CentralAddressEntity): Long =
             centralAddressDao.insertNewCentralAddress(addressEntity)
@@ -42,7 +44,7 @@ class CentralAddressRepoImpl
         override suspend fun insertIfNotExists(): CentralAddressEntity? = centralAddressDao.insertIfNotExists(tron)
 
         override suspend fun getCentralAddress(): CentralAddressEntity? {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext centralAddressDao.getCentralAddress()
             }
         }
@@ -56,7 +58,7 @@ class CentralAddressRepoImpl
         ) = centralAddressDao.changeCentralAddress(address = address, publicKey = publicKey, privateKey = privateKey)
 
         override suspend fun getCentralAddressLiveData(): LiveData<CentralAddressEntity?> {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext centralAddressDao.getCentralAddressLiveData()
             }
         }

@@ -3,7 +3,6 @@ package com.profpay.wallet.data.scheduler.transfer.tron
 import android.content.SharedPreferences
 import android.database.sqlite.SQLiteConstraintException
 import com.profpay.wallet.PrefKeys
-import com.profpay.wallet.backend.grpc.AmlGrpcClient
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.data.database.entities.wallet.TransactionStatusCode
 import com.profpay.wallet.data.database.entities.wallet.TransactionType
@@ -22,6 +21,7 @@ import com.profpay.wallet.tron.http.TrxTransactionsApi
 import com.profpay.wallet.tron.http.models.Trc20TransactionsDataResponse
 import com.profpay.wallet.tron.http.models.TrxTransactionDataResponse
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -41,12 +41,12 @@ class UsdtTransferScheduler(
     private var notificationFunction: (String, String) -> Unit,
     private var tron: Tron,
     private var pendingTransactionRepo: PendingTransactionRepo,
-    private var amlClient: AmlGrpcClient,
     private var amlProcessorService: AmlProcessorService,
     private var sharedPrefs: SharedPreferences,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     suspend fun scheduleAddresses() =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             val addressList = addressRepo.getAddressesSotsWithTokensByBlockchain("Tron")
             val centralAddress = centralAddressRepo.getCentralAddress()
             for (address in addressList) {

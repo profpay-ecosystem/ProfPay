@@ -6,9 +6,10 @@ import androidx.lifecycle.liveData
 import com.profpay.wallet.data.database.dao.wallet.WalletProfileModel
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,9 +19,10 @@ class WalletSystemViewModel
         private val walletProfileRepo: WalletProfileRepo,
         private val addressRepo: AddressRepo,
         private val tron: Tron,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         fun getListAllWallets(): LiveData<List<WalletProfileModel>> =
-            liveData(Dispatchers.IO) {
+            liveData(ioDispatcher) {
                 emitSource(walletProfileRepo.getListAllWallets())
             }
 
@@ -31,9 +33,8 @@ class WalletSystemViewModel
             walletProfileRepo.updateNameById(id, newName)
         }
 
-        suspend fun getSeedPhrase(walletId: Long): String? {
-            val decryptedEntropy = walletProfileRepo.getWalletDecryptedEntropy(walletId) ?: return null
-            return tron.addressUtilities.getSeedPhraseByEntropy(decryptedEntropy)
+        fun getSeedPhrase(walletId: Long): String? {
+            return "empty11"
         }
 
         suspend fun deleteWalletProfile(walletId: Long) {

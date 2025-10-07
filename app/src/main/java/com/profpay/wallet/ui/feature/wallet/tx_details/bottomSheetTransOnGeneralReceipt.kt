@@ -1,7 +1,7 @@
 package com.profpay.wallet.ui.feature.wallet.tx_details
 
 import StackedSnakbarHostState
-import android.view.MotionEvent
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,15 +31,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.bridge.view_model.dto.transfer.TransferResult
-import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
+import com.profpay.wallet.bridge.view_model.wallet.walletSot.GeneralTransactionViewModel
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.data.flow_db.repo.EstimateCommissionResult
 import com.profpay.wallet.data.utils.toBigInteger
@@ -57,7 +59,7 @@ import java.math.BigInteger
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun bottomSheetTransOnGeneralReceipt(
-    viewModel: WalletAddressViewModel,
+    viewModel: GeneralTransactionViewModel = hiltViewModel(),
     addressWithTokens: AddressWithTokens?,
     snackbar: StackedSnakbarHostState,
     tokenName: String,
@@ -80,8 +82,6 @@ fun bottomSheetTransOnGeneralReceipt(
 
     val (commissionOnTransaction, setCommissionOnTransaction) = remember { mutableStateOf(BigDecimal.ZERO) }
     val (commissionResult, setCommissionResult) = remember { mutableStateOf(TransferProto.EstimateCommissionResponse.getDefaultInstance()) }
-    val (generalAddressActivatedCommission, setGeneralAddressActivatedCommission) = remember { mutableStateOf(BigInteger.ZERO) }
-    val (isGeneralAddressNotActivatedVisible, setIsGeneralAddressNotActivatedVisible) = remember { mutableStateOf(false) }
 
     if (isOpenSheet) {
         val tokenEntity =
@@ -93,50 +93,16 @@ fun bottomSheetTransOnGeneralReceipt(
                 ?.orElse(null)
 
         LaunchedEffect(Unit) {
-            val address =
-                withContext(Dispatchers.IO) {
-                    viewModel.addressRepo.getAddressEntityByAddress(addressWithTokens.addressEntity.address)
-                }
-            val generalAddress =
-                withContext(Dispatchers.IO) {
-                    viewModel.addressRepo.getGeneralAddressByWalletId(walletId)
-                }
-
-            if (address == null) return@LaunchedEffect
-
-            val requiredEnergy =
-                withContext(Dispatchers.IO) {
-                    viewModel.tron.transactions.estimateEnergy(
-                        fromAddress = address.address,
-                        toAddress = generalAddress,
-                        privateKey = address.privateKey,
-                        amount = balance ?: tokenEntity?.balanceWithoutFrozen!!,
-                    )
-                }
-            val requiredBandwidth =
-                withContext(Dispatchers.IO) {
-                    viewModel.tron.transactions.estimateBandwidth(
-                        fromAddress = address.address,
-                        toAddress = generalAddress,
-                        privateKey = address.privateKey,
-                        amount = balance ?: tokenEntity?.balanceWithoutFrozen!!,
-                    )
-                }
-
-            withContext(Dispatchers.IO) {
-                if (!viewModel.tron.addressUtilities.isAddressActivated(generalAddress)) {
-                    val commission = viewModel.tron.addressUtilities.getCreateNewAccountFeeInSystemContract()
-                    setIsGeneralAddressNotActivatedVisible(true)
-                    setGeneralAddressActivatedCommission(commission)
-                }
-
-                viewModel.estimateCommission(
-                    address = addressWithTokens.addressEntity.address,
-                    bandwidth = requiredBandwidth.bandwidth,
-                    energy = requiredEnergy.energy,
-                )
-            }
+            viewModel.prepareTransaction(
+                walletId = walletId,
+                addressWithTokens = addressWithTokens,
+                tokenEntity = tokenEntity,
+                balance = balance
+            )
         }
+
+        val isGeneralAddressNotActivatedVisible by viewModel.isGeneralAddressNotActivatedVisible.collectAsState()
+        val generalAddressActivatedCommission by viewModel.generalAddressActivatedCommission.collectAsState()
 
         LaunchedEffect(commissionState) {
             when (commissionState) {
@@ -228,7 +194,7 @@ fun bottomSheetTransOnGeneralReceipt(
                             ) {
                                 Text(text = "Активация адреса:", fontWeight = FontWeight.SemiBold, color = Color.Red)
                                 Row {
-                                    Text(text = "${generalAddressActivatedCommission.toTokenAmount()} ")
+                                    Text(text = "${generalAddressActivatedCommission?.toTokenAmount()} ")
                                     Text(text = "TRX", fontWeight = FontWeight.SemiBold)
                                 }
                             }
@@ -304,12 +270,8 @@ fun bottomSheetTransOnGeneralReceipt(
                         modifier =
                             Modifier
                                 // Защищаемся от Tapjacking/Clickjacking
-                                .pointerInteropFilter { motionEvent ->
-                                    if (motionEvent.action == MotionEvent.ACTION_DOWN) {
-                                        val view = (context as? android.app.Activity)?.window?.decorView
-                                        isButtonEnabled = view?.filterTouchesWhenObscured ?: true
-                                    }
-                                    false
+                                .onGloballyPositioned {
+                                    (context as? Activity)?.window?.decorView?.filterTouchesWhenObscured = true
                                 }
                                 .padding(vertical = 24.dp, horizontal = 16.dp)
                                 .fillMaxWidth()

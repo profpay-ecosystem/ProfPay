@@ -29,7 +29,6 @@ fun FaceIDAuthentication(
     if (sharedPref().getBoolean("useBiomAuth", true)) {
         val context = LocalContext.current
         val fragmentActivity = context as? FragmentActivity ?: return
-        val sharedPref = sharedPref()
         var authResult by remember { mutableStateOf("Tap Authenticate to start Face ID") }
         var isAuthCancelled by remember { mutableStateOf(false) }
 

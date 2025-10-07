@@ -3,6 +3,7 @@ package com.profpay.wallet.backend.grpc
 import com.profpay.wallet.data.flow_db.token.SharedPrefsTokenProvider
 import com.profpay.wallet.utils.safeGrpcCall
 import io.grpc.ManagedChannel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.protobuf.transfer.TransferProto
@@ -14,6 +15,7 @@ import org.example.protobuf.transfer.TransferServiceGrpc
 class TransferGrpcClient(
     private val channel: ManagedChannel,
     val token: SharedPrefsTokenProvider,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val stub: TransferServiceGrpc.TransferServiceBlockingStub = TransferServiceGrpc.newBlockingStub(channel)
 
@@ -26,7 +28,7 @@ class TransferGrpcClient(
         txId: String? = null,
     ): Result<TransferProto.SendUsdtTransactionResponse> =
         token.safeGrpcCall {
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 val request =
                     TransferProto.SendUsdtTransactionRequest
                         .newBuilder()
@@ -50,7 +52,7 @@ class TransferGrpcClient(
         energy: Long,
     ): Result<TransferProto.EstimateCommissionResponse> =
         token.safeGrpcCall {
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 val request =
                     TransferProto.EstimateCommissionRequest
                         .newBuilder()
@@ -67,7 +69,7 @@ class TransferGrpcClient(
 
     suspend fun getTransactionStatus(txId: String): Result<TransferProto.TransactionStatusResponse> =
         token.safeGrpcCall {
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 val request =
                     TransferProto.TransactionStatusRequest
                         .newBuilder()

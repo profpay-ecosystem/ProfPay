@@ -3,8 +3,9 @@ package com.profpay.wallet.data.flow_db.repo
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.profpay.wallet.R
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -20,7 +21,8 @@ interface BlockingAppRepo {
 class BlockingAppRepoImpl
     @Inject
     constructor(
-        @ApplicationContext val appContext: Context,
+        @param:ApplicationContext val appContext: Context,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : BlockingAppRepo {
         private val _isBlockedApp = MutableSharedFlow<BlockingAppRepoState>(replay = 1)
 
@@ -30,7 +32,7 @@ class BlockingAppRepoImpl
 
         // Триггер обновления статуса
         override suspend fun getBlockedAppState() {
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 val sharedPref =
                     appContext.getSharedPreferences(
                         ContextCompat.getString(appContext, R.string.preference_file_key),

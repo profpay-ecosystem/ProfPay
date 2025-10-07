@@ -36,7 +36,6 @@ import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.bridge.view_model.smart_contract.CompleteReturnData
 import com.profpay.wallet.bridge.view_model.smart_contract.CompleteStatusesEnum
 import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
-import com.profpay.wallet.bridge.view_model.smart_contract.usecases.estimate.EstimateType
 import com.profpay.wallet.data.flow_db.repo.SmartContractButtonType
 import com.profpay.wallet.data.flow_db.repo.SmartContractModalData
 import com.profpay.wallet.data.utils.toTokenAmount
@@ -63,28 +62,28 @@ fun confirmationSmartModalFeature(
         val estimateResourcePrice by viewModel.stateEstimateResourcePrice.collectAsStateWithLifecycle()
 
         LaunchedEffect(Unit) {
-            var transactionEstimatorResult =
-                if (smartModalState.buttonType == SmartContractButtonType.ACCEPT) {
-                    viewModel.estimateCompleteContract(smartModalState.deal)
-                } else if (smartModalState.buttonType == SmartContractButtonType.REJECT) {
-                    viewModel.estimateRejectContract(smartModalState.deal)
-                } else {
-                    return@LaunchedEffect
-                }
-
-            if (transactionEstimatorResult != null) {
-                viewModel.getResourceQuote(
-                    address = transactionEstimatorResult.executorAddress!!,
-                    energy = transactionEstimatorResult.requiredEnergy!!,
-                    bandwidth = transactionEstimatorResult.requiredBandwidth!!,
-                )
-
-                if (transactionEstimatorResult.estimateType == EstimateType.APPROVE) {
-                    setFunctionMessage(
-                        "\n\nДля работы данной функции необходим approve, сначала выполнится он, после повторите вызов еще раз.",
-                    )
-                }
-            }
+//            var transactionEstimatorResult =
+//                if (smartModalState.buttonType == SmartContractButtonType.ACCEPT) {
+//                    viewModel.estimateCompleteContract(smartModalState.deal)
+//                } else if (smartModalState.buttonType == SmartContractButtonType.REJECT) {
+//                    viewModel.estimateRejectContract(smartModalState.deal)
+//                } else {
+//                    return@LaunchedEffect
+//                }
+//
+//            if (transactionEstimatorResult != null) {
+//                viewModel.getResourceQuote(
+//                    address = transactionEstimatorResult.executorAddress!!,
+//                    energy = transactionEstimatorResult.requiredEnergy!!,
+//                    bandwidth = transactionEstimatorResult.requiredBandwidth!!,
+//                )
+//
+//                if (transactionEstimatorResult.estimateType == EstimateType.APPROVE) {
+//                    setFunctionMessage(
+//                        "\n\nДля работы данной функции необходим approve, сначала выполнится он, после повторите вызов еще раз.",
+//                    )
+//                }
+//            }
         }
 
         LaunchedEffect(estimateResourcePrice) {

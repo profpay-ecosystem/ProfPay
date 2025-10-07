@@ -10,10 +10,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ServiceInfo
 import android.os.IBinder
-import com.profpay.wallet.AppConstants
 import com.profpay.wallet.MainActivity
 import com.profpay.wallet.R
-import com.profpay.wallet.backend.grpc.AmlGrpcClient
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.TransactionsRepo
@@ -59,14 +57,6 @@ class PusherService :
     @Inject lateinit var grpcClientFactory: GrpcClientFactory
 
     @Inject lateinit var amlProcessorService: AmlProcessorService
-
-    private val amlClient: AmlGrpcClient by lazy {
-        grpcClientFactory.getGrpcClient(
-            AmlGrpcClient::class.java,
-            AppConstants.Network.GRPC_ENDPOINT,
-            AppConstants.Network.GRPC_PORT,
-        )
-    }
 
     private val sharedPrefs: SharedPreferences by lazy {
         getSharedPreferences(
@@ -171,7 +161,7 @@ class PusherService :
             val kronFastScheduler =
                 buildSchedule {
                     seconds {
-                        0 every 5
+                        0 every 45
                     }
                 }
             val kronTransferScheduler =
@@ -191,14 +181,13 @@ class PusherService :
                     notificationFunction = ::showNotification,
                     tron = tron,
                     pendingTransactionRepo = pendingTransactionRepo,
-                    amlClient = amlClient,
                     amlProcessorService = amlProcessorService,
                     sharedPrefs = sharedPrefs,
                 )
 
             launch {
                 kronFastScheduler.doInfinity {
-                    rollbackFrozenTransactions(pendingTransactionRepo = pendingTransactionRepo)
+                    rollbackFrozenTransactions(pendingTransactionRepo = pendingTransactionRepo, transactionsRepo = transactionsRepo)
                 }
             }
 

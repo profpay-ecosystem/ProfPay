@@ -2,8 +2,6 @@ package com.profpay.wallet.data.database.modules
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.profpay.wallet.data.database.AppDatabase
 import com.profpay.wallet.data.database.dao.ProfileDao
 import com.profpay.wallet.data.database.dao.SettingsDao
@@ -28,6 +26,20 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class AppDatabaseModule {
+    @Provides
+    @Singleton
+    fun provideAppDatabase(
+        @ApplicationContext appContext: Context,
+    ): AppDatabase {
+        return Room
+            .databaseBuilder(
+                appContext,
+                AppDatabase::class.java,
+                "room_crypto_wallet.db",
+            )
+            .build()
+    }
+
     @Provides
     fun provideAddressDao(appDatabase: AppDatabase): AddressDao = appDatabase.getAddressDao()
 
@@ -66,18 +78,4 @@ class AppDatabaseModule {
 
     @Provides
     fun providePendingAmlTransactionDao(appDatabase: AppDatabase): PendingAmlTransactionDao = appDatabase.getPendingAmlTransactionDao()
-
-    @Provides
-    @Singleton
-    fun provideAppDatabase(
-        @ApplicationContext appContext: Context,
-    ): AppDatabase {
-        return Room
-            .databaseBuilder(
-                appContext,
-                AppDatabase::class.java,
-                "room_crypto_wallet.db",
-            )
-            .build()
-    }
 }

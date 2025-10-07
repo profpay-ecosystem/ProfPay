@@ -4,7 +4,8 @@ import androidx.lifecycle.LiveData
 import com.profpay.wallet.data.database.dao.TransactionsDao
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.data.database.models.TransactionModel
-import kotlinx.coroutines.Dispatchers
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -46,6 +47,7 @@ interface TransactionsRepo {
     )
 
     suspend fun isTransactionSuccessful(txid: String): Boolean
+    suspend fun deleteTransactionByTxId(txid: String)
 }
 
 @Singleton
@@ -53,33 +55,34 @@ class TransactionsRepoImpl
     @Inject
     constructor(
         private val transactionsDao: TransactionsDao,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : TransactionsRepo {
         override suspend fun insertNewTransaction(transactionsEntity: TransactionEntity) {
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 transactionsDao.insertNewTransaction(transactionsEntity)
             }
         }
 
         override suspend fun transactionExistsViaTxid(txid: String): Int {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext transactionsDao.transactionExistsViaTxid(txid)
             }
         }
 
         override suspend fun getAllRelatedTransactions(walletId: Long): LiveData<List<TransactionModel>> {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext transactionsDao.getAllRelatedTransactionsLD(walletId)
             }
         }
 
         override suspend fun getTransactionLiveDataById(transactionId: Long): LiveData<TransactionEntity> {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext transactionsDao.getTransactionLiveDataById(transactionId)
             }
         }
 
         override suspend fun transactionSetProcessedUpdateTrueById(id: Long) {
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 transactionsDao.transactionSetProcessedUpdateTrueById(id)
             }
         }
@@ -110,7 +113,7 @@ class TransactionsRepoImpl
             )
 
         override suspend fun isTransactionPending(txid: String): Boolean {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext transactionsDao.isTransactionPending(txid)
             }
         }
@@ -120,14 +123,20 @@ class TransactionsRepoImpl
             timestamp: Long,
             txid: String,
         ) {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext transactionsDao.updateStatusAndTimestampByTxId(statusCode, timestamp, txid)
             }
         }
 
         override suspend fun isTransactionSuccessful(txid: String): Boolean {
-            return withContext(Dispatchers.IO) {
+            return withContext(ioDispatcher) {
                 return@withContext transactionsDao.isTransactionSuccessful(txid)
             }
         }
-    }
+
+        override suspend fun deleteTransactionByTxId(txid: String) {
+            return withContext(ioDispatcher) {
+                return@withContext transactionsDao.deleteTransactionByTxId(txid)
+            }
+        }
+}

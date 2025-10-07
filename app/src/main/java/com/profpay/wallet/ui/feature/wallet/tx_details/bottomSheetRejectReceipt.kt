@@ -98,53 +98,7 @@ fun bottomSheetRejectReceipt(
                 ?.orElse(null)
 
         LaunchedEffect(Unit, valueAmount, addressSending) {
-            val addressEntity =
-                withContext(Dispatchers.IO) {
-                    viewModel.addressRepo.getAddressEntityByAddress(addressWithTokens.addressEntity.address)
-                }
-
-            if (addressEntity == null ||
-                valueAmount.isEmpty() ||
-                !viewModel.tron.addressUtilities.isValidTronAddress(addressSending)
-            ) {
-                return@LaunchedEffect
-            }
-
-            try {
-                val requiredEnergy =
-                    withContext(Dispatchers.IO) {
-                        viewModel.tron.transactions.estimateEnergy(
-                            fromAddress = addressEntity.address,
-                            toAddress = addressSending,
-                            privateKey = addressEntity.privateKey,
-                            amount = valueAmount.toBigDecimal().toSunAmount(),
-                        )
-                    }
-                val requiredBandwidth =
-                    withContext(Dispatchers.IO) {
-                        viewModel.tron.transactions.estimateBandwidth(
-                            fromAddress = addressEntity.address,
-                            toAddress = addressSending,
-                            privateKey = addressEntity.privateKey,
-                            amount = valueAmount.toBigDecimal().toSunAmount(),
-                        )
-                    }
-
-                withContext(Dispatchers.IO) {
-                    val hasEnoughBandwidth =
-                        viewModel.tron.accounts.hasEnoughBandwidth(
-                            addressEntity.address,
-                            requiredBandwidth.bandwidth,
-                        )
-                    viewModel.estimateCommission(
-                        address = addressWithTokens.addressEntity.address,
-                        bandwidth = if (hasEnoughBandwidth) 0 else requiredBandwidth.bandwidth,
-                        energy = if (tokenName == "TRX") 0 else requiredEnergy.energy,
-                    )
-                }
-            } catch (e: NumberFormatException) {
-                return@LaunchedEffect
-            }
+            viewModel.requestCommission(addressWithTokens, tokenName, valueAmount, addressSending)
         }
 
         LaunchedEffect(commissionState) {

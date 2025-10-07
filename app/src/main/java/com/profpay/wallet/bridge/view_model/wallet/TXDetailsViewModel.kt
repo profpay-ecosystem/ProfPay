@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import com.google.protobuf.ByteString
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.backend.grpc.ProfPayServerGrpcClient
@@ -21,13 +22,14 @@ import com.profpay.wallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.profpay.wallet.data.database.repositories.wallet.PendingAmlTransactionRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.flow_db.repo.AmlResult
 import com.profpay.wallet.data.flow_db.repo.TXDetailsRepo
 import com.profpay.wallet.data.services.AmlProcessorService
 import com.profpay.wallet.tron.Tron
-import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,6 +56,7 @@ class TXDetailsViewModel
         val centralAddressRepo: CentralAddressRepo,
         private val amlProcessorService: AmlProcessorService,
         private val pendingAmlTransactionRepo: PendingAmlTransactionRepo,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
         grpcClientFactory: GrpcClientFactory,
     ) : ViewModel() {
         private val _state = MutableStateFlow<AmlResult>(AmlResult.Empty)
@@ -78,7 +81,7 @@ class TXDetailsViewModel
         fun getAmlFeeResult() {
             viewModelScope.launch {
                 val result =
-                    withContext(Dispatchers.IO) {
+                    withContext(ioDispatcher) {
                         profPayServerGrpcClient.getServerParameters()
                     }
 
@@ -103,7 +106,7 @@ class TXDetailsViewModel
         fun checkActivation(address: String) {
             viewModelScope.launch {
                 _isActivated.value =
-                    withContext(Dispatchers.IO) {
+                    withContext(ioDispatcher) {
                         tron.addressUtilities.isAddressActivated(address)
                     }
             }
@@ -128,7 +131,7 @@ class TXDetailsViewModel
         }
 
         fun getTransactionLiveDataById(transactionId: Long): LiveData<TransactionEntity> =
-            liveData(Dispatchers.IO) {
+            liveData(ioDispatcher) {
                 emitSource(transactionsRepo.getTransactionLiveDataById(transactionId))
             }
 
