@@ -1,4 +1,4 @@
-package com.profpay.wallet.ui.feature.wallet.tx_details
+package com.profpay.wallet.ui.feature.wallet.tx_details.aml
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

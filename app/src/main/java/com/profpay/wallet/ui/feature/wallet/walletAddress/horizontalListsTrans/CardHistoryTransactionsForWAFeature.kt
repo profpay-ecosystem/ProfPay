@@ -37,7 +37,7 @@ import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletAddressViewMo
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.data.database.entities.wallet.TransactionType
 import com.profpay.wallet.data.database.models.AddressWithTokens
-import com.profpay.wallet.ui.feature.wallet.tx_details.bottomSheetTransOnGeneralReceipt
+import com.profpay.wallet.ui.feature.wallet.tx_details.bottomSheet.bottomSheetTransOnGeneralReceipt
 import com.profpay.wallet.ui.shared.sharedPref
 import kotlinx.coroutines.launch
 

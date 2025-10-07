@@ -128,11 +128,10 @@ fun CustomScaffoldWallet(
             )
         },
     ) { padding ->
-
+        padding
         Column(
             modifier =
                 Modifier
-                    .padding()
                     .fillMaxSize()
                     .paint(
                         painterResource(id = R.drawable.wallet_background),

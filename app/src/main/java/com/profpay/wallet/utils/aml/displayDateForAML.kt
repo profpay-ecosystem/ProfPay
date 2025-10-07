@@ -1,4 +1,4 @@
-package com.profpay.wallet.ui.feature.wallet.tx_details
+package com.profpay.wallet.utils.aml
 
 import java.time.Instant
 import java.time.LocalDate
