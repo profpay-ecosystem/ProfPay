@@ -75,7 +75,7 @@ class SendFromWalletViewModel
             blockchain: String,
             tokenName: String,
         ) {
-            viewModelScope.launch {
+            viewModelScope.launch(ioDispatcher) {
                 val addressWithTokens = getGeneralAddressWithTokens(addressId, blockchain)
                 val isActivated = tron.addressUtilities.isAddressActivated(addressWithTokens.addressEntity.address)
                 val token = addressWithTokens.tokens.find { it.token.tokenName == tokenName }
@@ -97,7 +97,7 @@ class SendFromWalletViewModel
             sum: String,
             tokenName: TokenName,
         ) {
-            viewModelScope.launch {
+            viewModelScope.launch(ioDispatcher) {
                 val isValidAddress = tron.addressUtilities.isValidTronAddress(addressTo)
                 val addressEntity = _uiState.value.addressWithTokens ?: return@launch
                 val token = addressEntity.tokens.find { it.token.tokenName == tokenName.tokenName }

@@ -7,5 +7,5 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.0" apply false
     id("com.google.protobuf") version "0.9.5" apply false
     id("org.jetbrains.kotlin.jvm") version "2.2.0" apply false
-    id("org.sonarqube") version "6.3.1.5724" apply false
+    id("org.sonarqube") version "6.3.1.5724" apply true
 }

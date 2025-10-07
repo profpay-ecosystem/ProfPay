@@ -23,8 +23,15 @@ fun CustomBottomCard(
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     bottomPadding: Float,
+    verticalScroll: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val columnModifier = if (verticalScroll) {
+        modifierColumn.verticalScroll(rememberScrollState())
+    } else {
+        modifierColumn
+    }
+
     Card(
         modifier =
             modifier
@@ -33,10 +40,9 @@ fun CustomBottomCard(
     ) {
         Column(
             modifier =
-                modifierColumn
+                columnModifier
                     .fillMaxSize()
-                    .padding(bottom = bottomPadding.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .padding(bottom = bottomPadding.dp),
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
         ) {

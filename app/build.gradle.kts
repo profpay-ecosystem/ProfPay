@@ -53,7 +53,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     group = "verification"
     description = "Generates Jacoco coverage reports for unit tests."
 
-    dependsOn("testDebugUnitTest")
+    dependsOn("test")
 
     reports {
         xml.required.set(true)
@@ -69,6 +69,24 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     executionData.setFrom(
         fileTree(layout.buildDirectory.get().asFile).include("**/*.exec")
     )
+}
+
+jacoco {
+    toolVersion = "0.8.10"
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "profpay-ecosystem_ProfPay")
+        property("sonar.organization", "profpay-ecosystem")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.sources", "src/main/java")
+        property("sonar.tests", "src/test/java,src/androidTest/java")
+        property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest")
+        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+        property("sonar.kotlin.detekt.reportPaths", "build/reports/detekt/detekt.xml")
+        property("sonar.kotlin.ktlint.reportPaths", "build/reports/ktlint/ktlint.xml")
+    }
 }
 
 sentry {
