@@ -14,6 +14,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
     id("dev.detekt") version "2.0.0-alpha.0"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
+    id("jacoco")
 }
 
 ktlint {
@@ -47,6 +48,19 @@ detekt {
     ignoreFailures = false
     allRules = false
 }
+
+//tasks.register<JacocoReport>("jacocoTestReport") {
+//    dependsOn("test")
+//    val fileTree = fileTree("${project.buildDir}/jacoco").include("**/*.exec")
+//    executionData.setFrom(fileTree)
+//    // Укажи источники и классы модуля
+//    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+//    classDirectories.setFrom(fileTree("build/tmp/kotlin-classes/debug"))
+//    reports {
+//        xml.required.set(true)
+//        html.required.set(true)
+//    }
+//}
 
 sentry {
     tracingInstrumentation {
@@ -242,9 +256,6 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.compose.stacked.snackbar)
 
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-
     // -------------------------------------------------
     // Dependency Injection (Hilt)
     // -------------------------------------------------
@@ -265,11 +276,9 @@ dependencies {
     // -------------------------------------------------
     // Room
     implementation(libs.room.runtime)
-    annotationProcessor(libs.room.compiler)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
     implementation(libs.room.paging)
-    testImplementation(libs.androidx.room.testing)
 
     // Coroutines + Network
     implementation(libs.kotlinx.coroutines.android)
@@ -333,12 +342,25 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.turbine)
+    testImplementation(libs.androidx.room.testing)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.mockito.android)
+
+    // -------------------------------------------------
+    // Debug
+    // -------------------------------------------------
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    // -------------------------------------------------
+    // Annotation Processor
+    // -------------------------------------------------
+    annotationProcessor(libs.room.compiler)
 }
 
 kapt {

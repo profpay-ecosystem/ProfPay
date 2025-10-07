@@ -21,7 +21,7 @@ class CommissionFeeBuilder
         private val addressRepo: AddressRepo,
         private val tron: Tron,
         grpcClientFactory: GrpcClientFactory,
-        @IoDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val dispatcher: CoroutineDispatcher,
     ) {
         private val profPayServerGrpcClient: ProfPayServerGrpcClient =
             grpcClientFactory.getGrpcClient(

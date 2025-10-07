@@ -56,7 +56,7 @@ class TXDetailsViewModel
         val centralAddressRepo: CentralAddressRepo,
         private val amlProcessorService: AmlProcessorService,
         private val pendingAmlTransactionRepo: PendingAmlTransactionRepo,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
         grpcClientFactory: GrpcClientFactory,
     ) : ViewModel() {
         private val _state = MutableStateFlow<AmlResult>(AmlResult.Empty)

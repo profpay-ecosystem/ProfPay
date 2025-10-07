@@ -35,7 +35,7 @@ class WalletSotViewModel
         private val centralAddressRepo: CentralAddressRepo,
         private val tron: Tron,
         private val keystoreCryptoManager: KeystoreCryptoManager,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         // Получение списка адресов и балансов в формате Flow
         fun getAddressesSotsWithTokensByBlockchainLD(

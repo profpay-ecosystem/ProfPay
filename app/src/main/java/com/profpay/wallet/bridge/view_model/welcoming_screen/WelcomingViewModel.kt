@@ -20,7 +20,7 @@ class WelcomingViewModel
     constructor(
         private val profileRepo: ProfileRepo,
         grpcClientFactory: GrpcClientFactory,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         private val userGrpcClient: UserGrpcClient =
             grpcClientFactory.getGrpcClient(
