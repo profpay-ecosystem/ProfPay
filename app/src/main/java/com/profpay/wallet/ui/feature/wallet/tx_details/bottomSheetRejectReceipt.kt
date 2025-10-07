@@ -51,7 +51,7 @@ import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.app.theme.PubAddressDark
-import com.profpay.wallet.ui.screens.wallet.ContentBottomSheetTransferProcessing
+import com.profpay.wallet.ui.feature.wallet.send.bottomsheet.ContentBottomSheetTransferProcessing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -19,7 +19,7 @@ import com.profpay.wallet.bridge.view_model.dto.TokenName
 import com.profpay.wallet.data.database.models.TransactionModel
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.BackgroundIcon
-import com.profpay.wallet.ui.screens.wallet.formatDate
+import com.profpay.wallet.ui.shared.utils.formatDate
 import com.profpay.wallet.utils.decimalFormat
 
 @Composable
