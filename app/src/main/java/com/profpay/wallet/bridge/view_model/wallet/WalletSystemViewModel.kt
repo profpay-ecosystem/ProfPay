@@ -7,6 +7,7 @@ import com.profpay.wallet.data.database.dao.wallet.WalletProfileModel
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
 import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -20,6 +21,7 @@ class WalletSystemViewModel
         private val addressRepo: AddressRepo,
         private val tron: Tron,
         @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+        private val keystoreCryptoManager: KeystoreCryptoManager,
     ) : ViewModel() {
         fun getListAllWallets(): LiveData<List<WalletProfileModel>> =
             liveData(ioDispatcher) {
@@ -33,8 +35,17 @@ class WalletSystemViewModel
             walletProfileRepo.updateNameById(id, newName)
         }
 
-        fun getSeedPhrase(walletId: Long): String? {
-            return "empty11"
+        suspend fun getSeedPhrase(walletId: Long): String? {
+            val generalAddress = addressRepo.getGeneralAddressByWalletId(walletId)
+            val cipherData = walletProfileRepo.getWalletCipherData(walletId)
+
+            val entropy = keystoreCryptoManager.decrypt(
+                alias = generalAddress,
+                iv = cipherData.iv,
+                cipherText = cipherData.cipherText
+            )
+
+            return tron.addressUtilities.getSeedPhraseByEntropy(entropy)
         }
 
         suspend fun deleteWalletProfile(walletId: Long) {

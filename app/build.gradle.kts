@@ -49,18 +49,27 @@ detekt {
     allRules = false
 }
 
-//tasks.register<JacocoReport>("jacocoTestReport") {
-//    dependsOn("test")
-//    val fileTree = fileTree("${project.buildDir}/jacoco").include("**/*.exec")
-//    executionData.setFrom(fileTree)
-//    // Укажи источники и классы модуля
-//    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
-//    classDirectories.setFrom(fileTree("build/tmp/kotlin-classes/debug"))
-//    reports {
-//        xml.required.set(true)
-//        html.required.set(true)
-//    }
-//}
+tasks.register<JacocoReport>("jacocoTestReport") {
+    group = "verification"
+    description = "Generates Jacoco coverage reports for unit tests."
+
+    dependsOn("testDebugUnitTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    classDirectories.setFrom(
+        fileTree(layout.buildDirectory.dir("intermediates/javac/debug/classes")) {
+            exclude("**/R.class", "**/R$*.class", "**/BuildConfig.*", "**/Manifest*.*")
+        }
+    )
+    sourceDirectories.setFrom(files("src/main/java"))
+    executionData.setFrom(
+        fileTree(layout.buildDirectory.get().asFile).include("**/*.exec")
+    )
+}
 
 sentry {
     tracingInstrumentation {
