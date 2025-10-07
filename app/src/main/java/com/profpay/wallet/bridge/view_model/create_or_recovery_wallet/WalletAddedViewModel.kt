@@ -40,7 +40,7 @@ class WalletAddedViewModel
         private val profileRepo: ProfileRepo,
         private val keystoreCryptoManager: KeystoreCryptoManager,
         grpcClientFactory: GrpcClientFactory,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         private val keystore = KeystoreEncryptionUtils()
         private val cryptoAddressGrpcClient: CryptoAddressGrpcClient =

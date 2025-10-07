@@ -41,7 +41,7 @@ class AddressAndMnemonicRepoImpl
         val addressRepo: AddressRepo,
         private val tron: Tron,
         grpcClientFactory: GrpcClientFactory,
-        @IoDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val dispatcher: CoroutineDispatcher,
     ) : AddressAndMnemonicRepo {
         private val cryptoAddressGrpcClient: CryptoAddressGrpcClient =
             grpcClientFactory.getGrpcClient(

@@ -14,6 +14,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
     id("dev.detekt") version "2.0.0-alpha.0"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
+    id("jacoco")
 }
 
 ktlint {
@@ -47,6 +48,19 @@ detekt {
     ignoreFailures = false
     allRules = false
 }
+
+//tasks.register<JacocoReport>("jacocoTestReport") {
+//    dependsOn("test")
+//    val fileTree = fileTree("${project.buildDir}/jacoco").include("**/*.exec")
+//    executionData.setFrom(fileTree)
+//    // Укажи источники и классы модуля
+//    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+//    classDirectories.setFrom(fileTree("build/tmp/kotlin-classes/debug"))
+//    reports {
+//        xml.required.set(true)
+//        html.required.set(true)
+//    }
+//}
 
 sentry {
     tracingInstrumentation {
@@ -225,8 +239,66 @@ buildscript {
 }
 
 dependencies {
-//    implementation(project(":walletcore"))
+    // -------------------------------------------------
+    // UI (Compose, Material, Navigation, System UI)
+    // -------------------------------------------------
+    implementation(platform(libs.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.graphics.shapes)
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.showcase.layout.compose)
+    implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.compose.stacked.snackbar)
 
+    // -------------------------------------------------
+    // Dependency Injection (Hilt)
+    // -------------------------------------------------
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    // -------------------------------------------------
+    // Lifecycle / State management
+    // -------------------------------------------------
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.livedata.ktx)
+    implementation(libs.compose.runtime.livedata)
+    implementation(libs.androidx.lifecycle.process)
+
+    // -------------------------------------------------
+    // Data layer (DB, Coroutines, Serialization, Network)
+    // -------------------------------------------------
+    // Room
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
+    implementation(libs.room.paging)
+
+    // Coroutines + Network
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.okhttp)
+
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
+
+    // -------------------------------------------------
+    // Security / Storage
+    // -------------------------------------------------
+    implementation(libs.jbcrypt)
+    implementation(libs.androidx.biometric)
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.datastore.datastore.preferences)
+    implementation(libs.androidx.security.crypto)
+
+    // -------------------------------------------------
+    // Blockchain / Crypto
+    // -------------------------------------------------
     implementation(files("libs/bitcoinj-core-0.17-SNAPSHOT.jar"))
     implementation(libs.trident)
     implementation(libs.kotlin.bip39)
@@ -270,12 +342,25 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.turbine)
+    testImplementation(libs.androidx.room.testing)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.mockito.android)
+
+    // -------------------------------------------------
+    // Debug
+    // -------------------------------------------------
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    // -------------------------------------------------
+    // Annotation Processor
+    // -------------------------------------------------
+    annotationProcessor(libs.room.compiler)
 }
 
 kapt {

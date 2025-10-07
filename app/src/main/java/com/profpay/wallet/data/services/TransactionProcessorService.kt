@@ -58,7 +58,7 @@ class TransactionProcessorService
         private val keystoreCryptoManager: KeystoreCryptoManager,
         private val walletProfileRepo: WalletProfileRepo,
         val tron: Tron,
-        @IoDispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        @IoDispatcher private val dispatcher: CoroutineDispatcher,
         grpcClientFactory: GrpcClientFactory,
     ) {
         private val profPayServerGrpcClient: ProfPayServerGrpcClient =
