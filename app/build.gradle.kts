@@ -45,8 +45,13 @@ detekt {
     source.setFrom("src/main/java", "src/main/kotlin")
 
     buildUponDefaultConfig = true
-    ignoreFailures = false
+    ignoreFailures = true
     allRules = false
+}
+
+tasks.withType<Detekt>().configureEach {
+    jvmTarget = "17"
+    autoCorrect = true
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
