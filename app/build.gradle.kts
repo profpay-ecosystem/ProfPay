@@ -228,6 +228,7 @@ dependencies {
 //    implementation(project(":walletcore"))
 
     implementation(files("libs/bitcoinj-core-0.17-SNAPSHOT.jar"))
+    implementation("androidx.compose.foundation:foundation:1.9.1")
     val navVersion = "2.9.2"
     val roomVersion = "2.7.2"
     val lifecycleVersion = "2.9.2"

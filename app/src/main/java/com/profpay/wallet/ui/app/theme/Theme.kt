@@ -3,6 +3,7 @@ package com.profpay.wallet.ui.app.theme
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -10,6 +11,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+
+val ColorScheme.white: Color
+@Composable
+get() = Color.White
+
+val ColorScheme.transparent: Color
+@Composable
+get() = Color.Transparent
+
+val ColorScheme.redColor: Color
+@Composable
+get() = RedColor
 
 private val DarkColorPalette =
     darkColorScheme(
@@ -68,3 +81,5 @@ fun WalletNavigationBottomBarTheme(
         content = content,
     )
 }
+
+
