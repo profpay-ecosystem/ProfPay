@@ -24,6 +24,14 @@ val ColorScheme.redColor: Color
 @Composable
 get() = RedColor
 
+val ColorScheme.greenColor: Color
+@Composable
+get() = GreenColor
+
+val ColorScheme.backgroundContainerButtonLight: Color
+@Composable
+get() = BackgroundContainerButtonLight
+
 private val DarkColorPalette =
     darkColorScheme(
         primary = BackgroundDark,

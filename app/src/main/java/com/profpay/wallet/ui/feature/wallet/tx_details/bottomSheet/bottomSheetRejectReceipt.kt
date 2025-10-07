@@ -1,4 +1,4 @@
-package com.profpay.wallet.ui.feature.wallet.tx_details
+package com.profpay.wallet.ui.feature.wallet.tx_details.bottomSheet
 
 import StackedSnakbarHostState
 import androidx.compose.foundation.layout.Arrangement

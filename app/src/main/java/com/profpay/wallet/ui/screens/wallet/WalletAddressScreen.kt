@@ -25,7 +25,7 @@ import com.profpay.wallet.ui.components.custom.CustomBottomCard
 import com.profpay.wallet.ui.components.custom.CustomScaffoldWallet
 import com.profpay.wallet.ui.components.custom.CustomTabRow
 import com.profpay.wallet.ui.components.custom.CustomTopAppBar
-import com.profpay.wallet.ui.feature.wallet.tx_details.bottomSheetRejectReceipt
+import com.profpay.wallet.ui.feature.wallet.tx_details.bottomSheet.bottomSheetRejectReceipt
 import com.profpay.wallet.ui.feature.wallet.walletAddress.ActionsRowWalletAddressFeature
 import com.profpay.wallet.ui.feature.wallet.walletAddress.TopCardForWalletAddressFeature
 import com.profpay.wallet.ui.feature.wallet.walletAddress.horizontalListsTrans.TransactionsHPagerWalletAddressFeature
