@@ -22,9 +22,6 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@b90f77c2e6f34769c90231a2f5f0e97b0c8242f7
-
       - name: Decode keystore from secret
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
