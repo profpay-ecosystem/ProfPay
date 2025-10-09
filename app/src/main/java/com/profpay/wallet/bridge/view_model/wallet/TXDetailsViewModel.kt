@@ -1,6 +1,11 @@
 package com.profpay.wallet.bridge.view_model.wallet
 
+import android.R.id.input
+import android.content.ContentValues
+import android.content.Context
 import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
@@ -30,15 +35,13 @@ import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import java.io.InputStream
+import java.io.OutputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -140,24 +143,28 @@ class TXDetailsViewModel
         suspend fun getWalletNameById(walletId: Long): String? = walletRepo.getWalletNameById(walletId)
 
         suspend fun downloadPdfFile(
-            txId: String,
-            destinationFile: File,
+            transactionEntity: TransactionEntity,
+            context: Context,
         ) {
             val userId = profileRepo.getProfileUserId()
             DownloadAmlPdfApi.downloadAmlPdfService.makeRequest(
                 object : DownloadAmlPdfRequestCallback {
                     @RequiresApi(Build.VERSION_CODES.S)
                     override fun onSuccess(inputStream: InputStream?) {
-                        val outputStream = FileOutputStream(destinationFile)
-                        inputStream?.use { input ->
-                            outputStream.use { output ->
-                                input.copyTo(output)
+                        val contentValues = ContentValues().apply {
+                            put(MediaStore.Downloads.DISPLAY_NAME, "aml_${transactionEntity.txId}.pdf")
+                            put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
+                            put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                        }
+
+                        val resolver = context.contentResolver
+                        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+
+                        if (uri != null) {
+                            resolver.openOutputStream(uri)?.use { outputStream ->
+                                inputStream?.copyTo(outputStream)
                             }
                         }
-                        Log.d(
-                            "FileDownload",
-                            "File saved successfully: ${destinationFile.absolutePath}",
-                        )
                     }
 
                     override fun onFailure(error: String) {
@@ -165,7 +172,7 @@ class TXDetailsViewModel
                     }
                 },
                 userId = userId,
-                txId = txId,
+                txId = transactionEntity.txId,
             )
         }
     }

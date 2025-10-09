@@ -58,18 +58,42 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     group = "verification"
     description = "Generates Jacoco coverage reports for unit tests."
 
-    dependsOn("test")
+    dependsOn(
+        "testDebugUnitTest",
+        "mergeDebugAssets",
+        "compressDebugAssets",
+        "injectSentryDebugMetaPropertiesIntoAssetsDebug",
+        "collectExternalDebugDependenciesForSentry",
+        "dexBuilderDebug"
+    )
 
     reports {
         xml.required.set(true)
         html.required.set(true)
     }
 
-    classDirectories.setFrom(
-        fileTree(layout.buildDirectory.dir("intermediates/javac/debug/classes")) {
-            exclude("**/R.class", "**/R$*.class", "**/BuildConfig.*", "**/Manifest*.*")
-        }
-    )
+    afterEvaluate {
+        classDirectories.setFrom(
+            files(classDirectories.files.map {
+                fileTree(it) {
+                    exclude(
+                        // Исключаем системные, protobuf, netty и compose tooling
+                        "**/R.class",
+                        "**/R$*.class",
+                        "**/BuildConfig.*",
+                        "**/Manifest*.*",
+                        "**/*\$ViewInjector*.*",
+                        "**/*\$ViewBinder*.*",
+                        "**/androidx/**",
+                        "**/com/google/protobuf/**",
+                        "**/io/netty/**",
+                        "**/javax/naming/**",
+                        "**/androidx/compose/animation/tooling/**"
+                    )
+                }
+            })
+        )
+    }
     sourceDirectories.setFrom(files("src/main/java"))
     executionData.setFrom(
         fileTree(layout.buildDirectory.get().asFile).include("**/*.exec")

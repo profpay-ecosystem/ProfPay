@@ -2,7 +2,9 @@ package com.profpay.wallet.ui.feature.wallet.tx_details.aml
 
 import StackedSnakbarHostState
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.os.Environment
+import android.provider.MediaStore
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -274,13 +276,8 @@ fun KnowAMLFeature(
                 ) {
                     Button(
                         onClick = {
-                            val destinationFile =
-                                File(
-                                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                                    "aml_${transactionEntity.txId}.pdf",
-                                )
                             viewModel.viewModelScope.launch {
-                                viewModel.downloadPdfFile(txId = transactionEntity.txId, destinationFile = destinationFile)
+                                viewModel.downloadPdfFile(transactionEntity = transactionEntity, context=context)
                                 stackedSnackbarHostState.showSuccessSnackbar(
                                     "Успешное сохранение",
                                     "Файл был успешно сохранен в папку 'Загрузки'",

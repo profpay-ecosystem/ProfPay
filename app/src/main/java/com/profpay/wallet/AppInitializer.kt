@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import com.profpay.wallet.backend.http.binance.BinancePriceConverterApi.binancePriceConverterService
 import com.profpay.wallet.backend.http.binance.BinancePriceConverterRequestCallback
@@ -137,6 +138,6 @@ class AppInitializer
         private fun startPusherService(context: Context) {
             if (PusherService.isRunning) return
             val intent = Intent(context, PusherService::class.java)
-            context.startService(intent)
+            ContextCompat.startForegroundService(context, intent)
         }
     }
