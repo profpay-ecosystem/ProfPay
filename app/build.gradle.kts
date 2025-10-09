@@ -59,7 +59,13 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     description = "Generates coverage for unit tests"
 
     dependsOn("testDebugUnitTest") // только unit-тесты
-    classDirectories.setFrom(fileTree("${buildDir}/tmp/kotlin-classes/debug"))
+    classDirectories.setFrom(fileTree("${buildDir}/tmp/kotlin-classes/debug") {
+        exclude(
+            "**/R.class",
+            "**/R$*.class",
+            "**/BuildConfig.*"
+        )
+    })
     sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
     executionData.setFrom(fileTree(buildDir).include("**/testDebugUnitTest.exec"))
 }
