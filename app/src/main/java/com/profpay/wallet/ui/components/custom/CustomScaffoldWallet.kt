@@ -77,7 +77,7 @@ fun CustomScaffoldWallet(
                 hostState = stackedSnackbarHostState,
                 modifier =
                     Modifier
-                        .padding(8.dp, 90.dp),
+                        .padding(8.dp, (bottomPadding + 50).dp),
             )
         },
     ) { padding ->

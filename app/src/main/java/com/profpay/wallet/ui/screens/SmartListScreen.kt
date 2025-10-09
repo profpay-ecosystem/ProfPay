@@ -48,7 +48,7 @@ import com.profpay.wallet.data.database.entities.wallet.SmartContractEntity
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.feature.smartList.AnimatedScrollToHideHeaderLazyColumn
 import com.profpay.wallet.ui.feature.smartList.IsEmptyListSmartContract
-import com.profpay.wallet.ui.feature.smartList.SmartCardFeature
+import com.profpay.wallet.ui.feature.smartList.smartCard.SmartCardFeature
 import com.profpay.wallet.ui.feature.smartList.SmartHeaderCreateContractInListFeature
 import com.profpay.wallet.ui.feature.smartList.SmartHeaderInListFeature
 import com.profpay.wallet.ui.feature.smartList.bottomSheets.ProgressIndicatorSmartModalFeature

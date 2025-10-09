@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.data.database.models.TransactionModel
+import com.profpay.wallet.ui.components.feature.transaction.TransactionCardType
+import com.profpay.wallet.ui.components.feature.transaction.TransactionHistoryList
 
 @Composable
 fun TransactionsHPagerWalletAddressFeature(
@@ -28,40 +30,41 @@ fun TransactionsHPagerWalletAddressFeature(
     ) { page ->
         when (page) {
             // Все транзакции
-            0 -> TransactionsTabWalletAddressFeature(
+            0 -> TransactionHistoryList(
                 groupedTransaction = groupedAllTransaction,
+                type = TransactionCardType.WA,
                 viewModel = viewModel,
-                stackedSnackbarHostState = stackedSnackbarHostState,
-                goToTXDetailsScreen = goToTXDetailsScreen,
-                goToSystemTRX = goToSystemTRX,
                 addressWithTokens = addressWithTokens,
+                stackedSnackbarHostState = stackedSnackbarHostState,
+                goToSystemTRX = { goToSystemTRX() },
+                goToTXDetailsScreen = { goToTXDetailsScreen() },
             )
-
             // Отправленные
             1 -> {
                 val groupedTransaction =
                     transactionsByTypeWalletAddressFeature(transactionsByAddressSender, viewModel)
-                TransactionsTabWalletAddressFeature(
+                TransactionHistoryList(
                     groupedTransaction = groupedTransaction,
+                    type = TransactionCardType.WA,
                     viewModel = viewModel,
-                    stackedSnackbarHostState = stackedSnackbarHostState,
-                    goToTXDetailsScreen = goToTXDetailsScreen,
-                    goToSystemTRX = goToSystemTRX,
                     addressWithTokens = addressWithTokens,
+                    stackedSnackbarHostState = stackedSnackbarHostState,
+                    goToSystemTRX = { goToSystemTRX() },
+                    goToTXDetailsScreen = { goToTXDetailsScreen() },
                 )
             }
-
             // Полученные
             2 -> {
                 val groupedTransaction =
                     transactionsByTypeWalletAddressFeature(transactionsByAddressReceiver, viewModel)
-                TransactionsTabWalletAddressFeature(
+                TransactionHistoryList(
                     groupedTransaction = groupedTransaction,
+                    type = TransactionCardType.WA,
                     viewModel = viewModel,
-                    stackedSnackbarHostState = stackedSnackbarHostState,
-                    goToTXDetailsScreen = goToTXDetailsScreen,
-                    goToSystemTRX = goToSystemTRX,
                     addressWithTokens = addressWithTokens,
+                    stackedSnackbarHostState = stackedSnackbarHostState,
+                    goToSystemTRX = { goToSystemTRX() },
+                    goToTXDetailsScreen = { goToTXDetailsScreen() },
                 )
             }
         }
