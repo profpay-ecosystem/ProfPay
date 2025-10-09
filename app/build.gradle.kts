@@ -60,6 +60,14 @@ tasks.register<JacocoReport>("jacocoTestReport") {
 
     dependsOn("testDebugUnitTest")
 
+    mustRunAfter(
+        "mergeDebugAssets",
+        "compressDebugAssets",
+        "injectSentryDebugMetaPropertiesIntoAssetsDebug",
+        "collectExternalDebugDependenciesForSentry",
+        "dexBuilderDebug"
+    )
+
     reports {
         xml.required.set(true)
         html.required.set(true)
