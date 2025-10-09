@@ -34,6 +34,7 @@ import kotlinx.serialization.json.Json
 import me.pushy.sdk.Pushy
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class PushReceiver :
@@ -104,7 +105,7 @@ class PushReceiver :
             } else {
                 null
             }
-        var pushyDeployContractErrorMessage =
+        val pushyDeployContractErrorMessage =
             if (intent.getStringExtra("pushyDeployContractErrorMessage") !=
                 null
             ) {
@@ -113,7 +114,7 @@ class PushReceiver :
                 null
             }
 
-        var amlPaymentSuccessfullyMessage =
+        val amlPaymentSuccessfullyMessage =
             if (intent.getStringExtra("amlPaymentSuccessfullyMessage") !=
                 null
             ) {
@@ -121,7 +122,7 @@ class PushReceiver :
             } else {
                 null
             }
-        var amlPaymentErrorMessage =
+        val amlPaymentErrorMessage =
             if (intent.getStringExtra("amlPaymentErrorMessage") !=
                 null
             ) {
@@ -214,7 +215,7 @@ class PushReceiver :
                     )
 
             Pushy.setNotificationChannel(builder, context)
-            notificationManager.notify((Math.random() * 100000).toInt(), builder.build())
+            notificationManager.notify(Random.nextInt(100_000), builder.build())
         }
     }
 

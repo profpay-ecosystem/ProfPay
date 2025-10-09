@@ -58,46 +58,32 @@ tasks.register<JacocoReport>("jacocoTestReport") {
     group = "verification"
     description = "Generates Jacoco coverage reports for unit tests."
 
-    dependsOn(
-        "testDebugUnitTest",
-        "mergeDebugAssets",
-        "compressDebugAssets",
-        "injectSentryDebugMetaPropertiesIntoAssetsDebug",
-        "collectExternalDebugDependenciesForSentry",
-        "dexBuilderDebug"
-    )
+    dependsOn("testDebugUnitTest")
 
     reports {
         xml.required.set(true)
         html.required.set(true)
     }
 
-    afterEvaluate {
-        classDirectories.setFrom(
-            files(classDirectories.files.map {
-                fileTree(it) {
-                    exclude(
-                        // Исключаем системные, protobuf, netty и compose tooling
-                        "**/R.class",
-                        "**/R$*.class",
-                        "**/BuildConfig.*",
-                        "**/Manifest*.*",
-                        "**/*\$ViewInjector*.*",
-                        "**/*\$ViewBinder*.*",
-                        "**/androidx/**",
-                        "**/com/google/protobuf/**",
-                        "**/io/netty/**",
-                        "**/javax/naming/**",
-                        "**/androidx/compose/animation/tooling/**"
-                    )
-                }
-            })
+    val debugClasses = fileTree("${buildDir}/tmp/kotlin-classes/debug") {
+        exclude(
+            "**/R.class",
+            "**/R$*.class",
+            "**/BuildConfig.*",
+            "**/Manifest*.*",
+            "**/*\$ViewInjector*.*",
+            "**/*\$ViewBinder*.*",
+            "**/androidx/**",
+            "**/com/google/protobuf/**",
+            "**/io/netty/**",
+            "**/javax/naming/**",
+            "**/androidx/compose/animation/tooling/**"
         )
     }
-    sourceDirectories.setFrom(files("src/main/java"))
-    executionData.setFrom(
-        fileTree(layout.buildDirectory.get().asFile).include("**/*.exec")
-    )
+
+    classDirectories.setFrom(debugClasses)
+    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+    executionData.setFrom(fileTree(buildDir).include("**/*.exec"))
 }
 
 jacoco {
@@ -188,7 +174,7 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android.txt"),
+                getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
 

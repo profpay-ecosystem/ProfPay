@@ -1,6 +1,5 @@
 package com.profpay.wallet.backend.http.aml
 
-import kotlinx.serialization.json.Json
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.HttpUrl
@@ -18,7 +17,6 @@ interface DownloadAmlPdfRequestCallback {
 
 class DownloadAmlPdfService {
     private val client = OkHttpClient()
-    private val localJson = Json { ignoreUnknownKeys = true }
 
     fun makeRequest(
         callback: DownloadAmlPdfRequestCallback,

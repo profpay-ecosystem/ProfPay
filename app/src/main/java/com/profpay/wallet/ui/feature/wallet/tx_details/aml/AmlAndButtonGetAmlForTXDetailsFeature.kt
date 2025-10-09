@@ -20,7 +20,6 @@ import com.profpay.wallet.bridge.view_model.wallet.TXDetailsViewModel
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.data.flow_db.repo.AmlResult
 import com.profpay.wallet.exceptions.aml.ServerAmlException
-import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.backgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.greenColor
 import com.profpay.wallet.ui.widgets.dialog.AlertDialogWidget

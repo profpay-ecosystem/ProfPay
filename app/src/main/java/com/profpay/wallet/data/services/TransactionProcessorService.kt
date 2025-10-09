@@ -32,7 +32,6 @@ import com.profpay.wallet.utils.ResolvePrivateKeyDeps
 import com.profpay.wallet.utils.resolvePrivateKey
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.bitcoinj.base.internal.ByteUtils
 import org.example.protobuf.transfer.TransferProto

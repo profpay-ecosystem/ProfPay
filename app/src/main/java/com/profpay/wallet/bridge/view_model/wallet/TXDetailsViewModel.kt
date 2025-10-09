@@ -1,12 +1,10 @@
 package com.profpay.wallet.bridge.view_model.wallet
 
-import android.R.id.input
 import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -41,7 +39,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.InputStream
-import java.io.OutputStream
 import javax.inject.Inject
 
 @HiltViewModel

@@ -2,9 +2,6 @@ package com.profpay.wallet.ui.feature.wallet.tx_details.aml
 
 import StackedSnakbarHostState
 import android.annotation.SuppressLint
-import android.content.ContentValues
-import android.os.Environment
-import android.provider.MediaStore
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,11 +36,10 @@ import com.profpay.wallet.R
 import com.profpay.wallet.bridge.view_model.wallet.TXDetailsViewModel
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.ui.app.theme.RedColor
-import com.profpay.wallet.utils.aml.displayDateForAML
 import com.profpay.wallet.ui.screens.wallet.AMLType
+import com.profpay.wallet.utils.aml.displayDateForAML
 import kotlinx.coroutines.launch
 import org.server.protobuf.aml.AmlProto
-import java.io.File
 
 @SuppressLint("DefaultLocale")
 @Composable
