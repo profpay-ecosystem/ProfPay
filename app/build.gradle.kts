@@ -56,42 +56,12 @@ tasks.withType<Detekt>().configureEach {
 
 tasks.register<JacocoReport>("jacocoTestReport") {
     group = "verification"
-    description = "Generates Jacoco coverage reports for unit tests."
+    description = "Generates coverage for unit tests"
 
-    dependsOn("testDebugUnitTest")
-
-    mustRunAfter(
-        "mergeDebugAssets",
-        "compressDebugAssets",
-        "injectSentryDebugMetaPropertiesIntoAssetsDebug",
-        "collectExternalDebugDependenciesForSentry",
-        "dexBuilderDebug"
-    )
-
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-    }
-
-    val debugClasses = fileTree("${buildDir}/tmp/kotlin-classes/debug") {
-        exclude(
-            "**/R.class",
-            "**/R$*.class",
-            "**/BuildConfig.*",
-            "**/Manifest*.*",
-            "**/*\$ViewInjector*.*",
-            "**/*\$ViewBinder*.*",
-            "**/androidx/**",
-            "**/com/google/protobuf/**",
-            "**/io/netty/**",
-            "**/javax/naming/**",
-            "**/androidx/compose/animation/tooling/**"
-        )
-    }
-
-    classDirectories.setFrom(debugClasses)
+    dependsOn("testDebugUnitTest") // только unit-тесты
+    classDirectories.setFrom(fileTree("${buildDir}/tmp/kotlin-classes/debug"))
     sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
-    executionData.setFrom(fileTree(buildDir).include("**/*.exec"))
+    executionData.setFrom(fileTree(buildDir).include("**/testDebugUnitTest.exec"))
 }
 
 jacoco {
