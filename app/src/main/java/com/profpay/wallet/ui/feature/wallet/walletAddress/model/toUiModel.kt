@@ -6,8 +6,8 @@ import com.profpay.wallet.data.database.entities.wallet.TransactionType
 fun TransactionEntity.toUiModel(
     typeTransaction: Int,
     address: String,
-    addressWa: String,
-    isGeneralAddressReceive: Boolean,
+    addressWa: String = "",
+    isGeneralAddressReceive: Boolean = false,
 ): CardTransactionUiModel {
     val title = when (typeTransaction) {
         TransactionType.SEND.index -> "Отправлено"
@@ -36,6 +36,5 @@ fun TransactionEntity.toUiModel(
         title = title,
         details = details,
         showGeneralReceiveCard = showGeneralReceiveCard,
-        amountFormatted = "$amount $tokenName"
     )
 }

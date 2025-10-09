@@ -1,5 +1,4 @@
 package com.profpay.wallet.ui.feature.wallet.walletInfo
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,7 +15,8 @@ import com.profpay.wallet.bridge.view_model.dto.TokenName
 import com.profpay.wallet.bridge.view_model.wallet.WalletInfoViewModel
 import com.profpay.wallet.data.database.entities.wallet.TokenEntity
 import com.profpay.wallet.data.database.models.TransactionModel
-import com.profpay.wallet.ui.feature.wallet.walletAddress.horizontalListsTrans.LazyListTransactionsFeature
+import com.profpay.wallet.ui.components.feature.transaction.TransactionCardType
+import com.profpay.wallet.ui.components.feature.transaction.TransactionHistoryList
 import com.profpay.wallet.ui.shared.sharedPref
 
 @Composable
@@ -75,14 +75,11 @@ fun HorizontalPagerWalletInfoFeature(
             }
 
             1 -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    LazyListTransactionsFeature(
-                        groupedTransaction = groupedTransaction,
-                        goToTXDetailsScreen = goToTXDetailsScreen,
-                    )
-                }
+                TransactionHistoryList(
+                    groupedTransaction = groupedTransaction,
+                    type = TransactionCardType.INFO,
+                    goToTXDetailsScreen = { goToTXDetailsScreen() },
+                )
             }
         }
     }
