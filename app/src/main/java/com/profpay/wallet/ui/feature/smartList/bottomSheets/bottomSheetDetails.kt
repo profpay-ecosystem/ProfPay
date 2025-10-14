@@ -1,5 +1,6 @@
 package com.profpay.wallet.ui.feature.smartList.bottomSheets
 
+import android.content.ClipData
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,10 +28,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,16 +47,15 @@ import org.example.protobuf.smart.SmartContractProto
 @Composable
 fun bottomSheetDetails(
     contract: SmartContractProto.ContractDealListResponse,
-    viewModel: GetSmartContractViewModel,
 ): Pair<Boolean, (Boolean) -> Unit> {
-    val coroutineScope = rememberCoroutineScope()
     val sheetState =
         rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
             confirmValueChange = { true },
         )
 
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
 
     val (isOpenSheet, setIsOpenSheet) = remember { mutableStateOf(false) }
 
@@ -66,7 +65,7 @@ fun bottomSheetDetails(
             dragHandle = { Box(modifier = Modifier) },
             modifier = Modifier.height(IntrinsicSize.Min),
             onDismissRequest = {
-                coroutineScope.launch {
+                scope.launch {
                     sheetState.hide()
                     delay(400)
                     setIsOpenSheet(false)
@@ -127,7 +126,11 @@ fun bottomSheetDetails(
                         IconButton(
                             modifier = Modifier.size(35.dp),
                             onClick = {
-                                clipboardManager.setText(AnnotatedString(contract.smartContractAddress))
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipData.newPlainText("Smart address", contract.smartContractAddress).toClipEntry()
+                                    )
+                                }
                             },
                         ) {
                             Icon(
@@ -246,7 +249,13 @@ fun bottomSheetDetails(
                         )
                         IconButton(
                             modifier = Modifier.size(35.dp),
-                            onClick = { clipboardManager.setText(AnnotatedString(contract.seller.address)) },
+                            onClick = {
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipData.newPlainText("Wallet address", contract.seller.address).toClipEntry()
+                                    )
+                                }
+                            },
                         ) {
                             Icon(
                                 modifier = Modifier.padding(4.dp),
@@ -279,7 +288,11 @@ fun bottomSheetDetails(
                         IconButton(
                             modifier = Modifier.size(35.dp),
                             onClick = {
-                                clipboardManager.setText(AnnotatedString("@${contract.seller.username}"))
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipData.newPlainText("Username", contract.seller.username).toClipEntry()
+                                    )
+                                }
                             },
                         ) {
                             Icon(
@@ -313,7 +326,11 @@ fun bottomSheetDetails(
                         IconButton(
                             modifier = Modifier.size(35.dp),
                             onClick = {
-                                clipboardManager.setText(AnnotatedString(contract.seller.telegramId.toString()))
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipData.newPlainText("Telegram ID", contract.seller.telegramId.toString()).toClipEntry()
+                                    )
+                                }
                             },
                         ) {
                             Icon(
@@ -352,7 +369,11 @@ fun bottomSheetDetails(
                         IconButton(
                             modifier = Modifier.size(35.dp),
                             onClick = {
-                                clipboardManager.setText(AnnotatedString(contract.buyer.address))
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipData.newPlainText("Wallet address", contract.buyer.address).toClipEntry()
+                                    )
+                                }
                             },
                         ) {
                             Icon(
@@ -386,7 +407,11 @@ fun bottomSheetDetails(
                         IconButton(
                             modifier = Modifier.size(35.dp),
                             onClick = {
-                                clipboardManager.setText(AnnotatedString("@${contract.buyer.username}"))
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipData.newPlainText("Username", contract.buyer.username).toClipEntry()
+                                    )
+                                }
                             },
                         ) {
                             Icon(
@@ -420,7 +445,11 @@ fun bottomSheetDetails(
                         IconButton(
                             modifier = Modifier.size(35.dp),
                             onClick = {
-                                clipboardManager.setText(AnnotatedString(contract.buyer.telegramId.toString()))
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipData.newPlainText("Telegram ID", contract.buyer.telegramId.toString()).toClipEntry()
+                                    )
+                                }
                             },
                         ) {
                             Icon(

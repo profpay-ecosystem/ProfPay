@@ -40,22 +40,18 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.profpay.wallet.R
 import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
-import com.profpay.wallet.data.database.entities.wallet.SmartContractEntity
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.feature.smartList.AnimatedScrollToHideHeaderLazyColumn
 import com.profpay.wallet.ui.feature.smartList.IsEmptyListSmartContract
-import com.profpay.wallet.ui.feature.smartList.smartCard.SmartCardFeature
 import com.profpay.wallet.ui.feature.smartList.SmartHeaderCreateContractInListFeature
 import com.profpay.wallet.ui.feature.smartList.SmartHeaderInListFeature
 import com.profpay.wallet.ui.feature.smartList.bottomSheets.ProgressIndicatorSmartModalFeature
 import com.profpay.wallet.ui.feature.smartList.bottomSheets.confirmationSmartModalFeature
+import com.profpay.wallet.ui.feature.smartList.smartCard.SmartCardFeature
 import com.profpay.wallet.ui.shared.sharedPref
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import rememberStackedSnackbarHostState
 import java.math.BigInteger
 
@@ -80,22 +76,13 @@ fun SmartListScreen(
             },
         )
 
-    var smartContractLD by remember { mutableStateOf<LiveData<SmartContractEntity?>?>(null) }
-    val smartContract = smartContractLD?.observeAsState(initial = null)
+    val smartContract by viewModel.smartContractLiveData.observeAsState()
 
-    LaunchedEffect(Unit) {
-        // Получаем LiveData внутри coroutine-контекста
-        smartContractLD =
-            withContext(Dispatchers.IO) {
-                viewModel.smartContractDatabaseRepo.getSmartContractLiveData()
-            }
-    }
+    LaunchedEffect(smartContract) {
+        if (smartContract == null) return@LaunchedEffect
 
-    LaunchedEffect(smartContract?.value) {
-        smartContract?.value?.let {
-            withContext(Dispatchers.IO) {
-                contractBalance = viewModel.tron.addressUtilities.getUsdtBalance(it.contractAddress)
-            }
+        smartContract.let {
+            contractBalance = viewModel.tron.addressUtilities.getUsdtBalance(it!!.contractAddress)
         }
     }
 
@@ -161,10 +148,10 @@ fun SmartListScreen(
                             Modifier
                                 .background(MaterialTheme.colorScheme.primary),
                     ) {
-                        if (smartContract?.value != null) {
+                        if (smartContract != null) {
                             SmartHeaderInListFeature(
                                 balance = contractBalance.toTokenAmount(),
-                                address = smartContract.value?.contractAddress,
+                                address = smartContract!!.contractAddress,
                                 viewModel = viewModel,
                             )
                         } else {

@@ -19,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,9 +38,6 @@ import com.profpay.wallet.ui.app.theme.BackgroundLight
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.app.theme.PubAddressDark
 import com.profpay.wallet.utils.decimalFormat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.math.BigDecimal
 import java.math.BigInteger
 
 
@@ -51,31 +50,24 @@ fun ContentBottomSheetTransferConfirmation(
 ) {
     val tokenNameModel = modelTransferFromBS.tokenName
 
-    val (trxToUsdtRate, setTrxToUsdtRate) = remember { mutableStateOf(BigDecimal.valueOf(1.0)) }
+    val trxToUsdtRate by viewModel.trxToUsdtRate.collectAsState()
     val isConfirmButtonEnabled = remember { mutableStateOf(true) }
-    val (isNeedActivationAddress, setIsNeedActivationAddress) = remember { mutableStateOf(false) }
     val (createNewAccountFeeInSystemContract, setCreateNewAccountFeeInSystemContract) =
         remember {
             mutableStateOf(
                 BigInteger.ZERO,
             )
         }
+    val isActivated by viewModel.isActivated.collectAsState()
+
+    LaunchedEffect(isActivated) {
+        setCreateNewAccountFeeInSystemContract(
+            viewModel.tron.addressUtilities.getCreateNewAccountFeeInSystemContract()
+        )
+    }
 
     LaunchedEffect(Unit) {
-        val isAddressActivated =
-            withContext(Dispatchers.IO) {
-                viewModel.tron.addressUtilities.isAddressActivated(modelTransferFromBS.addressReceiver)
-            }
-        if (!isAddressActivated) {
-            setCreateNewAccountFeeInSystemContract(
-                withContext(Dispatchers.IO) {
-                    viewModel.tron.addressUtilities.getCreateNewAccountFeeInSystemContract()
-                },
-            )
-            setIsNeedActivationAddress(true)
-        }
-
-        setTrxToUsdtRate(viewModel.trxToUsdtRate())
+        viewModel.checkActivation(modelTransferFromBS.addressReceiver)
     }
 
     Column(
@@ -255,7 +247,7 @@ fun ContentBottomSheetTransferConfirmation(
                         )
                     }
                 }
-                if (isNeedActivationAddress) {
+                if (!isActivated) {
                     Row(
                         modifier =
                             Modifier

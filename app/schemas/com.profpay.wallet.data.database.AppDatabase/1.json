@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5441a543b94b1208513ef51c694d3bdb",
+    "identityHash": "c43915e587a9e58ea7ba2c956ef1285b",
     "entities": [
       {
         "tableName": "addresses",
@@ -468,35 +468,6 @@
         }
       },
       {
-        "tableName": "states",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `channel` INTEGER NOT NULL, `data` TEXT NOT NULL)",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "channel",
-            "columnName": "channel",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "data",
-            "columnName": "data",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        }
-      },
-      {
         "tableName": "central_address",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`central_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `address` TEXT NOT NULL, `public_key` TEXT NOT NULL, `private_key` TEXT NOT NULL, `balance` TEXT NOT NULL DEFAULT '0')",
         "fields": [
@@ -821,7 +792,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5441a543b94b1208513ef51c694d3bdb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c43915e587a9e58ea7ba2c956ef1285b')"
     ]
   }
 }

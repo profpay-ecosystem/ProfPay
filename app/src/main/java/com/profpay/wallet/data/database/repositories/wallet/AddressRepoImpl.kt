@@ -1,66 +1,60 @@
 package com.profpay.wallet.data.database.repositories.wallet
 
-import androidx.lifecycle.LiveData
 import com.profpay.wallet.data.database.dao.wallet.AddressDao
 import com.profpay.wallet.data.database.entities.wallet.AddressEntity
 import com.profpay.wallet.data.database.models.AddressWithTokens
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 interface AddressRepo {
-    suspend fun insertNewAddress(addressEntity: AddressEntity): Long
+    suspend fun insert(addressEntity: AddressEntity): Long
+
+    suspend fun updateSotIndexByAddressId(index: Byte, addressId: Long)
 
     suspend fun getAddressEntityByAddress(address: String): AddressEntity?
 
     suspend fun isGeneralAddress(address: String): Boolean
 
-    suspend fun getAddressesSotsWithTokensByBlockchainLD(
+    fun getAddressesSotsWithTokensByBlockchainFlow(
         walletId: Long,
         blockchainName: String,
-    ): LiveData<List<AddressWithTokens>>
+    ): Flow<List<AddressWithTokens>>
 
     suspend fun getAddressesSotsWithTokensByBlockchain(blockchainName: String): List<AddressWithTokens>
 
-    suspend fun getAddressesSotsWithTokensLD(walletId: Long): LiveData<List<AddressWithTokens>>
+    fun getAddressesSotsWithTokensFlow(walletId: Long): Flow<List<AddressWithTokens>>
 
     suspend fun getAddressEntityById(id: Long): AddressEntity?
 
-    suspend fun getGeneralAddressWithTokensLiveData(
+    fun getGeneralAddressWithTokensFlow(
         addressId: Long,
         blockchainName: String,
-    ): LiveData<AddressWithTokens>
+    ): Flow<AddressWithTokens>
 
     suspend fun getGeneralAddressWithTokens(
         addressId: Long,
         blockchainName: String,
     ): AddressWithTokens
 
-    suspend fun getAddressWithTokens(
+    fun getAddressWithTokensFlow(
         addressId: Long,
         blockchainName: String,
-    ): LiveData<AddressWithTokens>
+    ): Flow<AddressWithTokens>
 
     suspend fun getGeneralAddressByWalletId(walletId: Long): String
 
-    suspend fun getAddressEntityByAddressLD(address: String): LiveData<AddressEntity>
+    fun getAddressEntityByAddressFlow(address: String): Flow<AddressEntity>
 
-    suspend fun getAddressWithTokensByAddressLD(address: String): LiveData<AddressWithTokens>
+    fun getAddressWithTokensByAddressFlow(address: String): Flow<AddressWithTokens>
 
     suspend fun getMaxSotDerivationIndex(id: Long): Int
 
-    suspend fun updateSotIndexByAddressId(
-        index: Byte,
-        addressId: Long,
-    )
-
-    suspend fun getAddressesWithTokensArchivalByBlockchainLD(
+    fun getAddressesWithTokensArchivalByBlockchainFlow(
         walletId: Long,
         blockchainName: String,
-    ): LiveData<List<AddressWithTokens>>
+    ): Flow<List<AddressWithTokens>>
 
     suspend fun getGeneralPublicKeyByWalletId(walletId: Long): String
 
@@ -72,106 +66,81 @@ interface AddressRepo {
 }
 
 @Singleton
-class AddressRepoImpl
-    @Inject
-    constructor(
-        private val addressDao: AddressDao,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    ) : AddressRepo {
-        override suspend fun insertNewAddress(addressEntity: AddressEntity): Long = addressDao.insertNewAddress(addressEntity)
+class AddressRepoImpl @Inject constructor(
+    private val addressDao: AddressDao
+) : AddressRepo {
+    override suspend fun insert(addressEntity: AddressEntity): Long =
+        addressDao.insert(addressEntity)
 
-        override suspend fun getAddressEntityByAddress(address: String): AddressEntity? {
-            return withContext(ioDispatcher) {
-                return@withContext addressDao.getAddressEntityByAddress(address)
-            }
-        }
+    override suspend fun updateSotIndexByAddressId(index: Byte, addressId: Long) =
+        addressDao.updateSotIndexByAddressId(index, addressId)
 
-        override suspend fun isGeneralAddress(address: String): Boolean {
-            return withContext(ioDispatcher) {
-                return@withContext addressDao.isGeneralAddress(address)
-            }
-        }
+    override suspend fun getAddressEntityByAddress(address: String): AddressEntity? =
+        addressDao.getAddressEntityByAddress(address)
 
-        override suspend fun getAddressesSotsWithTokensByBlockchainLD(
-            walletId: Long,
-            blockchainName: String,
-        ): LiveData<List<AddressWithTokens>> = addressDao.getAddressesSotsWithTokensByBlockchainLD(walletId, blockchainName)
+    override suspend fun isGeneralAddress(address: String): Boolean =
+        addressDao.isGeneralAddress(address)
 
-        override suspend fun getAddressesSotsWithTokensByBlockchain(blockchainName: String): List<AddressWithTokens> =
-            addressDao.getAddressesSotsWithTokensByBlockchain(blockchainName)
+    override fun getAddressesSotsWithTokensByBlockchainFlow(
+        walletId: Long,
+        blockchainName: String
+    ): Flow<List<AddressWithTokens>> =
+        addressDao.getAddressesSotsWithTokensByBlockchainFlow(walletId, blockchainName)
 
-        override suspend fun getAddressesSotsWithTokensLD(walletId: Long): LiveData<List<AddressWithTokens>> =
-            addressDao.getAddressesSotsWithTokensLD(walletId)
+    override suspend fun getAddressesSotsWithTokensByBlockchain(blockchainName: String): List<AddressWithTokens> =
+        addressDao.getAddressesSotsWithTokensByBlockchain(blockchainName)
 
-        override suspend fun getAddressEntityById(id: Long): AddressEntity? {
-            return withContext(ioDispatcher) {
-                return@withContext addressDao.getAddressEntityById(id)
-            }
-        }
+    override fun getAddressesSotsWithTokensFlow(walletId: Long): Flow<List<AddressWithTokens>> =
+        addressDao.getAddressesSotsWithTokensFlow(walletId)
 
-        override suspend fun getGeneralAddressWithTokensLiveData(
-            addressId: Long,
-            blockchainName: String,
-        ): LiveData<AddressWithTokens> {
-            return withContext(ioDispatcher) {
-                return@withContext addressDao.getGeneralAddressWithTokensLiveData(addressId, blockchainName)
-            }
-        }
+    override suspend fun getAddressEntityById(id: Long): AddressEntity? =
+        addressDao.getAddressEntityById(id)
 
-        override suspend fun getGeneralAddressWithTokens(
-            addressId: Long,
-            blockchainName: String,
-        ): AddressWithTokens {
-            return withContext(ioDispatcher) {
-                return@withContext addressDao.getGeneralAddressWithTokens(addressId, blockchainName)
-            }
-        }
+    override fun getGeneralAddressWithTokensFlow(
+        addressId: Long,
+        blockchainName: String
+    ): Flow<AddressWithTokens> =
+        addressDao.getGeneralAddressWithTokensFlow(addressId, blockchainName)
 
-        override suspend fun getAddressWithTokens(
-            addressId: Long,
-            blockchainName: String,
-        ): LiveData<AddressWithTokens> = addressDao.getAddressWithTokens(addressId, blockchainName)
+    override suspend fun getGeneralAddressWithTokens(
+        addressId: Long,
+        blockchainName: String
+    ): AddressWithTokens =
+        addressDao.getGeneralAddressWithTokens(addressId, blockchainName)
 
-        override suspend fun getGeneralAddressByWalletId(walletId: Long): String {
-            return withContext(ioDispatcher) {
-                return@withContext addressDao.getGeneralAddressByWalletId(walletId)
-            }
-        }
+    override fun getAddressWithTokensFlow(
+        addressId: Long,
+        blockchainName: String
+    ): Flow<AddressWithTokens> =
+        addressDao.getAddressWithTokensFlow(addressId, blockchainName)
 
-        override suspend fun getAddressWithTokensByAddressLD(address: String): LiveData<AddressWithTokens> =
-            addressDao.getAddressWithTokensByAddressLD(address)
+    override suspend fun getGeneralAddressByWalletId(walletId: Long): String =
+        addressDao.getGeneralAddressByWalletId(walletId)
 
-        override suspend fun getMaxSotDerivationIndex(id: Long): Int = addressDao.getMaxSotDerivationIndex(id)
+    override fun getAddressEntityByAddressFlow(address: String): Flow<AddressEntity> =
+        addressDao.getAddressEntityByAddressFlow(address)
 
-        override suspend fun updateSotIndexByAddressId(
-            index: Byte,
-            addressId: Long,
-        ) {
-            addressDao.updateSotIndexByAddressId(index, addressId)
-        }
+    override fun getAddressWithTokensByAddressFlow(address: String): Flow<AddressWithTokens> =
+        addressDao.getAddressWithTokensByAddressFlow(address)
 
-        override suspend fun getAddressesWithTokensArchivalByBlockchainLD(
-            walletId: Long,
-            blockchainName: String,
-        ): LiveData<List<AddressWithTokens>> = addressDao.getAddressWithTokensArchivalByBlockchainLD(walletId, blockchainName)
+    override suspend fun getMaxSotDerivationIndex(id: Long): Int =
+        addressDao.getMaxSotDerivationIndex(id)
 
-        override suspend fun getGeneralPublicKeyByWalletId(walletId: Long): String = addressDao.getGeneralPublicKeyByWalletId(walletId)
+    override fun getAddressesWithTokensArchivalByBlockchainFlow(
+        walletId: Long,
+        blockchainName: String
+    ): Flow<List<AddressWithTokens>> =
+        addressDao.getAddressesWithTokensArchivalByBlockchainFlow(walletId, blockchainName)
 
-        override suspend fun getGeneralAddressEntityByWalletId(walletId: Long): AddressEntity =
-            addressDao.getGeneralAddressEntityByWalletId(walletId)
+    override suspend fun getGeneralPublicKeyByWalletId(walletId: Long): String =
+        addressDao.getGeneralPublicKeyByWalletId(walletId)
 
-        override suspend fun getGeneralAddresses(): List<AddressEntity> {
-            return withContext(ioDispatcher) {
-                return@withContext addressDao.getGeneralAddresses()
-            }
-        }
+    override suspend fun getGeneralAddressEntityByWalletId(walletId: Long): AddressEntity =
+        addressDao.getGeneralAddressEntityByWalletId(walletId)
 
-        override suspend fun getSortedDerivationIndices(walletId: Long): List<Int> {
-            return withContext(ioDispatcher) {
-                return@withContext addressDao.getSortedDerivationIndices(walletId)
-            }
-        }
+    override suspend fun getGeneralAddresses(): List<AddressEntity> =
+        addressDao.getGeneralAddresses()
 
-        override suspend fun getAddressEntityByAddressLD(address: String): LiveData<AddressEntity> =
-            addressDao.getAddressEntityByAddressLD(address)
-    }
+    override suspend fun getSortedDerivationIndices(walletId: Long): List<Int> =
+        addressDao.getSortedDerivationIndices(walletId)
+}

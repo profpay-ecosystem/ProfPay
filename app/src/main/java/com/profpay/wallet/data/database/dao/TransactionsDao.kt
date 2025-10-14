@@ -1,20 +1,20 @@
 package com.profpay.wallet.data.database.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.data.database.models.TransactionModel
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TransactionsDao {
     @Insert(entity = TransactionEntity::class)
-    fun insertNewTransaction(transactionsEntity: TransactionEntity)
+    suspend fun insertNewTransaction(transactionsEntity: TransactionEntity)
 
     @Query("SELECT EXISTS(SELECT * FROM transactions WHERE tx_id = :txid)")
-    fun transactionExistsViaTxid(txid: String): Int
+    suspend fun transactionExistsViaTxid(txid: String): Int
 
     @Query("SELECT EXISTS(SELECT * FROM transactions WHERE tx_id = :txid AND status_code = 0)")
     suspend fun isTransactionPending(txid: String): Boolean
@@ -26,22 +26,22 @@ interface TransactionsDao {
             "WHERE wallet_id = :walletId " +
             "ORDER BY timestamp DESC",
     )
-    fun getAllRelatedTransactionsLD(walletId: Long): LiveData<List<TransactionModel>>
+    fun getAllRelatedTransactionsFlow(walletId: Long): Flow<List<TransactionModel>>
 
     @Query("SELECT * FROM transactions WHERE transaction_id = :transactionId")
-    fun getTransactionLiveDataById(transactionId: Long): LiveData<TransactionEntity>
+    fun getTransactionFlowById(transactionId: Long): Flow<TransactionEntity>
 
     @Query("UPDATE transactions SET is_processed = 1 WHERE transaction_id = :id")
-    fun transactionSetProcessedUpdateTrueById(id: Long)
+    suspend fun transactionSetProcessedUpdateTrueById(id: Long)
 
     @Query("UPDATE transactions SET is_processed = 0 WHERE transaction_id = :id")
-    fun transactionSetProcessedUpdateFalseById(id: Long)
+    suspend fun transactionSetProcessedUpdateFalseById(id: Long)
 
     @Query("UPDATE transactions SET is_processed = 0 WHERE tx_id = :txId")
-    fun transactionSetProcessedUpdateFalseByTxId(txId: String)
+    suspend fun transactionSetProcessedUpdateFalseByTxId(txId: String)
 
     @Query("UPDATE transactions SET is_processed = 1 WHERE tx_id = :txId")
-    fun transactionSetProcessedUpdateTrueByTxId(txId: String)
+    suspend fun transactionSetProcessedUpdateTrueByTxId(txId: String)
 
     @Transaction
     @Query(
@@ -61,16 +61,16 @@ interface TransactionsDao {
         ORDER BY timestamp DESC
         """,
     )
-    fun getTransactionsByAddressAndTokenLD(
+    fun getTransactionsByAddressAndTokenFlow(
         walletId: Long,
         address: String,
         tokenName: String,
         isSender: Boolean,
         isCentralAddress: Boolean,
-    ): LiveData<List<TransactionModel>>
+    ): Flow<List<TransactionModel>>
 
     @Query("SELECT * FROM transactions WHERE tx_id = :txId")
-    fun getTransactionByTxId(txId: String): TransactionEntity
+    suspend fun getTransactionByTxId(txId: String): TransactionEntity
 
     @Query("UPDATE transactions SET status_code = :statusCode, timestamp = :timestamp WHERE tx_id = :txid")
     suspend fun updateStatusAndTimestampByTxId(

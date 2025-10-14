@@ -1,6 +1,7 @@
 package com.profpay.wallet.ui.feature.wallet.send.bottomsheet
 
 import StackedSnakbarHostState
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -27,10 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.bridge.view_model.dto.transfer.TransferResult
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.profpay.wallet.bridge.view_model.wallet.send.SendFromWalletViewModel
-import com.profpay.wallet.data.utils.toSunAmount
+import com.profpay.wallet.bridge.view_model.wallet.send.TransferUiEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -52,6 +54,34 @@ fun bottomSheetTransferConfirmation(
 
     val (isConfirmTransaction, setIsConfirmTransaction) = remember { mutableStateOf(false) }
     val (isDetailsTransaction, setIsDetailsTransaction) = remember { mutableStateOf(false) }
+
+    val uiEvent by viewModel.uiEventTransfer.collectAsStateWithLifecycle(null)
+
+    LaunchedEffect(uiEvent) {
+        when (uiEvent) {
+            is TransferUiEvent.Idle -> {
+                // Пусто
+            }
+            is TransferUiEvent.Success -> setIsConfirmTransaction(true)
+            is TransferUiEvent.Error -> {
+                val e = uiEvent as TransferUiEvent.Error
+                snackbar.showErrorSnackbar(
+                    title = e.title,
+                    description = e.message,
+                    actionTitle = "Закрыть"
+                )
+
+                coroutineScope.launch {
+                    sheetState.hide()
+                    delay(400)
+                    setIsOpenSheet(false)
+                }
+            }
+            null -> {
+                Log.d("TAG", "bottomSheetTransferConfirmation: null")
+            }
+        }
+    }
 
     if (isOpenSheet) {
         ModalBottomSheet(
@@ -107,58 +137,7 @@ fun bottomSheetTransferConfirmation(
                         isDetails = isDetailsTransaction,
                         modelTransferFromBS = modelTransferFromBS,
                         confirmTransaction = {
-                            viewModel.viewModelScope.launch {
-                                val tokenName = modelTransferFromBS.tokenName.tokenName
-                                val tokenEntity =
-                                    modelTransferFromBS.addressWithTokens
-                                        ?.tokens
-                                        ?.firstOrNull { it.token.tokenName == tokenName }
-
-                                if (tokenEntity == null) {
-                                    snackbar.showErrorSnackbar(
-                                        title = "Ошибка перевода",
-                                        description = "Не удалось найти токен",
-                                        actionTitle = "Закрыть",
-                                    )
-
-                                    coroutineScope.launch {
-                                        sheetState.hide()
-                                        delay(400)
-                                        setIsOpenSheet(false)
-                                    }
-                                    return@launch
-                                }
-
-                                val result =
-                                    viewModel.transferProcess(
-                                        senderAddress = modelTransferFromBS.addressSender,
-                                        receiverAddress = modelTransferFromBS.addressReceiver,
-                                        amount = modelTransferFromBS.amount.toSunAmount(),
-                                        commission = modelTransferFromBS.commission.toSunAmount(),
-                                        tokenEntity = tokenEntity,
-                                        commissionResult = modelTransferFromBS.commissionResult,
-                                    )
-
-                                when (result) {
-                                    is TransferResult.Success -> {
-                                        setIsConfirmTransaction(true)
-                                    }
-
-                                    is TransferResult.Failure -> {
-                                        snackbar.showErrorSnackbar(
-                                            title = "Ошибка перевода",
-                                            description = result.error.message!!,
-                                            actionTitle = "Закрыть",
-                                        )
-
-                                        coroutineScope.launch {
-                                            sheetState.hide()
-                                            delay(400)
-                                            setIsOpenSheet(false)
-                                        }
-                                    }
-                                }
-                            }
+                            viewModel.onConfirmTransaction(modelTransferFromBS)
                         },
                     )
                 } else {

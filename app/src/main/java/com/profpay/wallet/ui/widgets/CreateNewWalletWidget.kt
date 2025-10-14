@@ -1,5 +1,6 @@
 package com.profpay.wallet.ui.widgets
 
+import android.content.ClipData
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,16 +28,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.profpay.wallet.R
 import com.profpay.wallet.tron.AddressGenerateResult
@@ -46,6 +47,7 @@ import com.profpay.wallet.ui.app.theme.RedColor
 import com.profpay.wallet.ui.feature.createOrRecoveryWallet.bottomSheetAttentionWhenSavingMnemonic
 import com.profpay.wallet.ui.screens.createOrRecoveryWallet.BottomButtonsForCoRFeature
 import com.profpay.wallet.ui.screens.createOrRecoveryWallet.TitleCreateOrRecoveryWalletFeature
+import kotlinx.coroutines.launch
 
 @Composable
 fun CreateNewWalletWidget(
@@ -53,7 +55,9 @@ fun CreateNewWalletWidget(
     goToBack: () -> Unit,
     goToSeedPhraseConfirmation: () -> Unit,
 ) {
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+
     val charMnemonic: CharArray = addressGenerateResult.mnemonic.chars
     val (isOpenAWSMS, setIsOpenAttentionWhenSavingMnemonicSheet) = bottomSheetAttentionWhenSavingMnemonic()
     var allowGoToNext by remember { mutableStateOf(false) }
@@ -127,7 +131,13 @@ fun CreateNewWalletWidget(
                         Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .clickable { clipboardManager.setText(AnnotatedString(String(charMnemonic))) },
+                            .clickable {
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipData.newPlainText("Wallet address", String(charMnemonic)).toClipEntry()
+                                    )
+                                }
+                            },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                 ) {

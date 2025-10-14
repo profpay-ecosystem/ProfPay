@@ -1,5 +1,6 @@
 package com.profpay.wallet.ui.screens.createOrRecoveryWallet
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,11 +30,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.PrefKeys
 import com.profpay.wallet.R
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.SeedPhraseConfirmationState
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.SeedPhraseConfirmationViewModel
@@ -41,16 +40,11 @@ import com.profpay.wallet.tron.AddressGenerateResult
 import com.profpay.wallet.ui.app.theme.BackgroundDark
 import com.profpay.wallet.ui.app.theme.BackgroundLight
 import com.profpay.wallet.ui.shared.sharedPref
-import io.sentry.Sentry
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun CreatedWalletAddingScreen(
     goToHome: () -> Unit,
-    viewModel: SeedPhraseConfirmationViewModel = hiltViewModel(),
-    goToBack: () -> Unit,
+    viewModel: SeedPhraseConfirmationViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     Scaffold { padding ->
@@ -91,6 +85,17 @@ fun CreatedWalletAddingWidget(
 ) {
     val sharedPref = sharedPref()
 
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is WalletAddedViewModel.WalletUiEvent.NavigateToHome -> goToHome()
+                is WalletAddedViewModel.WalletUiEvent.ShowError -> {
+                    Log.e("WalletAdded", "Error event received")
+                }
+            }
+        }
+    }
+
     Column(
         modifier =
             Modifier
@@ -127,36 +132,7 @@ fun CreatedWalletAddingWidget(
             )
             Button(
                 onClick = {
-                    viewModel.viewModelScope.launch {
-                        val deviceToken = sharedPref.getString(PrefKeys.DEVICE_TOKEN, null) ?: throw Exception("Device Token not found.")
-                        val isFirstStarted = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
-                        val addresses = addressGenerateResult.addressesWithKeysForM
-
-                        if (isFirstStarted) {
-                            viewModel.registerUserAccount(
-                                deviceToken = deviceToken,
-                                sharedPref = sharedPref,
-                            )
-                            sharedPref.edit(commit = true) { putBoolean(PrefKeys.FIRST_STARTED, false) }
-                        }
-
-                        try {
-                            viewModel.createCryptoAddresses(addresses)
-                            viewModel.insertNewCryptoAddresses(addresses)
-
-                            withContext(Dispatchers.Main) {
-                                goToHome()
-                            }
-                        } catch (e: Exception) {
-                            if (!sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)) {
-                                sharedPref.edit { putBoolean(PrefKeys.FIRST_STARTED, true) }
-                            }
-                            Sentry.captureException(e)
-                            // todo: реализовать
-                            // Обработка ошибки вставки
-                            // Можно показать пользователю сообщение об ошибке
-                        }
-                    }
+                    viewModel.onWalletCreatedClicked(addressGenerateResult.addressesWithKeysForM, sharedPref)
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = BackgroundLight),
                 modifier =

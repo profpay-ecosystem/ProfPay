@@ -1,5 +1,6 @@
 package com.profpay.wallet.ui.feature.smartList.smartCard
 
+import android.content.ClipData
 import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -32,10 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -48,6 +48,7 @@ import com.profpay.wallet.ui.app.theme.RedColor
 import com.profpay.wallet.ui.app.theme.greenColor
 import com.profpay.wallet.ui.app.theme.redColor
 import com.profpay.wallet.ui.feature.wallet.HexagonShape
+import kotlinx.coroutines.launch
 import org.example.protobuf.smart.SmartContractProto
 import java.math.BigInteger
 
@@ -66,8 +67,9 @@ internal fun SmartCardWidget(
     onClickButtonCancel: () -> Unit,
     onClickButtonAgree: () -> Unit,
 ) {
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
+
     var expandedDropdownMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -170,7 +172,7 @@ internal fun SmartCardWidget(
             RowForSmartCardFeature(
                 label = "Адрес контракта",
                 address = item.smartContractAddress,
-                clipboardManager = clipboardManager,
+                clipboard = clipboard,
             ) {
                 DropdownMenu(
                     expanded = expandedDropdownMenu,
@@ -178,7 +180,11 @@ internal fun SmartCardWidget(
                 ) {
                     DropdownMenuItem(
                         onClick = {
-                            clipboardManager.setText(AnnotatedString(item.smartContractAddress))
+                            scope.launch {
+                                clipboard.setClipEntry(
+                                    ClipData.newPlainText("Wallet address", item.smartContractAddress ?: "").toClipEntry()
+                                )
+                            }
                         },
                         text = { Text("Скопировать") },
                     )
@@ -204,12 +210,12 @@ internal fun SmartCardWidget(
             RowForSmartCardFeature(
                 label = "Получатель:",
                 address = item.seller.address,
-                clipboardManager = clipboardManager,
+                clipboard = clipboard,
             )
             RowForSmartCardFeature(
                 label = "Отправитель:",
                 address = item.buyer.address,
-                clipboardManager = clipboardManager,
+                clipboard = clipboard,
             )
             if (isBuyerNotDeposited || isSellerNotPayedExpertFee) {
                 Row(

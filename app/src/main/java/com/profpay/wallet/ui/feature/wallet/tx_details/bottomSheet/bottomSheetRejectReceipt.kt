@@ -29,19 +29,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.bridge.view_model.dto.transfer.TransferResult
+import com.profpay.wallet.bridge.view_model.wallet.walletSot.TransferRejectUiEvent
 import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.data.flow_db.repo.EstimateCommissionResult
@@ -52,9 +52,7 @@ import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.app.theme.PubAddressDark
 import com.profpay.wallet.ui.feature.wallet.send.bottomsheet.ContentBottomSheetTransferProcessing
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.example.protobuf.transfer.TransferProto
 import java.math.BigDecimal
 
@@ -72,7 +70,8 @@ fun bottomSheetRejectReceipt(
             confirmValueChange = { true },
         )
 
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -83,9 +82,17 @@ fun bottomSheetRejectReceipt(
     val (commissionOnTransaction, setCommissionOnTransaction) = remember { mutableStateOf(BigDecimal.ZERO) }
     val commissionState by viewModel.stateCommission.collectAsStateWithLifecycle()
 
+    val uiEvent by viewModel.uiEventTransfer.collectAsStateWithLifecycle(null)
+
     val (commissionResult, setCommissionResult) = remember { mutableStateOf(TransferProto.EstimateCommissionResponse.getDefaultInstance()) }
 
     var isButtonEnabled by remember { mutableStateOf(false) }
+
+    fun resetUI() {
+        setIsOpenSheet(false)
+        isButtonEnabled = true
+        setIsConfirmTransaction(false)
+    }
 
     if (isOpenSheet) {
         var addressSending by remember { mutableStateOf(addressWithTokens!!.addressEntity.address) }
@@ -103,7 +110,7 @@ fun bottomSheetRejectReceipt(
 
         LaunchedEffect(commissionState) {
             when (commissionState) {
-                is EstimateCommissionResult.Loading -> {}
+                is EstimateCommissionResult.Loading -> Unit
                 is EstimateCommissionResult.Success -> {
                     val commission = (commissionState as EstimateCommissionResult.Success).response.commission
                     val commissionResult = (commissionState as EstimateCommissionResult.Success).response
@@ -115,8 +122,31 @@ fun bottomSheetRejectReceipt(
                     setCommissionOnTransaction(commission.toBigInteger().toTokenAmount())
                     setCommissionResult(commissionResult)
                 }
-                is EstimateCommissionResult.Error -> {}
-                is EstimateCommissionResult.Empty -> {}
+                is EstimateCommissionResult.Error -> Unit
+                is EstimateCommissionResult.Empty -> Unit
+            }
+        }
+
+        LaunchedEffect(uiEvent) {
+            when (uiEvent) {
+                is TransferRejectUiEvent.Success -> {
+                    snackbar.showSuccessSnackbar(
+                        "Успешное действие",
+                        "Успешно отправлено ${valueAmount.toBigInteger()} $tokenName",
+                        "Закрыть",
+                    )
+                    resetUI()
+                }
+                is TransferRejectUiEvent.Error -> {
+                    val e = uiEvent as TransferRejectUiEvent.Error
+                    snackbar.showErrorSnackbar(
+                        "Перевод валюты невозможен",
+                        e.message,
+                        "Закрыть",
+                    )
+                    resetUI()
+                }
+                TransferRejectUiEvent.Idle, null -> Unit
             }
         }
 
@@ -179,9 +209,13 @@ fun bottomSheetRejectReceipt(
                                         modifier = Modifier.padding(end = 8.dp),
                                         elevation = CardDefaults.cardElevation(7.dp),
                                         onClick = {
-                                            val clipData = clipboardManager.getText()
-                                            if (clipData != null) {
-                                                addressSending = clipData.toString()
+                                            scope.launch {
+                                                val clipEntry = clipboard.getClipEntry()
+                                                val pastedText = clipEntry?.clipData?.getItemAt(0)?.text?.toString()
+
+                                                if (!pastedText.isNullOrBlank()) {
+                                                    addressSending = pastedText
+                                                }
                                             }
                                         },
                                     ) {
@@ -323,41 +357,18 @@ fun bottomSheetRejectReceipt(
                     Button(
                         enabled = isButtonEnabled,
                         onClick = {
-                            if (viewModel.tron.addressUtilities.isValidTronAddress(addressSending)) {
+                            if (viewModel.isValidTronAddress(addressSending)) {
                                 isButtonEnabled = false // Отключаем кнопку
                                 setIsConfirmTransaction(true)
-                                viewModel.viewModelScope.launch {
-                                    val result =
-                                        withContext(Dispatchers.IO) {
-                                            viewModel.rejectTransaction(
-                                                toAddress = addressSending,
-                                                addressWithTokens = addressWithTokens,
-                                                amount = valueAmount.toBigDecimal().toSunAmount(),
-                                                commission = commissionOnTransaction.toSunAmount(),
-                                                tokenEntity = tokenEntity,
-                                                commissionResult = commissionResult,
-                                            )
-                                        }
 
-                                    when (result) {
-                                        is TransferResult.Success ->
-                                            snackbar.showSuccessSnackbar(
-                                                "Успешное действие",
-                                                "Успешно отправлено ${valueAmount.toBigInteger()} $tokenName",
-                                                "Закрыть",
-                                            )
-                                        is TransferResult.Failure ->
-                                            snackbar.showErrorSnackbar(
-                                                "Перевод валюты невозможен",
-                                                result.error.message,
-                                                "Закрыть",
-                                            )
-                                    }
-
-                                    setIsOpenSheet(false)
-                                    isButtonEnabled = true
-                                    setIsConfirmTransaction(false)
-                                }
+                                viewModel.onClickedReject(
+                                    toAddress = addressSending,
+                                    addressWithTokens = addressWithTokens,
+                                    amount = valueAmount.toBigDecimal().toSunAmount(),
+                                    commission = commissionOnTransaction.toSunAmount(),
+                                    tokenEntity = tokenEntity,
+                                    commissionResult = commissionResult,
+                                )
                             }
                         },
                         modifier =

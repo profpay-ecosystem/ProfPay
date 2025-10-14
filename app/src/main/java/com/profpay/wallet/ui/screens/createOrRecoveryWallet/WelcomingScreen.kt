@@ -29,6 +29,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +46,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.PrefKeys
 import com.profpay.wallet.R
 import com.profpay.wallet.bridge.view_model.welcoming_screen.WelcomingViewModel
@@ -54,8 +54,6 @@ import com.profpay.wallet.ui.app.navigation.graphs.navGraph.OnboardingScreen
 import com.profpay.wallet.ui.app.theme.BackgroundDark
 import com.profpay.wallet.ui.app.theme.BackgroundLight
 import com.profpay.wallet.ui.shared.sharedPref
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -196,7 +194,6 @@ fun WelcomingScreen(
                     style = MaterialTheme.typography.headlineSmall,
                     color = BackgroundLight,
                 )
-//                Spacer(modifier = Modifier.height(48.dp))
             }
 
             Column(
@@ -258,9 +255,7 @@ fun WelcomingScreen(
                                         toNavigate(Graph.Home.route)
                                     }
 
-                                    viewModel.viewModelScope.launch(Dispatchers.IO) {
-                                        viewModel.setUserLegalConsentsTrue()
-                                    }
+                                    viewModel.setUserLegalConsentsTrue()
 
                                     sharedPref.edit(commit = true) {
                                         putBoolean(PrefKeys.ACCEPTED_RULES, true)
@@ -311,9 +306,11 @@ fun AnimatedFadingTextList(
                 .padding(horizontal = 16.dp),
     ) {
         itemsIndexed(textBlocks) { index, block ->
-            val itemInfo =
-                listState.layoutInfo.visibleItemsInfo
-                    .find { it.index == index }
+            val itemInfo by remember {
+                derivedStateOf {
+                    listState.layoutInfo.visibleItemsInfo.find { it.index == index }
+                }
+            }
 
             // Затухание начинается, когда элемент начинает уезжать вверх
             val fadeDistancePx = with(density) { 10.dp.toPx() }
@@ -324,17 +321,7 @@ fun AnimatedFadingTextList(
                 }
 
             LaunchedEffect(itemInfo?.offset) {
-                if (itemInfo != null) {
-                    val offset = itemInfo.offset.toFloat()
-                    alpha.floatValue =
-                        when {
-                            offset >= 0 -> 1f
-                            offset <= -fadeDistancePx -> 0f
-                            else -> 1f + (offset / fadeDistancePx)
-                        }.coerceIn(0f, 1f)
-                } else {
-                    alpha.floatValue = 1f
-                }
+                alpha.floatValue = calculateAlpha(itemInfo?.offset?.toFloat(), fadeDistancePx)
             }
 
             val animatedAlpha by animateFloatAsState(
@@ -361,6 +348,16 @@ fun AnimatedFadingTextList(
     }
 }
 
+private fun calculateAlpha(offset: Float?, fadeDistancePx: Float): Float {
+    if (offset == null) return 1f
+
+    return when {
+        offset >= 0 -> 1f
+        offset <= -fadeDistancePx -> 0f
+        else -> 1f + (offset / fadeDistancePx)
+    }.coerceIn(0f, 1f)
+}
+
 fun splitTextIntoBlocks(
     text: String,
     linesPerBlock: Int,
@@ -368,14 +365,12 @@ fun splitTextIntoBlocks(
     val words = text.split(" ")
     val blocks = mutableListOf<String>()
     var current = StringBuilder()
-    var lineCount = 0
 
     for (word in words) {
         current.append(word).append(" ")
         if (current.length >= 60 * linesPerBlock) { // эвристика для строк
             blocks.add(current.toString().trim())
             current = StringBuilder()
-            lineCount = 0
         }
     }
     if (current.isNotBlank()) {

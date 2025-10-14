@@ -1,17 +1,17 @@
 package com.profpay.wallet.bridge.view_model.wallet
 
-import android.content.SharedPreferences
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
-import androidx.navigation.NavController
+import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.backend.http.models.binance.BinanceSymbolEnum
 import com.profpay.wallet.backend.http.models.coingecko.CoinSymbolEnum
 import com.profpay.wallet.bridge.view_model.dto.TokenName
 import com.profpay.wallet.data.database.entities.wallet.TokenEntity
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.data.database.models.TransactionModel
-import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.TransactionsRepo
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.ExchangeRatesRepo
@@ -19,171 +19,201 @@ import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.TradingInsightsRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
 import com.profpay.wallet.data.flow_db.module.IoDispatcher
-import com.profpay.wallet.data.flow_db.repo.WalletInfoRepo
 import com.profpay.wallet.data.utils.toSunAmount
 import com.profpay.wallet.data.utils.toTokenAmount
+import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
 import javax.inject.Inject
 
 @HiltViewModel
-class WalletInfoViewModel
-    @Inject
-    constructor(
-        private val walletProfileRepo: WalletProfileRepo,
-        private val transactionsRepo: TransactionsRepo,
-        private val addressRepo: AddressRepo,
-        private val tokenRepo: TokenRepo,
-        val exchangeRatesRepo: ExchangeRatesRepo,
-        val tradingInsightsRepo: TradingInsightsRepo,
-        private val profileRepo: ProfileRepo,
-        private val walletInfoRepo: WalletInfoRepo,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    ) : ViewModel() {
-        suspend fun getProfileTelegramId(): Long? = profileRepo.getProfileTelegramId()
+class WalletInfoViewModel @Inject constructor(
+    private val walletProfileRepo: WalletProfileRepo,
+    private val transactionsRepo: TransactionsRepo,
+    private val addressRepo: AddressRepo,
+    private val tokenRepo: TokenRepo,
+    val exchangeRatesRepo: ExchangeRatesRepo,
+    val tradingInsightsRepo: TradingInsightsRepo,
+    private val tron: Tron,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+) : ViewModel() {
+    private val _walletName = MutableStateFlow<String?>(null)
+    val walletName: StateFlow<String?> = _walletName.asStateFlow()
 
-        suspend fun getWalletNameById(walletId: Long): String? = walletProfileRepo.getWalletNameById(walletId)
+    private val _tokensWithTotalBalance = MutableStateFlow<List<TokenEntity>>(emptyList())
+    val tokensWithTotalBalance: StateFlow<List<TokenEntity>> = _tokensWithTotalBalance.asStateFlow()
 
-        fun getAddressesSotsWithTokens(walletId: Long): LiveData<List<AddressWithTokens>> =
-            liveData(ioDispatcher) {
-                emitSource(addressRepo.getAddressesSotsWithTokensLD(walletId))
-            }
+    private val _totalBalance = MutableStateFlow<BigInteger>(BigInteger.ZERO)
+    val totalBalance: StateFlow<BigInteger> = _totalBalance.asStateFlow()
 
-        suspend fun getUserPermissions(
-            sharedPrefs: SharedPreferences,
-            navController: NavController,
-        ) {
-            try {
-                walletInfoRepo.getUserPermissions(sharedPrefs, navController)
-            } catch (e: Exception) {
-                throw e
-            }
+    private val _totalPercentage24h = MutableStateFlow(0.0)
+    val totalPercentage24h: StateFlow<Double> = _totalPercentage24h.asStateFlow()
+
+    private val _transactionsByDate = MutableStateFlow<List<List<TransactionModel>>>(emptyList())
+    val transactionsByDate: StateFlow<List<List<TransactionModel>>> = _transactionsByDate.asStateFlow()
+
+    fun getWalletNameById(walletId: Long) = viewModelScope.launch(ioDispatcher) {
+        val name = walletProfileRepo.getWalletNameById(walletId)
+        _walletName.emit(name)
+    }
+
+    fun getAddressesSotsWithTokens(walletId: Long): LiveData<List<AddressWithTokens>> =
+        liveData(ioDispatcher) {
+            emitSource(addressRepo.getAddressesSotsWithTokensFlow(walletId).asLiveData())
         }
 
-        suspend fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel?>> {
-            var listListTransactions: List<List<TransactionModel>> = listOf(emptyList())
-
-            withContext(ioDispatcher) {
-                if (listTransactions.isEmpty()) return@withContext
-                listListTransactions =
-                    listTransactions
-                        .sortedByDescending { it.timestamp }
-                        .groupBy { it.transactionDate }
-                        .values
-                        .toList()
-            }
-            return listListTransactions
+    fun groupTransactionsByDate(listTransactions: List<TransactionModel>) = viewModelScope.launch(ioDispatcher) {
+        if (listTransactions.isEmpty()) {
+            _transactionsByDate.value = emptyList()
+            return@launch
         }
 
-        fun getAllRelatedTransactions(walletId: Long): LiveData<List<TransactionModel>> =
-            liveData(ioDispatcher) {
-                emitSource(transactionsRepo.getAllRelatedTransactions(walletId))
-            }
+        val grouped = listTransactions
+            .sortedByDescending { it.timestamp }
+            .groupBy { it.transactionDate }
+            .values
+            .toList()
 
-        suspend fun updateTokenBalances(listAddressWithTokens: List<AddressWithTokens>) =
-            coroutineScope {
-                if (listAddressWithTokens.isEmpty()) return@coroutineScope
+        _transactionsByDate.value = grouped
+    }
 
-                TokenName.entries
-                    .flatMap { token ->
-                        listAddressWithTokens.map { addressWithTokens ->
-                            async {
-                                tokenRepo.updateTokenBalanceFromBlockchain(addressWithTokens.addressEntity.address, token)
-                            }
+    fun getAllRelatedTransactions(walletId: Long): LiveData<List<TransactionModel>> =
+        liveData(ioDispatcher) {
+            emitSource(transactionsRepo.getAllRelatedTransactionsFlow(walletId).asLiveData())
+        }
+
+    fun updateTokenBalances(listAddressWithTokens: List<AddressWithTokens>) =
+        viewModelScope.launch(ioDispatcher) {
+            if (listAddressWithTokens.isEmpty()) return@launch
+
+            TokenName.entries
+                .flatMap { token ->
+                    listAddressWithTokens.map { addressWithTokens ->
+                        async {
+                            val addressId = addressRepo.getAddressEntityByAddress(addressWithTokens.addressEntity.address)?.addressId
+
+                            val balance =
+                                if (token == TokenName.USDT) {
+                                    tron.addressUtilities.getUsdtBalance(addressWithTokens.addressEntity.address)
+                                } else {
+                                    tron.addressUtilities.getTrxBalance(addressWithTokens.addressEntity.address)
+                                }
+                            tokenRepo.updateTronBalanceViaId(balance, addressId!!, token.shortName)
                         }
-                    }.awaitAll()
-            }
-
-        suspend fun getListTokensWithTotalBalance(listAddressWithTokens: List<AddressWithTokens>): List<TokenEntity> {
-            val listTokensWithTotalBalance = mutableListOf<TokenEntity>()
-            withContext(ioDispatcher) {
-                if (listAddressWithTokens.isEmpty()) return@withContext
-                TokenName.entries.forEach { token ->
-                    val gAddressId =
-                        listAddressWithTokens
-                            .stream()
-                            .filter { addressWithTokens ->
-                                addressWithTokens.tokens.any { it.token.tokenName == token.tokenName }
-                            }.filter { it.addressEntity.isGeneralAddress }
-                            .findFirst()
-                            .orElse(listAddressWithTokens[1])
-                    val sumBalancesSotByToken =
-                        listAddressWithTokens
-                            .flatMap { addressWithTokens -> addressWithTokens.tokens }
-                            .filter { it.token.tokenName == token.tokenName }
-                            .sumOf { it.balanceWithoutFrozen }
-
-                    listTokensWithTotalBalance.add(
-                        TokenEntity(
-                            addressId = gAddressId.addressEntity.addressId!!,
-                            tokenName = token.tokenName,
-                            balance = sumBalancesSotByToken,
-                        ),
-                    )
-                }
-            }
-            return listTokensWithTotalBalance
+                    }
+                }.awaitAll()
         }
 
-        suspend fun getTotalBalance(listTokensWithTotalBalance: List<TokenEntity>): BigInteger {
+    fun loadTokensWithTotalBalance(listAddressWithTokens: List<AddressWithTokens>) = viewModelScope.launch(ioDispatcher) {
+        if (listAddressWithTokens.isEmpty()) return@launch
+
+        val tokensWithBalance = TokenName.entries.map { token ->
+            val generalAddress =
+                listAddressWithTokens
+                    .firstOrNull { address ->
+                        address.addressEntity.isGeneralAddress &&
+                                address.tokens.any { it.token.tokenName == token.tokenName }
+                    } ?: listAddressWithTokens.firstOrNull() // безопаснее, чем [1]
+
+            val totalBalance = listAddressWithTokens
+                .flatMap { it.tokens }
+                .filter { it.token.tokenName == token.tokenName }
+                .sumOf { it.balanceWithoutFrozen }
+
+            TokenEntity(
+                addressId = generalAddress?.addressEntity?.addressId ?: 0,
+                tokenName = token.tokenName,
+                balance = totalBalance
+            )
+        }
+
+        _tokensWithTotalBalance.emit(tokensWithBalance)
+    }
+
+    fun calculateTotalBalance(listTokensWithTotalBalance: List<TokenEntity>) = viewModelScope.launch(ioDispatcher) {
+        if (listTokensWithTotalBalance.isEmpty()) {
+            _totalBalance.value = BigInteger.ZERO
+            return@launch
+        }
+
+        try {
             val trxToUsdtRate =
                 exchangeRatesRepo.getExchangeRateValue(BinanceSymbolEnum.TRX_USDT.symbol)
 
-            return listTokensWithTotalBalance.sumOf {
-                if (it.tokenName == "TRX") {
-                    val balanceInSun = it.balance.toTokenAmount()
+            val total = listTokensWithTotalBalance.sumOf { token ->
+                if (token.tokenName == "TRX") {
+                    val balanceInSun = token.balance.toTokenAmount()
                     val totalValue = balanceInSun.multiply(trxToUsdtRate.toBigDecimal())
                     totalValue.toSunAmount()
                 } else {
-                    it.balance
+                    token.balance
                 }
             }
-        }
 
-        suspend fun getTotalPPercentage24(listTokensWithTotalBalance: List<TokenEntity>): Double {
-            val trxToUsdtRate = exchangeRatesRepo.getExchangeRateValue(BinanceSymbolEnum.TRX_USDT.symbol).toBigDecimal()
-            val priceChangePercentage24hUsdt = tradingInsightsRepo.getPriceChangePercentage24h(CoinSymbolEnum.USDT_TRC20.symbol)
-            val priceChangePercentage24hTrx = tradingInsightsRepo.getPriceChangePercentage24h(CoinSymbolEnum.TRON.symbol)
-
-            val totalValue =
-                listTokensWithTotalBalance.sumOf { token ->
-                    when (token.tokenName) {
-                        "TRX" -> token.balance.toTokenAmount().multiply(trxToUsdtRate)
-                        "USDT" -> token.balance.toBigDecimal()
-                        else -> BigDecimal.ZERO
-                    }
-                }
-
-            val weightedSum =
-                listTokensWithTotalBalance.sumOf { token ->
-                    when (token.tokenName) {
-                        "TRX" ->
-                            token.balance
-                                .toTokenAmount()
-                                .multiply(trxToUsdtRate)
-                                .multiply(priceChangePercentage24hTrx.toBigDecimal())
-                        "USDT" ->
-                            token.balance
-                                .toBigDecimal()
-                                .multiply(priceChangePercentage24hUsdt.toBigDecimal())
-                        else -> BigDecimal.ZERO
-                    }
-                }
-
-            val result =
-                if (totalValue.compareTo(BigDecimal.ZERO) == 0) {
-                    BigDecimal.ZERO
-                } else {
-                    weightedSum.divide(totalValue, 8, RoundingMode.HALF_UP)
-                }
-
-            return result.toDouble().coerceIn(-100.0, 100.0)
+            _totalBalance.value = total
+        } catch (e: Exception) {
+            // Лучше не падать, а выставить 0
+            _totalBalance.value = BigInteger.ZERO
+            Log.e("WalletViewModel", "Failed to calculate total balance", e)
         }
     }
+
+    fun calculateTotalPercentage24h(listTokensWithTotalBalance: List<TokenEntity>) = viewModelScope.launch(ioDispatcher) {
+        if (listTokensWithTotalBalance.isEmpty()) {
+            _totalPercentage24h.value = 0.0
+            return@launch
+        }
+
+        try {
+            val trxToUsdtRate =
+                exchangeRatesRepo.getExchangeRateValue(BinanceSymbolEnum.TRX_USDT.symbol)
+                    .toBigDecimal()
+
+            val priceChangeUsdt =
+                tradingInsightsRepo.getPriceChangePercentage24h(CoinSymbolEnum.USDT_TRC20.symbol)
+            val priceChangeTrx =
+                tradingInsightsRepo.getPriceChangePercentage24h(CoinSymbolEnum.TRON.symbol)
+
+            val totalValue = listTokensWithTotalBalance.sumOf { token ->
+                when (token.tokenName) {
+                    "TRX" -> token.balance.toTokenAmount().multiply(trxToUsdtRate)
+                    "USDT" -> token.balance.toBigDecimal()
+                    else -> BigDecimal.ZERO
+                }
+            }
+
+            val weightedSum = listTokensWithTotalBalance.sumOf { token ->
+                when (token.tokenName) {
+                    "TRX" -> token.balance
+                        .toTokenAmount()
+                        .multiply(trxToUsdtRate)
+                        .multiply(priceChangeTrx.toBigDecimal())
+                    "USDT" -> token.balance
+                        .toBigDecimal()
+                        .multiply(priceChangeUsdt.toBigDecimal())
+                    else -> BigDecimal.ZERO
+                }
+            }
+
+            val result = if (totalValue.compareTo(BigDecimal.ZERO) == 0) {
+                BigDecimal.ZERO
+            } else {
+                weightedSum.divide(totalValue, 8, RoundingMode.HALF_UP)
+            }
+
+            _totalPercentage24h.value = result.toDouble().coerceIn(-100.0, 100.0)
+        } catch (e: Exception) {
+            Log.e("WalletViewModel", "Failed to calculate 24h percentage", e)
+            _totalPercentage24h.value = 0.0
+        }
+    }
+}

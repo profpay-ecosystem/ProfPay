@@ -3,9 +3,12 @@ package com.profpay.wallet.bridge.view_model.wallet.walletSot
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.bridge.view_model.dto.BlockchainName
 import com.profpay.wallet.data.database.entities.wallet.AddressEntity
+import com.profpay.wallet.data.database.entities.wallet.CentralAddressEntity
 import com.profpay.wallet.data.database.entities.wallet.TokenEntity
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.data.database.repositories.ProfileRepo
@@ -19,6 +22,7 @@ import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -34,21 +38,21 @@ class WalletSotViewModel
         private val centralAddressRepo: CentralAddressRepo,
         private val tron: Tron,
         private val keystoreCryptoManager: KeystoreCryptoManager,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
         // Получение списка адресов и балансов в формате Flow
-        fun getAddressesSotsWithTokensByBlockchainLD(
+        fun getAddressesSotsWithTokensByBlockchain(
             walletId: Long,
             blockchainName: String,
         ): LiveData<List<AddressWithTokens>> =
             liveData(ioDispatcher) {
-                emitSource(addressRepo.getAddressesSotsWithTokensByBlockchainLD(walletId, blockchainName))
+                emitSource(addressRepo.getAddressesSotsWithTokensByBlockchainFlow(walletId, blockchainName).asLiveData())
             }
 
-        suspend fun creationOfANewCell(
+        fun creationOfANewCell(
             walletId: Long,
             addressEntity: AddressEntity,
-        ) {
+        ) = viewModelScope.launch(ioDispatcher) {
             val generalAddress = addressRepo.getGeneralAddressByWalletId(walletId)
             val cipherData = walletProfileRepo.getWalletCipherData(walletId)
 
@@ -80,7 +84,7 @@ class WalletSotViewModel
                 )
             } catch (e: Exception) {
                 Log.e("ERROR", e.message!!)
-                return
+                return@launch
             }
 
             addressRepo.updateSotIndexByAddressId(
@@ -90,7 +94,7 @@ class WalletSotViewModel
 
             BlockchainName.entries.map { blockchain ->
                 val addressId =
-                    addressRepo.insertNewAddress(
+                    addressRepo.insert(
                         AddressEntity(
                             walletId = walletId,
                             blockchainName = blockchain.blockchainName,
@@ -102,7 +106,7 @@ class WalletSotViewModel
                         ),
                     )
                 blockchain.tokens.forEach { token ->
-                    tokenRepo.insertNewTokenEntity(
+                    tokenRepo.insert(
                         TokenEntity(
                             addressId = addressId,
                             tokenName = token.tokenName,
@@ -112,12 +116,24 @@ class WalletSotViewModel
                 }
             }
 
-            val centralAddress = centralAddressRepo.insertIfNotExists()
+            val isCentralAddressExists = centralAddressRepo.isCentralAddressExists()
+            if (!isCentralAddressExists) {
+                val address = tron.addressUtilities.generateSingleAddress()
+                centralAddressRepo.insertNewCentralAddress(
+                    CentralAddressEntity(
+                        address = address.address,
+                        publicKey = address.publicKey,
+                        privateKey = address.privateKey
+                    ),
+                )
+            }
+
+            val centralAddress = centralAddressRepo.getCentralAddress()
             if (centralAddress != null) {
                 val balance = tron.addressUtilities.getTrxBalance(centralAddress.address)
                 if (balance >= BigInteger.valueOf(1_500_000)) {
                     val newBalance = tron.addressUtilities.getTrxBalance(centralAddress.address)
-                    if (newBalance < BigInteger.valueOf(1_000_000)) return
+                    if (newBalance < BigInteger.valueOf(1_000_000)) return@launch
                     if (!tron.addressUtilities.isAddressActivated(address)) {
                         tron.transactions.trxTransfer(
                             fromAddress = centralAddress.address,

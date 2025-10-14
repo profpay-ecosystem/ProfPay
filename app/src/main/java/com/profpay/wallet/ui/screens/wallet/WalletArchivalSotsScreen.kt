@@ -75,7 +75,7 @@ fun WalletArchivalSotsScreen(
     val token = sharedPref.getString("token_name", TokenName.USDT.tokenName) ?: TokenName.USDT.tokenName
 
     val addressWithTokensArchival by viewModel
-        .getAddressWithTokensArchivalByBlockchainLD(
+        .getAddressWithTokensArchivalByBlockchain(
             walletId = walletId,
             blockchainName = TokenName.valueOf(token).blockchainName,
         ).observeAsState(emptyList())

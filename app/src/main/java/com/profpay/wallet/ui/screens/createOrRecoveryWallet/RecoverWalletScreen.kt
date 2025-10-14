@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverUiEvent
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletState
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletViewModel
 import com.profpay.wallet.data.flow_db.repo.RecoveryResult
@@ -54,10 +56,7 @@ import com.profpay.wallet.ui.app.theme.BackgroundDark
 import com.profpay.wallet.ui.app.theme.BackgroundIcon
 import com.profpay.wallet.ui.app.theme.IndicatorGreen
 import com.profpay.wallet.ui.widgets.dialog.AlertDialogConfButtonWidget
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -70,9 +69,21 @@ fun RecoverWalletScreen(
     val openDialog = remember { mutableStateOf(false) }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle()
 
     // Текущая клавиатура
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(uiEvent) {
+        when (uiEvent) {
+            is RecoverUiEvent.Success -> {
+                delay(500L)
+                openDialog.value = true
+            }
+            is RecoverUiEvent.Error -> Unit
+            else -> Unit
+        }
+    }
 
     @Composable
     fun AlertDialogForCoRFeature(dialogText: String) {
@@ -107,10 +118,6 @@ fun RecoverWalletScreen(
                     goToBack = { goToBack() },
                     goToNext = {
                         viewModel.recoverWallet(seedPhrase)
-                        CoroutineScope(Dispatchers.IO).launch {
-                            delay(500L)
-                            openDialog.value = true
-                        }
                     },
                     allowGoToNext = true,
                     currentScreen = 1,
@@ -164,7 +171,7 @@ fun RecoverWalletScreen(
                 }
 
                 when (state) {
-                    is RecoverWalletState.Loading -> {}
+                    is RecoverWalletState.Loading -> Unit
                     is RecoverWalletState.Success -> {
                         val successState = state as RecoverWalletState.Success
                         when (successState.addressRecoverResult) {
@@ -183,7 +190,7 @@ fun RecoverWalletScreen(
                                             "и попробуйте снова.",
                                 )
                             }
-                            is RecoveryResult.AddressNotFound -> {}
+                            is RecoveryResult.AddressNotFound -> Unit
                             is RecoveryResult.Error -> {
                                 val throwable = successState.addressRecoverResult.throwable
                                 AlertDialogForCoRFeature(
@@ -197,7 +204,7 @@ fun RecoverWalletScreen(
                                 goToRecoveringWalletAdding()
                             }
 
-                            is RecoveryResult.Empty -> {}
+                            is RecoveryResult.Empty -> Unit
                         }
                     }
                 }

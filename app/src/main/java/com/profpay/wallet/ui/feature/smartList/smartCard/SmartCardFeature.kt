@@ -38,7 +38,7 @@ fun SmartCardFeature(
         }
     val (isBuyerNotDeposited, setIsBuyerNotDeposited) = remember { mutableStateOf(false) }
     val (isSellerNotPayedExpertFee, setIsSellerNotPayedExpertFee) = remember { mutableStateOf(false) }
-    val (_, setIsOpenDetailsSheet) = bottomSheetDetails(item, viewModel)
+    val (_, setIsOpenDetailsSheet) = bottomSheetDetails(item)
 
     LaunchedEffect(item) {
         scope.launch {

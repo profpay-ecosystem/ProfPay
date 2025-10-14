@@ -9,17 +9,17 @@ import com.profpay.wallet.data.database.entities.wallet.ExchangeRatesEntity
 @Dao
 interface ExchangeRatesDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(exchangeRatesEntity: ExchangeRatesEntity): Long
+    suspend fun insert(exchangeRatesEntity: ExchangeRatesEntity): Long
 
     @Query("SELECT EXISTS(SELECT * FROM exchange_rates WHERE symbol = :symbol)")
-    fun doesSymbolExist(symbol: String): Boolean
+    suspend fun doesSymbolExist(symbol: String): Boolean
 
     @Query("UPDATE exchange_rates SET value = :value WHERE symbol = :symbol")
-    fun updateExchangeRate(
+    suspend fun updateExchangeRate(
         symbol: String,
         value: Double,
     )
 
     @Query("SELECT value FROM exchange_rates WHERE symbol = :symbol")
-    fun getExchangeRateValue(symbol: String): Double
+    suspend fun getExchangeRateValue(symbol: String): Double
 }

@@ -34,8 +34,6 @@ import com.profpay.wallet.ui.feature.wallet.tx_details.aml.AmlAndButtonGetAmlFor
 import com.profpay.wallet.ui.shared.sharedPref
 import com.profpay.wallet.ui.shared.utils.convertTimestampToDateTime
 import com.profpay.wallet.utils.decimalFormat
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import rememberStackedSnackbarHostState
 import java.math.BigInteger
 
@@ -58,8 +56,8 @@ fun TXDetailsScreen(
 
     val amlFeeResult by viewModel.amlFeeResult.collectAsStateWithLifecycle()
     val amlIsPending by viewModel.amlIsPending.collectAsStateWithLifecycle()
+    val walletName by viewModel.walletName.collectAsStateWithLifecycle()
 
-    val (walletName, setWalletName) = remember { mutableStateOf("") }
     val (isReceive, setIsReceive) = remember { mutableStateOf(false) }
     val (amlButtonIsEnabled, setAmlButtonIsEnabled) = remember { mutableStateOf(true) }
     val (_, setIsProcessed) = remember { mutableStateOf(false) }
@@ -95,19 +93,11 @@ fun TXDetailsScreen(
     }
 
     LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            setWalletName(viewModel.getWalletNameById(walletId) ?: "")
-        }
+        viewModel.getWalletNameById(walletId)
     }
 
-    val currentTokenName =
-        TokenName.entries.find {
-            if (transactionEntity != null) {
-                it.tokenName == transactionEntity!!.tokenName
-            } else {
-                false
-            }
-        } ?: TokenName.USDT
+    val currentTokenName = TokenName.entries.find { it.tokenName == transactionEntity?.tokenName }
+        ?: TokenName.USDT
 
     CustomScaffoldWallet(stackedSnackbarHostState = stackedSnackbarHostState) { bottomPadding ->
         CustomTopAppBar(title = "TX Details", goToBack = { goToBack() })
@@ -122,7 +112,7 @@ fun TXDetailsScreen(
         ) {
             CardTextForTxDetailsFeature(
                 title = "Кошелёк",
-                contentText = walletName,
+                contentText = walletName ?: "",
                 stackedSnackbarHostState = stackedSnackbarHostState,
                 isDropdownMenu = false,
             )
@@ -196,7 +186,6 @@ fun TXDetailsScreen(
                     amlFeeResultText = (amlFeeResult?.toBigInteger()?.toTokenAmount()
                         ?: 0).toString(),
                 )
-
             }
         }
     }

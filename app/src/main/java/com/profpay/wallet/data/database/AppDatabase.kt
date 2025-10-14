@@ -2,10 +2,11 @@ package com.profpay.wallet.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.Transaction
 import androidx.room.TypeConverters
+import com.profpay.wallet.bridge.view_model.dto.BlockchainName
 import com.profpay.wallet.data.database.dao.ProfileDao
 import com.profpay.wallet.data.database.dao.SettingsDao
-import com.profpay.wallet.data.database.dao.StatesDao
 import com.profpay.wallet.data.database.dao.TransactionsDao
 import com.profpay.wallet.data.database.dao.wallet.AddressDao
 import com.profpay.wallet.data.database.dao.wallet.CentralAddressDao
@@ -18,7 +19,6 @@ import com.profpay.wallet.data.database.dao.wallet.TradingInsightsDao
 import com.profpay.wallet.data.database.dao.wallet.WalletProfileDao
 import com.profpay.wallet.data.database.entities.ProfileEntity
 import com.profpay.wallet.data.database.entities.SettingsEntity
-import com.profpay.wallet.data.database.entities.StatesEntity
 import com.profpay.wallet.data.database.entities.wallet.AddressEntity
 import com.profpay.wallet.data.database.entities.wallet.CentralAddressEntity
 import com.profpay.wallet.data.database.entities.wallet.ExchangeRatesEntity
@@ -29,6 +29,7 @@ import com.profpay.wallet.data.database.entities.wallet.TokenEntity
 import com.profpay.wallet.data.database.entities.wallet.TradingInsightsEntity
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.data.database.entities.wallet.WalletProfileEntity
+import java.math.BigInteger
 
 // Создание Базы Данных
 @Database(
@@ -41,7 +42,6 @@ import com.profpay.wallet.data.database.entities.wallet.WalletProfileEntity
         ProfileEntity::class,
         TransactionEntity::class,
         SettingsEntity::class,
-        StatesEntity::class,
         CentralAddressEntity::class,
         SmartContractEntity::class,
         ExchangeRatesEntity::class,
@@ -63,8 +63,6 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun getSettingsDao(): SettingsDao
 
-    abstract fun getStatesDao(): StatesDao
-
     abstract fun getTransactionsDao(): TransactionsDao
 
     abstract fun getCentralAddressDao(): CentralAddressDao
@@ -78,4 +76,25 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getPendingTransactionDao(): PendingTransactionDao
 
     abstract fun getPendingAmlTransactionDao(): PendingAmlTransactionDao
+
+    @Transaction
+    open suspend fun insertWalletWithAddressesAndTokens(
+        walletProfile: WalletProfileEntity,
+        addresses: List<AddressEntity>,
+    ) {
+        val number = getWalletProfileDao().getCountRecords() + 1
+        val entityWithName = walletProfile.copy(name = "Wallet $number")
+
+        val walletId = getWalletProfileDao().insert(entityWithName)
+
+        val defaultTokens = BlockchainName.entries
+            .flatMap { blockchain -> blockchain.tokens }
+            .map { it.tokenName }
+
+        addresses.forEach { address ->
+            val addressId = getAddressDao().insert(address.copy(walletId = walletId))
+            val tokenEntities = defaultTokens.map { TokenEntity(addressId = addressId, tokenName = it, balance = BigInteger.ZERO) }
+            getTokenDao().insertAll(tokenEntities)
+        }
+    }
 }

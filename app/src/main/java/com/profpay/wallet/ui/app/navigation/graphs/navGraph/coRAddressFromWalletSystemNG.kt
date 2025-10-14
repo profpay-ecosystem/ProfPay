@@ -64,10 +64,7 @@ fun NavGraphBuilder.coRAddressFromWalletSystemNG(navController: NavHostControlle
                     navController.navigate(route = Graph.Profile.route) {
                         popUpTo(route = Graph.Profile.route)
                     }
-                },
-                goToBack = {
-                    navController.navigateUp()
-                },
+                }
             )
         }
         composable(route = RecoverWallet.RecoveringWalletAdding.route) {
@@ -76,9 +73,6 @@ fun NavGraphBuilder.coRAddressFromWalletSystemNG(navController: NavHostControlle
                     navController.navigate(route = Graph.Profile.route) {
                         popUpTo(route = Graph.Profile.route)
                     }
-                },
-                goToBack = {
-                    navController.navigateUp()
                 },
             )
         }

@@ -24,7 +24,7 @@ class TransactionFeeEstimator
     constructor(
         private val addressRepo: AddressRepo,
         private val tron: Tron,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) {
         suspend fun createDeal(deal: SmartContractProto.ContractDealListResponse): TransactionEstimatorResult {
             val addressData =

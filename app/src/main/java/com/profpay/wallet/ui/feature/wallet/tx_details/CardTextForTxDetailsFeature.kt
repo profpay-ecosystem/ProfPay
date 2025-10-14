@@ -1,5 +1,6 @@
 package com.profpay.wallet.ui.feature.wallet.tx_details
 import StackedSnakbarHostState
+import android.content.ClipData
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -20,20 +21,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import com.profpay.wallet.R
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -77,7 +79,9 @@ fun CardTextForTxDetailsFeature(
     isHashTransaction: Boolean = false,
     isDropdownMenu: Boolean = true,
 ) {
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+
     var expandedDropdownMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
@@ -130,9 +134,11 @@ fun CardTextForTxDetailsFeature(
                     ) {
                         DropdownMenuItem(
                             onClick = {
-                                clipboardManager.setText(
-                                    AnnotatedString(contentText ?: ""),
-                                )
+                                scope.launch {
+                                    clipboard.setClipEntry(
+                                        ClipData.newPlainText("Content", contentText ?: "").toClipEntry()
+                                    )
+                                }
                                 stackedSnackbarHostState.showSuccessSnackbar(
                                     "Успешное действие",
                                     "Копирование выполнено успешно",

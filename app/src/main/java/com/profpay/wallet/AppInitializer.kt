@@ -14,12 +14,15 @@ import com.profpay.wallet.backend.http.models.binance.BinancePriceConverterRespo
 import com.profpay.wallet.backend.http.models.binance.BinanceSymbolEnum
 import com.profpay.wallet.backend.http.models.coingecko.CoinSymbolEnum
 import com.profpay.wallet.backend.http.models.coingecko.Tron24hChangeResponse
+import com.profpay.wallet.data.database.entities.wallet.CentralAddressEntity
 import com.profpay.wallet.data.database.entities.wallet.ExchangeRatesEntity
 import com.profpay.wallet.data.database.entities.wallet.TradingInsightsEntity
+import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.profpay.wallet.data.database.repositories.wallet.TradingInsightsRepo
 import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.services.foreground.PusherService
+import com.profpay.wallet.tron.Tron
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -37,7 +40,9 @@ class AppInitializer
     constructor(
         private val exchangeRatesRepo: ExchangeRatesRepo,
         private val tradingInsightsRepo: TradingInsightsRepo,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+        private val tron: Tron,
+        private val centralAddressRepo: CentralAddressRepo,
+        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
     ) {
         suspend fun initialize(
             sharedPrefs: SharedPreferences,
@@ -56,6 +61,16 @@ class AppInitializer
                         Log.e("Init", "Pushy registration failed", e)
                         throw e
                     }
+
+                val address = tron.addressUtilities.generateSingleAddress()
+                centralAddressRepo.insertNewCentralAddress(
+                    CentralAddressEntity(
+                        address = address.address,
+                        publicKey = address.publicKey,
+                        privateKey = address.privateKey
+                    )
+                )
+
                 sharedPrefs.edit { putString(PrefKeys.DEVICE_TOKEN, deviceToken) }
             }
 

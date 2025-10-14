@@ -1,5 +1,6 @@
 package com.profpay.wallet.ui.screens.settings
 
+import android.content.ClipData
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,16 +40,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.R
 import com.profpay.wallet.bridge.view_model.settings.SettingsAccountViewModel
 import com.profpay.wallet.ui.shared.sharedPref
@@ -61,18 +63,17 @@ fun SettingsAccountScreen(
     val tgId by viewModel.profileTelegramId.observeAsState()
     val tgUsername by viewModel.profileTelegramUsername.observeAsState()
 
-    val userId by produceState<Long?>(initialValue = null) {
-        value = viewModel.getProfileUserId()
-    }
-
-    val appId by produceState<String?>(initialValue = null) {
-        value = viewModel.getProfileAppId()
-    }
+    var userId by remember { mutableStateOf<Long?>(null) }
+    var appId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
-        viewModel.viewModelScope.launch {
-            viewModel.getUserTelegramData()
-        }
+        viewModel.getUserTelegramData()
+        viewModel.loadUserAndAppIds(
+            onLoaded = { u, a ->
+                userId = u
+                appId = a
+            }
+        )
     }
 
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
@@ -265,7 +266,8 @@ fun RowSettingsAccountFeature(
     info: String,
     byInfoShorted: Boolean = false,
 ) {
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val scope = rememberCoroutineScope()
+    val clipboard = LocalClipboard.current
 
     val infoForUI =
         if (byInfoShorted) {
@@ -293,7 +295,13 @@ fun RowSettingsAccountFeature(
             modifier =
                 Modifier
                     .clip(RoundedCornerShape(5.dp))
-                    .clickable { clipboardManager.setText(AnnotatedString(info)) },
+                    .clickable {
+                        scope.launch {
+                            clipboard.setClipEntry(
+                                ClipData.newPlainText("Telegram Data", info).toClipEntry()
+                            )
+                        }
+                    },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(

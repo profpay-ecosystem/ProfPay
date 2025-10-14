@@ -8,11 +8,15 @@ import com.profpay.wallet.data.database.entities.wallet.PendingAmlTransactionEnt
 import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.PendingAmlTransactionRepo
+import com.profpay.wallet.data.flow_db.module.IoDispatcher
 import com.profpay.wallet.data.utils.toBigInteger
 import com.profpay.wallet.data.utils.toSunAmount
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.tron.Tron
 import io.sentry.Sentry
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
+import org.bitcoinj.base.internal.ByteUtils
 import org.server.protobuf.aml.AmlProto.AmlPaymentRequest
 import org.server.protobuf.aml.AmlProto.AmlTransactionDetails
 import javax.inject.Inject
@@ -26,6 +30,7 @@ constructor(
     private val pendingAmlTransactionRepo: PendingAmlTransactionRepo,
     private val tron: Tron,
     private val profileRepo: ProfileRepo,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     grpcClientFactory: GrpcClientFactory,
 ) {
     private val profPayServerGrpcClient: ProfPayServerGrpcClient =
@@ -69,21 +74,22 @@ constructor(
             return Pair(false, "Недостаточно средств на балансе.\nНеобходимо: ${amlFeeValue.toBigInteger().toTokenAmount()} TRX")
         }
 
-        val signedTxnBytes =
+        val signedTxnBytes = withContext(ioDispatcher) {
             tron.transactions.getSignedTrxTransaction(
                 fromAddress = centralAddress.address,
                 toAddress = trxFeeAddress,
-                privateKey = centralAddress.privateKey.toByteArray(),
+                privateKey = ByteUtils.parseHex(centralAddress.privateKey),
                 amount = amlFeeValue.toBigInteger().toTokenAmount().toSunAmount(),
             )
-
-        val estimateBandwidth =
+        }
+        val estimateBandwidth = withContext(ioDispatcher) {
             tron.transactions.estimateBandwidth(
                 fromAddress = centralAddress.address,
                 toAddress = trxFeeAddress,
-                privateKey = centralAddress.privateKey.toByteArray(),
+                privateKey = ByteUtils.parseHex(centralAddress.privateKey),
                 amount = amlFeeValue.toBigInteger().toTokenAmount().toSunAmount(),
             )
+        }
 
         executeAmlPayment(
             AmlPaymentRequest

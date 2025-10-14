@@ -31,14 +31,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.R
 import com.profpay.wallet.bridge.view_model.wallet.TXDetailsViewModel
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.ui.app.theme.RedColor
 import com.profpay.wallet.ui.screens.wallet.AMLType
 import com.profpay.wallet.utils.aml.displayDateForAML
-import kotlinx.coroutines.launch
 import org.server.protobuf.aml.AmlProto
 
 @SuppressLint("DefaultLocale")
@@ -272,14 +270,12 @@ fun KnowAMLFeature(
                 ) {
                     Button(
                         onClick = {
-                            viewModel.viewModelScope.launch {
-                                viewModel.downloadPdfFile(transactionEntity = transactionEntity, context=context)
-                                stackedSnackbarHostState.showSuccessSnackbar(
-                                    "Успешное сохранение",
-                                    "Файл был успешно сохранен в папку 'Загрузки'",
-                                    "Закрыть",
-                                )
-                            }
+                            viewModel.downloadPdfFile(transactionEntity = transactionEntity, context=context)
+                            stackedSnackbarHostState.showSuccessSnackbar(
+                                "Успешное сохранение",
+                                "Файл был успешно сохранен в папку 'Загрузки'",
+                                "Закрыть",
+                            )
                         },
                         modifier =
                             Modifier

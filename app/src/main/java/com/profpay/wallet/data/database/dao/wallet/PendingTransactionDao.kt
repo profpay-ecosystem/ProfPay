@@ -9,14 +9,14 @@ import com.profpay.wallet.data.database.entities.wallet.PendingTransactionEntity
 @Dao
 interface PendingTransactionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(pendingTransactionEntity: PendingTransactionEntity): Long
+    suspend fun insert(pendingTransactionEntity: PendingTransactionEntity): Long
 
     @Query("SELECT EXISTS(SELECT 1 FROM pending_transaction WHERE tx_id = :txid)")
-    fun pendingTransactionIsExistsByTxId(txid: String): Boolean
+    suspend fun pendingTransactionIsExistsByTxId(txid: String): Boolean
 
     @Query("DELETE FROM pending_transaction WHERE tx_id = :txid")
-    fun deletePendingTransactionByTxId(txid: String)
+    suspend fun deletePendingTransactionByTxId(txid: String)
 
     @Query("SELECT * FROM pending_transaction WHERE timestamp + ttl_mills < :currentTime")
-    fun getExpiredTransactions(currentTime: Long): List<PendingTransactionEntity>
+    suspend fun getExpiredTransactions(currentTime: Long): List<PendingTransactionEntity>
 }

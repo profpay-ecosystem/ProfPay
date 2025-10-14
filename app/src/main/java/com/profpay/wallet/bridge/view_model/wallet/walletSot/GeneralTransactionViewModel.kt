@@ -26,10 +26,14 @@ import org.example.protobuf.transfer.TransferProto
 import java.math.BigInteger
 import javax.inject.Inject
 
+sealed class TransferUiEvent {
+    data object Idle : TransferUiEvent()
+    data object Success : TransferUiEvent()
+    data class Error(val title: String, val message: String) : TransferUiEvent()
+}
+
 @HiltViewModel
-class GeneralTransactionViewModel
-@Inject
-constructor(
+class GeneralTransactionViewModel @Inject constructor(
     private val walletAddressRepo: WalletAddressRepo,
     val addressRepo: AddressRepo,
     val transactionsRepo: TransactionsRepo,
@@ -37,7 +41,7 @@ constructor(
     private val transactionProcessorService: TransactionProcessorService,
     private val keystoreCryptoManager: KeystoreCryptoManager,
     private val walletProfileRepo: WalletProfileRepo,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val _stateCommission =
         MutableStateFlow<EstimateCommissionResult>(EstimateCommissionResult.Empty)
@@ -49,7 +53,11 @@ constructor(
     private val _generalAddressActivatedCommission = MutableStateFlow<BigInteger?>(null)
     val generalAddressActivatedCommission: StateFlow<BigInteger?> = _generalAddressActivatedCommission
 
-    suspend fun estimateCommission(
+    private val _uiEventTransfer = MutableStateFlow<TransferUiEvent>(
+        TransferUiEvent.Idle)
+    val uiEventTransfer: StateFlow<TransferUiEvent> = _uiEventTransfer.asStateFlow()
+
+    private suspend fun estimateCommission(
         address: String,
         bandwidth: Long,
         energy: Long,
@@ -65,59 +73,57 @@ constructor(
         addressWithTokens: AddressWithTokens,
         tokenEntity: TokenWithPendingTransactions?,
         balance: BigInteger?
-    ) {
-        viewModelScope.launch(ioDispatcher) {
-            val generalAddress = addressRepo.getGeneralAddressByWalletId(walletId)
+    ) = viewModelScope.launch(ioDispatcher) {
+        val generalAddress = addressRepo.getGeneralAddressByWalletId(walletId)
 
-            val privKeyBytes = resolvePrivateKey(
-                walletId = addressWithTokens.addressEntity.walletId,
-                addressEntity = addressWithTokens.addressEntity,
-                resolvePrivateKeyDeps = ResolvePrivateKeyDeps(
-                    addressRepo = addressRepo,
-                    walletProfileRepo = walletProfileRepo,
-                    keystoreCryptoManager = keystoreCryptoManager,
-                    tron = tron
-                )
+        val privKeyBytes = resolvePrivateKey(
+            walletId = addressWithTokens.addressEntity.walletId,
+            addressEntity = addressWithTokens.addressEntity,
+            resolvePrivateKeyDeps = ResolvePrivateKeyDeps(
+                addressRepo = addressRepo,
+                walletProfileRepo = walletProfileRepo,
+                keystoreCryptoManager = keystoreCryptoManager,
+                tron = tron
             )
+        )
 
-            val requiredEnergy = tron.transactions.estimateEnergy(
-                fromAddress = addressWithTokens.addressEntity.address,
-                toAddress = generalAddress,
-                privateKey = privKeyBytes,
-                amount = balance ?: tokenEntity?.balanceWithoutFrozen!!
-            )
+        val requiredEnergy = tron.transactions.estimateEnergy(
+            fromAddress = addressWithTokens.addressEntity.address,
+            toAddress = generalAddress,
+            privateKey = privKeyBytes,
+            amount = balance ?: tokenEntity?.balanceWithoutFrozen!!
+        )
 
-            val requiredBandwidth = tron.transactions.estimateBandwidth(
-                fromAddress = addressWithTokens.addressEntity.address,
-                toAddress = generalAddress,
-                privateKey = privKeyBytes,
-                amount = balance ?: tokenEntity?.balanceWithoutFrozen!!
-            )
+        val requiredBandwidth = tron.transactions.estimateBandwidth(
+            fromAddress = addressWithTokens.addressEntity.address,
+            toAddress = generalAddress,
+            privateKey = privKeyBytes,
+            amount = balance ?: tokenEntity?.balanceWithoutFrozen!!
+        )
 
-            if (!tron.addressUtilities.isAddressActivated(generalAddress)) {
-                val commission = tron.addressUtilities.getCreateNewAccountFeeInSystemContract()
-                _isGeneralAddressNotActivatedVisible.value = true
-                _generalAddressActivatedCommission.value = commission
-            }
-
-            estimateCommission(
-                address = addressWithTokens.addressEntity.address,
-                bandwidth = requiredBandwidth.bandwidth,
-                energy = requiredEnergy.energy,
-            )
+        if (!tron.addressUtilities.isAddressActivated(generalAddress)) {
+            val commission = tron.addressUtilities.getCreateNewAccountFeeInSystemContract()
+            _isGeneralAddressNotActivatedVisible.value = true
+            _generalAddressActivatedCommission.value = commission
         }
+
+        estimateCommission(
+            address = addressWithTokens.addressEntity.address,
+            bandwidth = requiredBandwidth.bandwidth,
+            energy = requiredEnergy.energy,
+        )
     }
 
-    suspend fun acceptTransaction(
+    fun onConfirmTransaction(
         addressWithTokens: AddressWithTokens,
         commission: BigInteger,
         walletId: Long,
         tokenEntity: TokenWithPendingTransactions?,
         amount: BigInteger,
         commissionResult: TransferProto.EstimateCommissionResponse,
-    ): TransferResult {
+    ) = viewModelScope.launch {
         val generalAddress = addressRepo.getGeneralAddressByWalletId(walletId)
-        return transactionProcessorService.sendTransaction(
+        val result = transactionProcessorService.sendTransaction(
             sender = addressWithTokens.addressEntity.address,
             receiver = generalAddress,
             amount = amount,
@@ -125,5 +131,15 @@ constructor(
             tokenEntity = tokenEntity,
             commissionResult = commissionResult,
         )
+
+        when (result) {
+            is TransferResult.Success -> _uiEventTransfer.emit(TransferUiEvent.Success)
+            is TransferResult.Failure -> _uiEventTransfer.emit(
+                TransferUiEvent.Error(
+                    title = "Ошибка перевода",
+                    message = result.error.message ?: "Неизвестная ошибка"
+                )
+            )
+        }
     }
 }

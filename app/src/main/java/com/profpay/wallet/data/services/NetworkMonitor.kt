@@ -1,23 +1,15 @@
 package com.profpay.wallet.data.services
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withContext
-import java.net.InetSocketAddress
-import java.net.Socket
 
 class NetworkMonitor(
     context: Context,
-    sharedPref: SharedPreferences,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -28,28 +20,15 @@ class NetworkMonitor(
     private val networkCallback =
         object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-//            CoroutineScope(Dispatchers.IO).launch {
-//                val isInternetAvailable = isInternetAvailable()
-//
-//                _networkAvailable.value = isInternetAvailable
-//                sharedPref.edit(commit = true) {
-//                    putBoolean("is_blocked_app", isInternetAvailable)
-//                }
-//            }
+                // Release
             }
 
             override fun onLost(network: Network) {
-//            sharedPref.edit(commit = true) {
-//                putBoolean("is_blocked_app", false)
-//            }
-//            _networkAvailable.value = false
+                // Release
             }
 
             override fun onUnavailable() {
-//            sharedPref.edit(commit = true) {
-//                putBoolean("is_blocked_app", false)
-//            }
-//            _networkAvailable.value = false
+                // Release
             }
         }
 
@@ -58,19 +37,4 @@ class NetworkMonitor(
         connectivityManager.registerNetworkCallback(request, networkCallback)
     }
 
-    fun unregister() {
-        connectivityManager.unregisterNetworkCallback(networkCallback)
-    }
-
-    suspend fun isInternetAvailable(): Boolean =
-        withContext(dispatcher) {
-            return@withContext try {
-                Socket().use {
-                    it.connect(InetSocketAddress("1.1.1.1", 443), 1500)
-                    true
-                }
-            } catch (e: Exception) {
-                false
-            }
-        }
 }

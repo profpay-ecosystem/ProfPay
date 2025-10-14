@@ -20,57 +20,44 @@ class ProcessContractEstimatorUseCase
     ) {
         suspend fun processCompleteSmartContract(deal: SmartContractProto.ContractDealListResponse): TransactionEstimatorResult? {
             val userId = profileRepo.getProfileUserId()
-            when {
-                isBuyerRequestInitialized(deal, userId) -> {
-                    return transactionFeeEstimator.createDeal(deal)
-                }
-                isBuyerNotDeposited(deal, userId) -> {
-                    return transactionFeeEstimator.approveAndDepositDeal(deal)
-                }
-                isSellerNotPayedExpertFee(deal, userId) -> {
-                    return transactionFeeEstimator.approveAndPaySellerExpertFee(deal, userId)
-                }
-                isContractAwaitingUserConfirmation(deal, userId) -> {
-                    return transactionFeeEstimator.confirmDeal(deal, userId)
-                }
-                isExpertNotDecision(deal, userId) -> {
-                    return null
-                }
-                isDisputeNotAgreed(deal, userId) -> {
-                    return transactionFeeEstimator.voteOnDisputeResolution(deal, userId)
-                }
-                else -> {
-                    return TransactionEstimatorResult.Error(EstimateType.DEFAULT, "Unknown contract state")
-                }
+            return when {
+                isBuyerRequestInitialized(deal, userId) ->
+                    transactionFeeEstimator.createDeal(deal)
+                isBuyerNotDeposited(deal, userId) ->
+                    transactionFeeEstimator.approveAndDepositDeal(deal)
+                isSellerNotPayedExpertFee(deal, userId) ->
+                    transactionFeeEstimator.approveAndPaySellerExpertFee(deal, userId)
+                isContractAwaitingUserConfirmation(deal, userId) ->
+                    transactionFeeEstimator.confirmDeal(deal, userId)
+                isExpertNotDecision(deal, userId) ->
+                    null
+                isDisputeNotAgreed(deal, userId) ->
+                    transactionFeeEstimator.voteOnDisputeResolution(deal, userId)
+                else ->
+                    TransactionEstimatorResult.Error(EstimateType.DEFAULT, "Unknown contract state")
             }
         }
 
         suspend fun processRejectSmartContract(deal: SmartContractProto.ContractDealListResponse): TransactionEstimatorResult? {
             val userId = profileRepo.getProfileUserId()
 
-            when {
-                isBuyerRequestInitialized(deal, userId) -> {
-                    return null
-                }
-                isBuyerNotDeposited(deal, userId) -> {
-                    return transactionFeeEstimator.rejectCancelDeal(deal, userId)
-                }
+            return when {
+                isBuyerRequestInitialized(deal, userId) ->
+                    null
+                isBuyerNotDeposited(deal, userId) ->
+                    transactionFeeEstimator.rejectCancelDeal(deal, userId)
                 isSellerNotPayedExpertFee(deal, userId) ||
                     isSellerNotPayedExpertFee(
                         deal,
                         getOppositeUserId(deal, userId),
-                    ) -> {
-                    return transactionFeeEstimator.rejectCancelDeal(deal, userId)
-                }
-                isContractAwaitingUserConfirmation(deal, userId) -> {
-                    return transactionFeeEstimator.executeDisputed(deal, userId)
-                }
-                isDisputeNotDeclined(deal, userId) -> {
-                    return transactionFeeEstimator.declineDisputeResolution(deal, userId)
-                }
-                else -> {
-                    return TransactionEstimatorResult.Error(EstimateType.DEFAULT, "Unknown contract state")
-                }
+                    ) ->
+                        transactionFeeEstimator.rejectCancelDeal(deal, userId)
+                isContractAwaitingUserConfirmation(deal, userId) ->
+                    transactionFeeEstimator.executeDisputed(deal, userId)
+                isDisputeNotDeclined(deal, userId) ->
+                    transactionFeeEstimator.declineDisputeResolution(deal, userId)
+                else ->
+                    TransactionEstimatorResult.Error(EstimateType.DEFAULT, "Unknown contract state")
             }
         }
     }

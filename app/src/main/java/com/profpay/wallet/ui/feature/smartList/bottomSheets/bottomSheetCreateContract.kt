@@ -33,16 +33,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.GreenColor
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,14 +64,10 @@ fun bottomSheetCreateContract(viewModel: GetSmartContractViewModel): Pair<Boolea
 
     if (isOpenSheet) {
         LaunchedEffect(Unit) {
-            withContext(Dispatchers.IO) {
-                val address = viewModel.addressRepo.getGeneralAddressByWalletId(1L)
-                viewModel.getResourceQuote(
-                    address = address,
-                    energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
-                    bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
-                )
-            }
+            viewModel.getResourceQuote(
+                energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
+                bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
+            )
         }
 
         LaunchedEffect(deployEstimateCommission) {
@@ -172,22 +165,18 @@ fun bottomSheetCreateContract(viewModel: GetSmartContractViewModel): Pair<Boolea
                     enabled = isButtonEnabled,
                     onClick = {
                         isButtonEnabled = false
-                        viewModel.viewModelScope.launch {
-                            withContext(Dispatchers.IO) {
-                                viewModel.deploySmartContract(
-                                    commission = commission,
-                                    energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
-                                    bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
-                                    context = context,
-                                )
-                                coroutineScope.launch {
-                                    sheetState.hide()
-                                    delay(400)
-                                    setIsOpenSheet(false)
-                                }
-                                isButtonEnabled = true
-                            }
+                        viewModel.deploySmartContract(
+                            commission = commission,
+                            energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
+                            bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
+                            context = context,
+                        )
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            delay(400)
+                            setIsOpenSheet(false)
                         }
+                        isButtonEnabled = true
                     },
                     modifier =
                         Modifier

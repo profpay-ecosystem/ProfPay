@@ -18,8 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -28,11 +27,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.profpay.wallet.R
 import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
 import com.profpay.wallet.ui.feature.smartList.bottomSheets.bottomSheetCreateContract
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @Composable
 fun SmartHeaderCreateContractInListFeature(
@@ -41,15 +39,11 @@ fun SmartHeaderCreateContractInListFeature(
     goToSystemTRX: () -> Unit,
 ) {
     val (_, setIsOpenCreateContractSheet) = bottomSheetCreateContract(viewModel = viewModel)
-    val (isGeneralAddressActivated, setIsGeneralAddressActivated) = remember { mutableStateOf(false) }
+    val isActivated by viewModel.isActivated.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         val generalAddress = viewModel.addressRepo.getGeneralAddressByWalletId(1)
-        setIsGeneralAddressActivated(
-            withContext(Dispatchers.IO) {
-                viewModel.tron.addressUtilities.isAddressActivated(generalAddress)
-            },
-        )
+        viewModel.checkActivation(generalAddress)
     }
 
     Column(modifier = Modifier.padding(8.dp)) {
@@ -89,7 +83,7 @@ fun SmartHeaderCreateContractInListFeature(
                         .fillMaxWidth()
                         .shadow(7.dp, RoundedCornerShape(10.dp))
                         .clickable {
-                            if (isGeneralAddressActivated) {
+                            if (isActivated) {
                                 setIsOpenCreateContractSheet(true)
                             } else {
                                 snackbar.showErrorSnackbar(

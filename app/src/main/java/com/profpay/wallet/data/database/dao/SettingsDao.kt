@@ -9,26 +9,29 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SettingsDao {
     @Insert(entity = SettingsEntity::class)
-    fun insertNewSettings(settings: SettingsEntity)
+    suspend fun insertNewSettings(settings: SettingsEntity)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM settings)")
+    suspend fun isSettingsExists(): Boolean
 
     @Query("UPDATE settings SET token_bot = :botToken")
-    fun updateBotToken(botToken: String)
+    suspend fun updateBotToken(botToken: String)
 
     @Query("UPDATE settings SET active_bot = :active")
-    fun updateActiveBot(active: Boolean)
+    suspend fun updateActiveBot(active: Boolean)
 
     @Query("SELECT COUNT(*) FROM settings")
-    fun getCountRecordSettings(): Int
+    suspend fun getCountRecordSettings(): Int
 
     @Query("SELECT language_code FROM settings LIMIT 1")
-    fun getLanguageCode(): String
+    suspend fun getLanguageCode(): String
 
     @Query("SELECT * FROM settings")
-    fun getSettings(): SettingsEntity?
+    suspend fun getSettings(): SettingsEntity?
 
     @Query("SELECT * FROM settings")
-    fun getSettingsForVM(): Flow<SettingsEntity>
+    fun getSettingsFlow(): Flow<SettingsEntity>
 
     @Query("UPDATE settings SET auto_aml = :autoAML")
-    fun updateAutoAML(autoAML: Boolean)
+    suspend fun updateAutoAML(autoAML: Boolean)
 }

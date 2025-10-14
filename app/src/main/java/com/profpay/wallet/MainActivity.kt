@@ -59,7 +59,7 @@ class MainActivity : FragmentActivity() {
                 MODE_PRIVATE,
             )
 
-        networkMonitor = NetworkMonitor(this, sharedPrefs).also { it.register() }
+        networkMonitor = NetworkMonitor(this).also { it.register() }
         enableEdgeToEdge()
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(

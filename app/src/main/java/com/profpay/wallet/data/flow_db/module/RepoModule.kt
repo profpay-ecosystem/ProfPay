@@ -14,6 +14,8 @@ import com.profpay.wallet.data.flow_db.repo.TXDetailsRepo
 import com.profpay.wallet.data.flow_db.repo.TXDetailsRepoImpl
 import com.profpay.wallet.data.flow_db.repo.ThemeAppRepo
 import com.profpay.wallet.data.flow_db.repo.ThemeAppRepoImpl
+import com.profpay.wallet.data.flow_db.repo.WalletAddedRepo
+import com.profpay.wallet.data.flow_db.repo.WalletAddedRepoImpl
 import com.profpay.wallet.data.flow_db.repo.WalletAddressRepo
 import com.profpay.wallet.data.flow_db.repo.WalletAddressRepoImpl
 import com.profpay.wallet.data.flow_db.repo.WalletInfoRepo
@@ -68,4 +70,8 @@ abstract class RepoModule {
     @Binds
     @Singleton
     abstract fun bindWalletInfoRepo(walletInfoRepo: WalletInfoRepoImpl): WalletInfoRepo
+
+    @Binds
+    @Singleton
+    abstract fun bindWalletAddedRepo(walletAddedRepoImpl: WalletAddedRepoImpl): WalletAddedRepo
 }

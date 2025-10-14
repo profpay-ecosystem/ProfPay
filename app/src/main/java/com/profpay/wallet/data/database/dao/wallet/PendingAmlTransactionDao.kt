@@ -9,14 +9,14 @@ import com.profpay.wallet.data.database.entities.wallet.PendingAmlTransactionEnt
 @Dao
 interface PendingAmlTransactionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(pendingAmlTransactionEntity: PendingAmlTransactionEntity): Long
+    suspend fun insert(pendingAmlTransactionEntity: PendingAmlTransactionEntity): Long
 
     @Query("UPDATE pending_aml_transactions SET is_successful = 1 WHERE tx_id = :txId")
-    fun markAsSuccessful(txId: String)
+    suspend fun markAsSuccessful(txId: String)
 
     @Query("UPDATE pending_aml_transactions SET is_error = 1 WHERE tx_id = :txId")
-    fun markAsError(txId: String)
+    suspend fun markAsError(txId: String)
 
     @Query("SELECT EXISTS(SELECT * FROM pending_aml_transactions WHERE tx_id = :txId AND is_successful = 0 AND is_error = 0)")
-    fun isPendingAmlTransactionExists(txId: String): Boolean
+    suspend fun isPendingAmlTransactionExists(txId: String): Boolean
 }

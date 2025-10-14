@@ -4,8 +4,6 @@ import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.ProfileRepoImpl
 import com.profpay.wallet.data.database.repositories.SettingsRepo
 import com.profpay.wallet.data.database.repositories.SettingsRepoImpl
-import com.profpay.wallet.data.database.repositories.StatesRepo
-import com.profpay.wallet.data.database.repositories.StatesRepoImpl
 import com.profpay.wallet.data.database.repositories.TransactionsRepo
 import com.profpay.wallet.data.database.repositories.TransactionsRepoImpl
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
@@ -33,7 +31,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class ProfileModule {
+abstract class RepositoryModule {
     @Binds
     abstract fun bindAddressRepo(addressRepoImpl: AddressRepoImpl): AddressRepo
 
@@ -48,9 +46,6 @@ abstract class ProfileModule {
 
     @Binds
     abstract fun bindSettingsRepo(settingsRepoImpl: SettingsRepoImpl): SettingsRepo
-
-    @Binds
-    abstract fun bindStatesRepo(statesRepoImpl: StatesRepoImpl): StatesRepo
 
     @Binds
     abstract fun bindTransactionsRepo(transactionsRepoImpl: TransactionsRepoImpl): TransactionsRepo

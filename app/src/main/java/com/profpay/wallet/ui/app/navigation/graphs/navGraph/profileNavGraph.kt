@@ -41,8 +41,7 @@ fun NavGraphBuilder.profileNavGraph(navController: NavController) {
                 goToWalletSystem = { navController.navigate(route = WalletInfo.WalletSystem.route) },
                 goToWalletSystemTRX = { navController.navigate(route = WalletInfo.WalletSystemTRX.route) },
                 goToWalletSots = { navController.navigate(route = WalletInfo.WalletSots.route) },
-                goToTXDetailsScreen = { navController.navigate(route = WalletInfo.TXDetails.route) },
-                navController = navController,
+                goToTXDetailsScreen = { navController.navigate(route = WalletInfo.TXDetails.route) }
             )
         }
 

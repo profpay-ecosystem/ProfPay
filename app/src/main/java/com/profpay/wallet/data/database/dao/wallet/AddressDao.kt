@@ -1,30 +1,30 @@
 package com.profpay.wallet.data.database.dao.wallet
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import com.profpay.wallet.data.database.entities.wallet.AddressEntity
 import com.profpay.wallet.data.database.models.AddressWithTokens
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AddressDao {
     @Insert(entity = AddressEntity::class)
-    fun insertNewAddress(addressEntity: AddressEntity): Long
+    suspend fun insert(addressEntity: AddressEntity): Long
 
     @Query("SELECT is_general_address FROM addresses WHERE address =:address")
-    fun isGeneralAddress(address: String): Boolean
+    suspend fun isGeneralAddress(address: String): Boolean
 
     @Query(
         "SELECT address_id, wallet_id, blockchain_name, address, is_general_address, sot_index, sot_derivation_index, public_key FROM addresses WHERE address =:address",
     )
-    fun getAddressEntityByAddress(address: String): AddressEntity?
+    suspend fun getAddressEntityByAddress(address: String): AddressEntity?
 
     @Query(
         "SELECT address_id, wallet_id, blockchain_name, address, is_general_address, sot_index, sot_derivation_index, public_key FROM addresses WHERE address_id =:id",
     )
-    fun getAddressEntityById(id: Long): AddressEntity?
+    suspend fun getAddressEntityById(id: Long): AddressEntity?
 
     @Transaction
     @Query(
@@ -33,10 +33,10 @@ interface AddressDao {
             "AND addresses.blockchain_name = :blockchainName " +
             "AND addresses.sot_index >= 0 ORDER BY addresses.sot_index ASC",
     )
-    fun getAddressesSotsWithTokensByBlockchainLD(
+    fun getAddressesSotsWithTokensByBlockchainFlow(
         walletId: Long,
         blockchainName: String,
-    ): LiveData<List<AddressWithTokens>>
+    ): Flow<List<AddressWithTokens>>
 
     @Transaction
     @Query(
@@ -45,10 +45,10 @@ interface AddressDao {
             "AND addresses.blockchain_name = :blockchainName " +
             "AND addresses.is_general_address = 1",
     )
-    fun getGeneralAddressWithTokensLiveData(
+    fun getGeneralAddressWithTokensFlow(
         addressId: Long,
         blockchainName: String,
-    ): LiveData<AddressWithTokens>
+    ): Flow<AddressWithTokens>
 
     @Query(
         "SELECT * FROM addresses " +
@@ -56,7 +56,7 @@ interface AddressDao {
             "AND addresses.blockchain_name = :blockchainName " +
             "AND addresses.is_general_address = 1",
     )
-    fun getGeneralAddressWithTokens(
+    suspend fun getGeneralAddressWithTokens(
         addressId: Long,
         blockchainName: String,
     ): AddressWithTokens
@@ -67,35 +67,35 @@ interface AddressDao {
             "WHERE addresses.address_id = :addressId " +
             "AND addresses.blockchain_name = :blockchainName",
     )
-    fun getAddressWithTokens(
+    fun getAddressWithTokensFlow(
         addressId: Long,
         blockchainName: String,
-    ): LiveData<AddressWithTokens>
+    ): Flow<AddressWithTokens>
 
     @Transaction
     @Query(
         "SELECT * FROM addresses " +
             "WHERE addresses.wallet_id = :walletId " +
             "AND addresses.blockchain_name = :blockchainName " +
-            "AND addresses.sot_index == -1 ",
+            "AND addresses.sot_index = -1 ",
     )
-    fun getAddressWithTokensArchivalByBlockchainLD(
+    fun getAddressesWithTokensArchivalByBlockchainFlow(
         walletId: Long,
         blockchainName: String,
-    ): LiveData<List<AddressWithTokens>>
+    ): Flow<List<AddressWithTokens>>
 
     @Transaction
     @Query(
         "SELECT * FROM addresses " +
             "WHERE addresses.address = :address ",
     )
-    fun getAddressWithTokensByAddressLD(address: String): LiveData<AddressWithTokens>
+    fun getAddressWithTokensByAddressFlow(address: String): Flow<AddressWithTokens>
 
     @Query("SELECT * FROM addresses WHERE address =:address")
-    fun getAddressEntityByAddressLD(address: String): LiveData<AddressEntity>
+    fun getAddressEntityByAddressFlow(address: String): Flow<AddressEntity>
 
     @Query("SELECT address FROM addresses WHERE wallet_id = :walletId AND is_general_address = 1")
-    fun getGeneralAddressByWalletId(walletId: Long): String
+    suspend fun getGeneralAddressByWalletId(walletId: Long): String
 
     @Transaction
     @Query(
@@ -103,7 +103,7 @@ interface AddressDao {
             "WHERE addresses.blockchain_name = :blockchainName " +
             "AND addresses.sot_index >= 0 ORDER BY addresses.sot_index ASC",
     )
-    fun getAddressesSotsWithTokensByBlockchain(blockchainName: String): List<AddressWithTokens>
+    suspend fun getAddressesSotsWithTokensByBlockchain(blockchainName: String): List<AddressWithTokens>
 
     @Transaction
     @Query(
@@ -111,25 +111,25 @@ interface AddressDao {
             "WHERE addresses.wallet_id = :walletId " +
             "AND addresses.sot_index >= 0 ",
     )
-    fun getAddressesSotsWithTokensLD(walletId: Long): LiveData<List<AddressWithTokens>>
+    fun getAddressesSotsWithTokensFlow(walletId: Long): Flow<List<AddressWithTokens>>
 
     @Query("SELECT max(sot_derivation_index) FROM addresses WHERE wallet_id = :id")
-    fun getMaxSotDerivationIndex(id: Long): Int
+    suspend fun getMaxSotDerivationIndex(id: Long): Int
 
     @Query("UPDATE addresses SET sot_index = :index WHERE address_id = :addressId")
-    fun updateSotIndexByAddressId(
+    suspend fun updateSotIndexByAddressId(
         index: Byte,
         addressId: Long,
     )
 
     @Query("SELECT public_key FROM addresses WHERE wallet_id = :walletId AND is_general_address = 1")
-    fun getGeneralPublicKeyByWalletId(walletId: Long): String
+    suspend fun getGeneralPublicKeyByWalletId(walletId: Long): String
 
     @Query("SELECT * FROM addresses WHERE wallet_id = :walletId AND is_general_address = 1")
-    fun getGeneralAddressEntityByWalletId(walletId: Long): AddressEntity
+    suspend fun getGeneralAddressEntityByWalletId(walletId: Long): AddressEntity
 
     @Query("SELECT * FROM addresses WHERE is_general_address = 1")
-    fun getGeneralAddresses(): List<AddressEntity>
+    suspend fun getGeneralAddresses(): List<AddressEntity>
 
     @Query(
         """

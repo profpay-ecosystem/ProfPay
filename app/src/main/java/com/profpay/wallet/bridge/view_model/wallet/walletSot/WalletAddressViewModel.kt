@@ -2,6 +2,7 @@ package com.profpay.wallet.bridge.view_model.wallet.walletSot
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.bridge.view_model.dto.transfer.TransferResult
@@ -21,6 +22,7 @@ import com.profpay.wallet.tron.Tron
 import com.profpay.wallet.utils.ResolvePrivateKeyDeps
 import com.profpay.wallet.utils.resolvePrivateKey
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,10 +33,14 @@ import org.example.protobuf.transfer.TransferProto
 import java.math.BigInteger
 import javax.inject.Inject
 
+sealed class TransferRejectUiEvent {
+    data object Idle : TransferRejectUiEvent()
+    data object Success : TransferRejectUiEvent()
+    data class Error(val title: String, val message: String) : TransferRejectUiEvent()
+}
+
 @HiltViewModel
-class WalletAddressViewModel
-@Inject
-constructor(
+class WalletAddressViewModel @Inject constructor(
     private val walletAddressRepo: WalletAddressRepo,
     val addressRepo: AddressRepo,
     val transactionsRepo: TransactionsRepo,
@@ -42,7 +48,7 @@ constructor(
     private val transactionProcessorService: TransactionProcessorService,
     private val keystoreCryptoManager: KeystoreCryptoManager,
     private val walletProfileRepo: WalletProfileRepo,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
     private val _isActivated = MutableStateFlow(false)
     val isActivated: StateFlow<Boolean> = _isActivated
@@ -51,16 +57,20 @@ constructor(
         MutableStateFlow<EstimateCommissionResult>(EstimateCommissionResult.Empty)
     val stateCommission: StateFlow<EstimateCommissionResult> = _stateCommission.asStateFlow()
 
-    fun checkActivation(address: String) {
-        viewModelScope.launch {
-            _isActivated.value =
-                withContext(ioDispatcher) {
-                    tron.addressUtilities.isAddressActivated(address)
-                }
-        }
+    private val _isGeneralAddress = MutableStateFlow(false)
+    val isGeneralAddress: StateFlow<Boolean> = _isGeneralAddress.asStateFlow()
+
+    private val _uiEventTransfer = MutableStateFlow<TransferRejectUiEvent>(TransferRejectUiEvent.Idle)
+    val uiEventTransfer: StateFlow<TransferRejectUiEvent> = _uiEventTransfer.asStateFlow()
+
+    fun checkActivation(address: String) = viewModelScope.launch {
+        _isActivated.value =
+            withContext(ioDispatcher) {
+                tron.addressUtilities.isAddressActivated(address)
+            }
     }
 
-    suspend fun estimateCommission(
+    private suspend fun estimateCommission(
         address: String,
         bandwidth: Long,
         energy: Long,
@@ -76,67 +86,69 @@ constructor(
         tokenName: String,
         valueAmount: String,
         addressSending: String
-    ) {
-        viewModelScope.launch {
-            if (valueAmount.isEmpty() ||
-                !tron.addressUtilities.isValidTronAddress(addressSending)
-            ) return@launch
+    ) = viewModelScope.launch {
+        if (valueAmount.isEmpty() ||
+            !tron.addressUtilities.isValidTronAddress(addressSending)
+        ) return@launch
 
-            val privKeyBytes = resolvePrivateKey(
-                walletId = addressWithTokens.addressEntity.walletId,
-                addressEntity = addressWithTokens.addressEntity,
-                resolvePrivateKeyDeps = ResolvePrivateKeyDeps(
-                    addressRepo = addressRepo,
-                    walletProfileRepo = walletProfileRepo,
-                    keystoreCryptoManager = keystoreCryptoManager,
-                    tron = tron
-                )
+        val privKeyBytes = resolvePrivateKey(
+            walletId = addressWithTokens.addressEntity.walletId,
+            addressEntity = addressWithTokens.addressEntity,
+            resolvePrivateKeyDeps = ResolvePrivateKeyDeps(
+                addressRepo = addressRepo,
+                walletProfileRepo = walletProfileRepo,
+                keystoreCryptoManager = keystoreCryptoManager,
+                tron = tron
             )
+        )
 
-            try {
-                val amount = valueAmount.toBigDecimal().toSunAmount()
+        try {
+            val amount = valueAmount.toBigDecimal().toSunAmount()
 
-                val requiredEnergy = withContext(ioDispatcher) {
-                    tron.transactions.estimateEnergy(
-                        fromAddress = addressWithTokens.addressEntity.address,
-                        toAddress = addressSending,
-                        privateKey = privKeyBytes,
-                        amount = amount
-                    )
-                }
-
-                val requiredBandwidth = withContext(ioDispatcher) {
-                    tron.transactions.estimateBandwidth(
-                        fromAddress = addressWithTokens.addressEntity.address,
-                        toAddress = addressSending,
-                        privateKey = privKeyBytes,
-                        amount = amount
-                    )
-                }
-
-                val hasEnoughBandwidth = withContext(ioDispatcher) {
-                    tron.accounts.hasEnoughBandwidth(
-                        addressWithTokens.addressEntity.address,
-                        requiredBandwidth.bandwidth
-                    )
-                }
-
-                estimateCommission(
-                    address = addressWithTokens.addressEntity.address,
-                    bandwidth = if (hasEnoughBandwidth) 0 else requiredBandwidth.bandwidth,
-                    energy = if (tokenName == "TRX") 0 else requiredEnergy.energy
+            val requiredEnergy = withContext(ioDispatcher) {
+                tron.transactions.estimateEnergy(
+                    fromAddress = addressWithTokens.addressEntity.address,
+                    toAddress = addressSending,
+                    privateKey = privKeyBytes,
+                    amount = amount
                 )
-            } catch (_: NumberFormatException) {
             }
+
+            val requiredBandwidth = withContext(ioDispatcher) {
+                tron.transactions.estimateBandwidth(
+                    fromAddress = addressWithTokens.addressEntity.address,
+                    toAddress = addressSending,
+                    privateKey = privKeyBytes,
+                    amount = amount
+                )
+            }
+
+            val hasEnoughBandwidth = withContext(ioDispatcher) {
+                tron.accounts.hasEnoughBandwidth(
+                    addressWithTokens.addressEntity.address,
+                    requiredBandwidth.bandwidth
+                )
+            }
+
+            estimateCommission(
+                address = addressWithTokens.addressEntity.address,
+                bandwidth = if (hasEnoughBandwidth) 0 else requiredBandwidth.bandwidth,
+                energy = if (tokenName == "TRX") 0 else requiredEnergy.energy
+            )
+        } catch (e: NumberFormatException) {
+            Sentry.captureException(e)
         }
     }
 
-    fun getAddressWithTokensByAddressLD(address: String): LiveData<AddressWithTokens> =
+    fun getAddressWithTokensByAddress(address: String): LiveData<AddressWithTokens> =
         liveData(ioDispatcher) {
-            emitSource(addressRepo.getAddressWithTokensByAddressLD(address))
+            emitSource(addressRepo.getAddressWithTokensByAddressFlow(address).asLiveData())
         }
 
-    suspend fun isGeneralAddress(address: String): Boolean = addressRepo.isGeneralAddress(address)
+    fun isGeneralAddress(address: String) = viewModelScope.launch(ioDispatcher) {
+        val value = addressRepo.isGeneralAddress(address)
+        _isGeneralAddress.emit(value)
+    }
 
     fun getTransactionsByAddressAndTokenLD(
         walletId: Long,
@@ -147,40 +159,36 @@ constructor(
     ): LiveData<List<TransactionModel>> =
         liveData(ioDispatcher) {
             emitSource(
-                transactionsRepo.getTransactionsByAddressAndTokenLD(
+                transactionsRepo.getTransactionsByAddressAndTokenFlow(
                     walletId = walletId,
                     address = address,
                     tokenName = tokenName,
                     isSender = isSender,
                     isCentralAddress = isCentralAddress,
-                ),
+                ).asLiveData(),
             )
         }
 
-    suspend fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel?>> {
-        var listListTransactions: List<List<TransactionModel>> = listOf(emptyList())
+    fun getListTransactionToTimestamp(listTransactions: List<TransactionModel>): List<List<TransactionModel>> {
+        if (listTransactions.isEmpty()) return emptyList()
+        val listListTransactions: List<List<TransactionModel>> = listTransactions
+                .sortedByDescending { it.timestamp }
+                .groupBy { it.transactionDate }
+                .values
+                .toList()
 
-        withContext(ioDispatcher) {
-            if (listTransactions.isEmpty()) return@withContext
-            listListTransactions =
-                listTransactions
-                    .sortedByDescending { it.timestamp }
-                    .groupBy { it.transactionDate }
-                    .values
-                    .toList()
-        }
         return listListTransactions
     }
 
-    suspend fun rejectTransaction(
+    fun onClickedReject(
         toAddress: String,
         addressWithTokens: AddressWithTokens,
         amount: BigInteger,
         commission: BigInteger,
         tokenEntity: TokenWithPendingTransactions?,
         commissionResult: TransferProto.EstimateCommissionResponse,
-    ): TransferResult =
-        transactionProcessorService.sendTransaction(
+    ) = viewModelScope.launch(ioDispatcher) {
+        val result = transactionProcessorService.sendTransaction(
             sender = addressWithTokens.addressEntity.address,
             receiver = toAddress,
             amount = amount,
@@ -188,4 +196,17 @@ constructor(
             tokenEntity = tokenEntity,
             commissionResult = commissionResult,
         )
+
+        when (result) {
+            is TransferResult.Success -> _uiEventTransfer.emit(TransferRejectUiEvent.Success)
+            is TransferResult.Failure -> _uiEventTransfer.emit(
+                TransferRejectUiEvent.Error(
+                    title = "Ошибка перевода",
+                    message = result.error.message ?: "Неизвестная ошибка"
+                )
+            )
+        }
+    }
+
+    fun isValidTronAddress(address: String) = tron.addressUtilities.isValidTronAddress(address)
 }

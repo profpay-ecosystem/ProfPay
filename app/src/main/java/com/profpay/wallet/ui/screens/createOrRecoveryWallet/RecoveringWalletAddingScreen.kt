@@ -1,5 +1,6 @@
 package com.profpay.wallet.ui.screens.createOrRecoveryWallet
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,11 +31,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.PrefKeys
 import com.profpay.wallet.R
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletState
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletViewModel
@@ -43,17 +42,12 @@ import com.profpay.wallet.tron.AddressGenerateFromSeedPhr
 import com.profpay.wallet.ui.app.theme.BackgroundDark
 import com.profpay.wallet.ui.app.theme.BackgroundLight
 import com.profpay.wallet.ui.shared.sharedPref
-import io.sentry.Sentry
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecoveringWalletAddingScreen(
     viewModel: RecoverWalletViewModel = hiltViewModel(),
     goToHome: () -> Unit,
-    goToBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     Scaffold { padding ->
@@ -111,6 +105,21 @@ fun RecoveringWalletAddingWidget(
 ) {
     val sharedPref = sharedPref()
 
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is WalletAddedViewModel.WalletUiEvent.NavigateToHome -> {
+                    clearState()
+                    goToHome()
+                }
+                is WalletAddedViewModel.WalletUiEvent.ShowError -> {
+                    clearState()
+                    Log.e("WalletAdded", "Error event received")
+                }
+            }
+        }
+    }
+
     Column(
         modifier =
             Modifier
@@ -147,44 +156,15 @@ fun RecoveringWalletAddingWidget(
             )
             Button(
                 onClick = {
-                    viewModel.viewModelScope.launch(Dispatchers.IO) {
-                        val addressesWithKeysForM = addressRecoverResult.addressesWithKeysForM
-                        val deviceToken = sharedPref.getString(PrefKeys.DEVICE_TOKEN, null) ?: throw Exception("Device Token not found.")
-                        if (accountWasFound && userId == null) throw Exception("User ID not found.")
-                        val isFirstStarted = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
+                    val addressesWithKeysForM = addressRecoverResult.addressesWithKeysForM
+                    if (accountWasFound && userId == null) throw Exception("User ID not found.")
 
-                        try {
-                            if (isFirstStarted) {
-                                if (accountWasFound && userId != null) {
-                                    viewModel.registerUserDevice(
-                                        userId = userId,
-                                        deviceToken = deviceToken,
-                                        sharedPref = sharedPref,
-                                    )
-                                    viewModel.insertNewCryptoAddresses(addressesWithKeysForM)
-                                } else {
-                                    viewModel.registerUserAccount(deviceToken = deviceToken, sharedPref = sharedPref)
-                                    viewModel.createCryptoAddresses(addressesWithKeysForM)
-                                    viewModel.insertNewCryptoAddresses(addressesWithKeysForM)
-                                }
-                                sharedPref.edit { putBoolean(PrefKeys.FIRST_STARTED, false) }
-                            } else {
-                                viewModel.createCryptoAddresses(addressesWithKeysForM)
-                                viewModel.insertNewCryptoAddresses(addressesWithKeysForM)
-                            }
-
-                            withContext(Dispatchers.Main) {
-                                clearState()
-                                goToHome()
-                            }
-                        } catch (e: Exception) {
-                            if (!sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)) {
-                                sharedPref.edit { putBoolean(PrefKeys.FIRST_STARTED, true) }
-                            }
-                            clearState()
-                            Sentry.captureException(e)
-                        }
-                    }
+                    viewModel.onWalletRecoveryClicked(
+                        sharedPref = sharedPref,
+                        addressesWithKeysForM = addressesWithKeysForM,
+                        accountWasFound = accountWasFound,
+                        userId = userId,
+                    )
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = BackgroundLight),
                 modifier =
@@ -216,12 +196,3 @@ fun RecoveringWalletAddingWidget(
         )
     }
 }
-//        WalletCheckBoxFeature(
-//            funcButton = {
-//                viewModel.walletAddingProcessing(
-//                    addressRecoverResult.addresses
-//                )
-//                goToHome()
-//            },
-//            textButton = "Принять и продолжить"
-//        )

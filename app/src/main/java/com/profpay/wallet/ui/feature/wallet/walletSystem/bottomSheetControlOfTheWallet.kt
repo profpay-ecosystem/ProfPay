@@ -1,5 +1,6 @@
 package com.profpay.wallet.ui.feature.wallet.walletSystem
 
+import android.content.ClipData
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,10 +30,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,13 +51,15 @@ fun bottomSheetControlOfTheWallet(
     viewModel: WalletSystemViewModel = hiltViewModel(),
     wallet: WalletProfileModel,
 ): Pair<Boolean, (Boolean) -> Unit> {
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+
     val sheetState =
         rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
             confirmValueChange = { true },
         )
     val coroutineScope = rememberCoroutineScope()
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
     val (isOpenSheet, setIsOpenSheet) = remember { mutableStateOf(false) }
 
     val (isOpenSeedPhrase, setIsOpenSeedPhrase) = remember { mutableStateOf(false) }
@@ -119,9 +121,7 @@ fun bottomSheetControlOfTheWallet(
                 RenamingWalletFeature(
                     walletName = wallet.name,
                     onClick = { newName ->
-                        viewModel.viewModelScope.launch {
-                            viewModel.updateNameWalletById(wallet.id!!, newName)
-                        }
+                        viewModel.updateNameWalletById(wallet.id!!, newName)
                     },
                 )
 
@@ -141,7 +141,13 @@ fun bottomSheetControlOfTheWallet(
                         )
                     }
                     if (isOpenSeedPhrase && seedPhr.isNotEmpty()) {
-                        IconButton(onClick = { clipboardManager.setText(AnnotatedString(seedPhr)) }) {
+                        IconButton(onClick = {
+                            scope.launch {
+                                clipboard.setClipEntry(
+                                    ClipData.newPlainText("!!!", seedPhr).toClipEntry()
+                                )
+                            }
+                        }) {
                             Icon(
                                 modifier =
                                     Modifier
@@ -173,10 +179,8 @@ fun bottomSheetControlOfTheWallet(
                             setIsOpenConfDeleteWallet(!isOpenConfDeleteWallet)
                         },
                         onConfirmation = {
-                            viewModel.viewModelScope.launch {
-                                viewModel.deleteWalletProfile(walletId = wallet.id!!)
-                                setIsOpenConfDeleteWallet(!isOpenConfDeleteWallet)
-                            }
+                            viewModel.deleteWalletProfile(walletId = wallet.id!!)
+                            setIsOpenConfDeleteWallet(!isOpenConfDeleteWallet)
                         },
                         dialogTitle = "Удалить кошелёк",
                         isSmallDialogTitle = true,

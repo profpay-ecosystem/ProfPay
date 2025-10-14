@@ -29,14 +29,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.bridge.view_model.wallet.ReissueCentralAddressViewModel
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.GreenColor
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,15 +105,11 @@ fun bottomSheetReissueAddress(viewModel: ReissueCentralAddressViewModel = hiltVi
 
                 Button(
                     onClick = {
-                        viewModel.viewModelScope.launch {
-                            withContext(Dispatchers.IO) {
-                                viewModel.reissueCentralAddress()
-                                coroutineScope.launch {
-                                    sheetState.hide()
-                                    delay(400)
-                                    setIsOpenSheet(false)
-                                }
-                            }
+                        viewModel.reissueCentralAddress()
+                        coroutineScope.launch {
+                            sheetState.hide()
+                            delay(400)
+                            setIsOpenSheet(false)
                         }
                     },
                     modifier =

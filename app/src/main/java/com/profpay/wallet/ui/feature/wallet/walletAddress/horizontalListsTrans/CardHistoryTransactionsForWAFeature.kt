@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -45,12 +44,11 @@ fun CardHistoryTransactionsForWAFeature(
     val addressWa = sharedPref.getString(PrefKeys.ADDRESS_FOR_WALLET_ADDRESS, "")
 
     val isActivated by viewModel.isActivated.collectAsState()
-    val isGeneralAddressReceive by produceState(initialValue = false) {
-        value = viewModel.isGeneralAddress(transactionEntity.receiverAddress)
-    }
+    val isGeneralAddressReceive by viewModel.isGeneralAddress.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.checkActivation(transactionEntity.receiverAddress)
+        viewModel.isGeneralAddress(transactionEntity.receiverAddress)
     }
 
     val uiModel = transactionEntity.toUiModel(

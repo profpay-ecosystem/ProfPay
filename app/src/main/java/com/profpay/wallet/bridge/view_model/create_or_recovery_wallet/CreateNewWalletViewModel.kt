@@ -18,10 +18,8 @@ class CreateNewWalletViewModel
         private val addressAndMnemonicRepo: AddressAndMnemonicRepo,
     ) : ViewModel() {
         // Создание нового кошелька
-        private fun createNewWallet() {
-            viewModelScope.launch {
-                addressAndMnemonicRepo.generateNewAddressAndMnemonic()
-            }
+        private fun createNewWallet() = viewModelScope.launch {
+            addressAndMnemonicRepo.generateNewAddressAndMnemonic()
         }
 
         private val _state: MutableStateFlow<CreateNewWalletState> =

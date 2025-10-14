@@ -38,9 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.bridge.view_model.dto.transfer.TransferResult
 import com.profpay.wallet.bridge.view_model.wallet.walletSot.GeneralTransactionViewModel
+import com.profpay.wallet.bridge.view_model.wallet.walletSot.TransferUiEvent
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.data.flow_db.repo.EstimateCommissionResult
 import com.profpay.wallet.data.utils.toBigInteger
@@ -49,9 +48,6 @@ import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.feature.wallet.send.bottomsheet.ContentBottomSheetTransferProcessing
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.example.protobuf.transfer.TransferProto
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -79,9 +75,16 @@ fun bottomSheetTransOnGeneralReceipt(
 
     var isButtonEnabled by remember { mutableStateOf(false) }
     val commissionState by viewModel.stateCommission.collectAsStateWithLifecycle()
+    val uiEvent by viewModel.uiEventTransfer.collectAsStateWithLifecycle(null)
 
     val (commissionOnTransaction, setCommissionOnTransaction) = remember { mutableStateOf(BigDecimal.ZERO) }
     val (commissionResult, setCommissionResult) = remember { mutableStateOf(TransferProto.EstimateCommissionResponse.getDefaultInstance()) }
+
+    fun resetUI() {
+        setIsOpenSheet(false)
+        setIsConfirmTransaction(false)
+        isButtonEnabled = true
+    }
 
     if (isOpenSheet) {
         val tokenEntity =
@@ -101,12 +104,36 @@ fun bottomSheetTransOnGeneralReceipt(
             )
         }
 
+        LaunchedEffect(uiEvent) {
+            when (uiEvent) {
+                is TransferUiEvent.Success -> {
+                    snackbar.showSuccessSnackbar(
+                        "Успешное действие",
+                        "Успешно отправлено ${(balance ?: tokenEntity?.balanceWithoutFrozen!!).toTokenAmount()} $tokenName",
+                        "Закрыть",
+                    )
+                    resetUI()
+                }
+                is TransferUiEvent.Error -> {
+                    val e = uiEvent as TransferUiEvent.Error
+
+                    snackbar.showErrorSnackbar(
+                        "Перевод валюты невозможен",
+                        e.message,
+                        "Закрыть",
+                    )
+                    resetUI()
+                }
+                is TransferUiEvent.Idle, null -> Unit
+            }
+        }
+
         val isGeneralAddressNotActivatedVisible by viewModel.isGeneralAddressNotActivatedVisible.collectAsState()
         val generalAddressActivatedCommission by viewModel.generalAddressActivatedCommission.collectAsState()
 
         LaunchedEffect(commissionState) {
             when (commissionState) {
-                is EstimateCommissionResult.Loading -> {}
+                is EstimateCommissionResult.Loading -> Unit
                 is EstimateCommissionResult.Success -> {
                     val commission = (commissionState as EstimateCommissionResult.Success).response.commission
                     val commissionResult = (commissionState as EstimateCommissionResult.Success).response
@@ -115,8 +142,8 @@ fun bottomSheetTransOnGeneralReceipt(
                     setCommissionOnTransaction(commission.toBigInteger().toTokenAmount())
                     setCommissionResult(commissionResult)
                 }
-                is EstimateCommissionResult.Error -> {}
-                is EstimateCommissionResult.Empty -> {}
+                is EstimateCommissionResult.Error -> Unit
+                is EstimateCommissionResult.Empty -> Unit
             }
         }
 
@@ -234,38 +261,15 @@ fun bottomSheetTransOnGeneralReceipt(
                         onClick = {
                             isButtonEnabled = false // Отключаем кнопку
                             setIsConfirmTransaction(true)
-                            viewModel.viewModelScope.launch {
-                                val result =
-                                    withContext(Dispatchers.IO) {
-                                        viewModel.acceptTransaction(
-                                            addressWithTokens = addressWithTokens,
-                                            commission = commissionOnTransaction.toSunAmount(),
-                                            walletId = walletId,
-                                            tokenEntity = tokenEntity,
-                                            amount = balance ?: tokenEntity?.balanceWithoutFrozen!!,
-                                            commissionResult = commissionResult,
-                                        )
-                                    }
 
-                                when (result) {
-                                    is TransferResult.Success ->
-                                        snackbar.showSuccessSnackbar(
-                                            "Успешное действие",
-                                            "Успешно отправлено ${(balance ?: tokenEntity?.balanceWithoutFrozen!!).toTokenAmount()} $tokenName",
-                                            "Закрыть",
-                                        )
-                                    is TransferResult.Failure ->
-                                        snackbar.showErrorSnackbar(
-                                            "Перевод валюты невозможен",
-                                            result.error.message,
-                                            "Закрыть",
-                                        )
-                                }
-
-                                setIsOpenSheet(false)
-                                isButtonEnabled = true
-                                setIsConfirmTransaction(false)
-                            }
+                            viewModel.onConfirmTransaction(
+                                addressWithTokens = addressWithTokens,
+                                commission = commissionOnTransaction.toSunAmount(),
+                                walletId = walletId,
+                                tokenEntity = tokenEntity,
+                                amount = balance ?: tokenEntity?.balanceWithoutFrozen!!,
+                                commissionResult = commissionResult,
+                            )
                         },
                         modifier =
                             Modifier

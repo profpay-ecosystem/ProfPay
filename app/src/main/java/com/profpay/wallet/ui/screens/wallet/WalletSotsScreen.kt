@@ -53,7 +53,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.PrefKeys
 import com.profpay.wallet.R
 import com.profpay.wallet.bridge.view_model.dto.TokenName
@@ -64,9 +63,6 @@ import com.profpay.wallet.ui.app.theme.BackgroundIcon2
 import com.profpay.wallet.ui.feature.wallet.HexagonShape
 import com.profpay.wallet.ui.feature.wallet.HexagonsFeature
 import com.profpay.wallet.ui.shared.sharedPref
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.math.BigInteger
 import java.util.stream.Collectors
 
@@ -95,7 +91,7 @@ fun WalletSotsScreen(
     val token = sharedPref().getString("token_name", TokenName.USDT.tokenName)
 
     val addressWithTokens by viewModel
-        .getAddressesSotsWithTokensByBlockchainLD(
+        .getAddressesSotsWithTokensByBlockchain(
             walletId = walletId,
             blockchainName = TokenName.valueOf(token!!).blockchainName,
         ).observeAsState(emptyList())
@@ -198,6 +194,9 @@ private fun SheetContent(
 
                     var expandedDropdownMenu by remember { mutableStateOf(false) }
 
+                    val balance = (tokenEntity?.balanceWithoutFrozen ?: BigInteger.ZERO).toTokenAmount()
+                    val formattedBalance = if (tokenName == "USDT") "$$balance" else "$balance TRX"
+
                     Card(
                         shape = RoundedCornerShape(10.dp),
                         modifier =
@@ -250,12 +249,7 @@ private fun SheetContent(
                                             style = MaterialTheme.typography.bodySmall,
                                         )
                                         Text(
-                                            text =
-                                                if (tokenName == "USDT") {
-                                                    "$${(tokenEntity?.balanceWithoutFrozen ?: BigInteger.ZERO).toTokenAmount()}"
-                                                } else {
-                                                    "${(tokenEntity?.balanceWithoutFrozen ?: BigInteger.ZERO).toTokenAmount()} TRX"
-                                                },
+                                            text = formattedBalance,
                                             style = MaterialTheme.typography.labelLarge,
                                         )
                                     }
@@ -297,15 +291,11 @@ private fun SheetContent(
                                         DropdownMenuItem(
                                             modifier = Modifier.height(IntrinsicSize.Min),
                                             onClick = {
-                                                viewModel.viewModelScope.launch {
-                                                    withContext(Dispatchers.IO) {
-                                                        viewModel.creationOfANewCell(
-                                                            walletId,
-                                                            address.addressEntity,
-                                                        )
-                                                    }
-                                                    expandedDropdownMenu = !expandedDropdownMenu
-                                                }
+                                                viewModel.creationOfANewCell(
+                                                    walletId,
+                                                    address.addressEntity,
+                                                )
+                                                expandedDropdownMenu = !expandedDropdownMenu
                                             },
                                             text = {
                                                 Text(

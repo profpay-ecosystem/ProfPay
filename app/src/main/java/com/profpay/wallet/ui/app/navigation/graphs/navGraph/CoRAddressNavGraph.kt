@@ -66,10 +66,7 @@ fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
                     navController.navigate(route = Graph.Home.route) {
                         popUpTo(route = Graph.Home.route)
                     }
-                },
-                goToBack = {
-                    navController.navigateUp()
-                },
+                }
             )
         }
         composable(route = RecoverWalletFS.RecoveringWalletAddingFS.route) {
@@ -78,10 +75,7 @@ fun NavGraphBuilder.coRAddressNavGraph(navController: NavHostController) {
                     navController.navigate(route = Graph.Home.route) {
                         popUpTo(route = Graph.Home.route)
                     }
-                },
-                goToBack = {
-                    navController.navigateUp()
-                },
+                }
             )
         }
     }

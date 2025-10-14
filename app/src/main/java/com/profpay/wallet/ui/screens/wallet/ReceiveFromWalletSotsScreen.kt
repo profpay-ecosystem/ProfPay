@@ -1,6 +1,7 @@
 package com.profpay.wallet.ui.screens.wallet
 
 import StackedSnackbarHost
+import android.content.ClipData
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,12 +40,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -51,13 +52,15 @@ import com.profpay.wallet.PrefKeys
 import com.profpay.wallet.R
 import com.profpay.wallet.ui.shared.sharedPref
 import com.profpay.wallet.utils.generateQRCode
+import kotlinx.coroutines.launch
 import rememberStackedSnackbarHostState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReceiveFromWalletSotsScreen(goToBack: () -> Unit) {
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val addressForReceive = sharedPref().getString(PrefKeys.ADDRESS_FOR_RECEIVE, "")
     val qrCodeBitmap = generateQRCode(addressForReceive!!)
@@ -198,7 +201,11 @@ fun ReceiveFromWalletSotsScreen(goToBack: () -> Unit) {
                         Row(modifier = Modifier.padding(top = 16.dp)) {
                             IconButton(
                                 onClick = {
-                                    clipboardManager.setText(AnnotatedString(addressForReceive))
+                                    scope.launch {
+                                        clipboard.setClipEntry(
+                                            ClipData.newPlainText("Wallet address", addressForReceive).toClipEntry()
+                                        )
+                                    }
                                     stackedSnackbarHostState.showSuccessSnackbar(
                                         "Успешное действие",
                                         "Адрес кошелька успешно скопирован.",

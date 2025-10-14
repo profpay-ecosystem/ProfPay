@@ -13,9 +13,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.profpay.wallet.bridge.view_model.wallet.AmlReleaseUiEvent
 import com.profpay.wallet.bridge.view_model.wallet.TXDetailsViewModel
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.data.flow_db.repo.AmlResult
@@ -25,9 +27,6 @@ import com.profpay.wallet.ui.app.theme.greenColor
 import com.profpay.wallet.ui.widgets.dialog.AlertDialogWidget
 import com.profpay.wallet.utils.aml.toAmlType
 import io.sentry.Sentry
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -42,6 +41,31 @@ fun AmlAndButtonGetAmlForTXDetailsFeature(
     setAmlButtonIsEnabled: (Boolean) -> Unit,
     amlFeeResultText: String
 ) {
+    val uiEvent by viewModel.amlReleaseUiEvent.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiEvent) {
+        when (uiEvent) {
+            is AmlReleaseUiEvent.Success -> {
+                val data = uiEvent as AmlReleaseUiEvent.Success
+                stackedSnackbarHostState.showSuccessSnackbar(
+                    "Успешное действие",
+                    data.message,
+                    "Закрыть",
+                )
+            }
+            is AmlReleaseUiEvent.Error -> {
+                val e = uiEvent as AmlReleaseUiEvent.Error
+                setAmlButtonIsEnabled(true)
+                stackedSnackbarHostState.showErrorSnackbar(
+                    "Ошибка запроса",
+                    e.message,
+                    "Закрыть",
+                )
+            }
+            AmlReleaseUiEvent.Idle -> Unit
+        }
+    }
+
     when (val result = amlState) {
         is AmlResult.Success -> {
             if (result.response.amlId.isNotEmpty()) {
@@ -136,33 +160,13 @@ fun AmlAndButtonGetAmlForTXDetailsFeature(
     if (amlReleaseDialog) {
         AlertDialogWidget(
             onConfirmation = {
-                viewModel.viewModelScope.launch {
-                    withContext(Dispatchers.IO) {
-                        setAmlReleaseDialog(false)
-                        setAmlButtonIsEnabled(false)
+                setAmlReleaseDialog(false)
+                setAmlButtonIsEnabled(false)
 
-                        val (status, message) =
-                            viewModel.processedAmlReport(
-                                receiverAddress = transactionEntity.receiverAddress,
-                                txId = transactionEntity.txId,
-                            )
-
-                        if (status) {
-                            stackedSnackbarHostState.showSuccessSnackbar(
-                                "Успешное действие",
-                                message,
-                                "Закрыть",
-                            )
-                        } else {
-                            setAmlButtonIsEnabled(true)
-                            stackedSnackbarHostState.showErrorSnackbar(
-                                "Ошибка запроса",
-                                message,
-                                "Закрыть",
-                            )
-                        }
-                    }
-                }
+                viewModel.processedAmlReport(
+                    receiverAddress = transactionEntity.receiverAddress,
+                    txId = transactionEntity.txId,
+                )
             },
             onDismissRequest = {
                 setAmlReleaseDialog(false)

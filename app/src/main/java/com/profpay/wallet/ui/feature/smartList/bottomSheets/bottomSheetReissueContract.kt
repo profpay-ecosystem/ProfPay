@@ -147,18 +147,14 @@ fun bottomSheetReissueContract(
                     enabled = isButtonEnabled,
                     onClick = {
                         if (commission != BigDecimal.ZERO) {
-                            viewModel.viewModelScope.launch {
-                                withContext(Dispatchers.IO) {
-                                    isButtonEnabled = false
-                                    viewModel.deploySmartContract(
-                                        commission = commission,
-                                        energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
-                                        bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
-                                        context = context,
-                                    )
-                                    isButtonEnabled = true
-                                }
-                            }
+                            isButtonEnabled = false
+                            viewModel.deploySmartContract(
+                                commission = commission,
+                                energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
+                                bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
+                                context = context,
+                            )
+                            isButtonEnabled = true
                         }
                     },
                     modifier =

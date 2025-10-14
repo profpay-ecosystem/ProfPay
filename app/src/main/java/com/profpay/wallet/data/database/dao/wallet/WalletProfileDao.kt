@@ -1,25 +1,25 @@
 package com.profpay.wallet.data.database.dao.wallet
 
-import androidx.lifecycle.LiveData
 import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.profpay.wallet.data.database.entities.wallet.WalletProfileEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WalletProfileDao {
     @Insert(entity = WalletProfileEntity::class)
-    fun insertNewWalletProfileEntity(walletProfileEntity: WalletProfileEntity): Long
+    suspend fun insert(walletProfileEntity: WalletProfileEntity): Long
 
     @Query("SELECT name FROM wallet_profile WHERE id = :walletId")
-    fun getWalletNameById(walletId: Long): String?
+    suspend fun getWalletNameById(walletId: Long): String?
 
     @Query("SELECT id, name FROM wallet_profile")
-    fun getListAllWallets(): LiveData<List<WalletProfileModel>>
+    fun getListAllWalletsFlow(): Flow<List<WalletProfileModel>>
 
     @Query("SELECT COUNT(*) FROM wallet_profile")
-    fun getCountRecords(): Long
+    suspend fun getCountRecords(): Long
 
     @Query("UPDATE wallet_profile SET name = :newName WHERE id = :id")
     suspend fun updateNameById(

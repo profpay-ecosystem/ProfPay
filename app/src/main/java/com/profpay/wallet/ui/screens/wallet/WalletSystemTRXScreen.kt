@@ -1,6 +1,7 @@
 package com.profpay.wallet.ui.screens.wallet
 
 import StackedSnackbarHost
+import android.content.ClipData
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,12 +45,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -59,28 +60,24 @@ import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.feature.wallet.bottomSheetReissueAddress
 import com.profpay.wallet.ui.shared.sharedPref
 import com.profpay.wallet.utils.generateQRCode
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import rememberStackedSnackbarHostState
 import java.math.BigInteger
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Suppress("UNUSED_VARIABLE") // Sonar считает setIsOpenRejectReceiptSheet неиспользуемой переменной.
 fun WalletSystemTRXScreen(
     goToBack: () -> Unit,
     goToCentralAddressTxHistory: () -> Unit,
     viewModel: WalletSystemTRXScreenViewModel = hiltViewModel(),
 ) {
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val scope = rememberCoroutineScope()
+    val clipboard = LocalClipboard.current
     val context = LocalContext.current
+
     var address by remember { mutableStateOf("empty") }
     var balanceTRX by remember { mutableStateOf(BigInteger.ZERO) }
-
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            viewModel.centralAddressRepo.insertIfNotExists()
-        }
-    }
 
     val centralAddress by viewModel.getCentralAddressLiveData().observeAsState()
 
@@ -264,7 +261,11 @@ fun WalletSystemTRXScreen(
                             Spacer(modifier = Modifier.fillMaxWidth(0.05f))
                             IconButton(
                                 onClick = {
-                                    clipboardManager.setText(AnnotatedString(address))
+                                    scope.launch {
+                                        clipboard.setClipEntry(
+                                            ClipData.newPlainText("Wallet address", address).toClipEntry()
+                                        )
+                                    }
                                     stackedSnackbarHostState.showSuccessSnackbar(
                                         "Успешное действие",
                                         "Адрес кошелька успешно скопирован.",

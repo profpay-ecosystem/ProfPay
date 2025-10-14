@@ -9,7 +9,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -30,8 +29,6 @@ import com.profpay.wallet.ui.feature.wallet.walletAddress.ActionsRowWalletAddres
 import com.profpay.wallet.ui.feature.wallet.walletAddress.TopCardForWalletAddressFeature
 import com.profpay.wallet.ui.feature.wallet.walletAddress.horizontalListsTrans.TransactionsHPagerWalletAddressFeature
 import com.profpay.wallet.ui.shared.sharedPref
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import rememberStackedSnackbarHostState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -54,7 +51,7 @@ fun WalletAddressScreen(
 
     val isActivated by viewModel.isActivated.collectAsState()
 
-    val addressWithTokens by viewModel.getAddressWithTokensByAddressLD(address).observeAsState()
+    val addressWithTokens by viewModel.getAddressWithTokensByAddress(address).observeAsState()
 
     val tokenNameObj =
         TokenName.entries
@@ -92,15 +89,8 @@ fun WalletAddressScreen(
     val allTransaction: List<TransactionModel> =
         transactionsByAddressSender + transactionsByAddressReceiver
 
-    val (groupedAllTransaction, setGroupedAllTransaction) =
-        remember {
-            mutableStateOf<List<List<TransactionModel?>>>(listOf(listOf(null)))
-        }
-
-    LaunchedEffect(allTransaction) {
-        withContext(Dispatchers.IO) {
-            setGroupedAllTransaction(viewModel.getListTransactionToTimestamp(allTransaction))
-        }
+    val groupedTransaction = remember(allTransaction) {
+        viewModel.getListTransactionToTimestamp(allTransaction)
     }
 
     LaunchedEffect(addressWithTokens) {
@@ -144,7 +134,7 @@ fun WalletAddressScreen(
                 pagerState = pagerState,
                 viewModel = viewModel,
                 stackedSnackbarHostState = stackedSnackbarHostState,
-                groupedAllTransaction = groupedAllTransaction,
+                groupedAllTransaction = groupedTransaction,
                 transactionsByAddressSender = transactionsByAddressSender,
                 transactionsByAddressReceiver = transactionsByAddressReceiver,
                 goToTXDetailsScreen = { goToTXDetailsScreen() },

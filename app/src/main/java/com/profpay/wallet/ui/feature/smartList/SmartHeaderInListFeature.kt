@@ -1,5 +1,6 @@
 package com.profpay.wallet.ui.feature.smartList
 
+import android.content.ClipData
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,12 +37,11 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -51,8 +52,7 @@ import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewM
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.LocalFontSize
 import com.profpay.wallet.ui.feature.smartList.bottomSheets.bottomSheetReissueContract
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 @Composable
@@ -62,7 +62,9 @@ fun SmartHeaderInListFeature(
     viewModel: GetSmartContractViewModel,
 ) {
     val context = LocalContext.current
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+
     var expandedDropdownMenu by remember { mutableStateOf(false) }
 
     val deployEstimateCommission by viewModel.stateEstimateResourcePrice.collectAsStateWithLifecycle()
@@ -80,21 +82,17 @@ fun SmartHeaderInListFeature(
         }
 
     LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            val generalAddress = viewModel.addressRepo.getGeneralAddressByWalletId(1L)
-            viewModel.getResourceQuote(
-                address = generalAddress,
-                energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
-                bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
-            )
+        viewModel.getResourceQuote(
+            energy = AppConstants.SmartContract.PUBLISH_ENERGY_REQUIRED,
+            bandwidth = AppConstants.SmartContract.PUBLISH_BANDWIDTH_REQUIRED,
+        )
 
-            if (address != null) {
-                val contractStats =
-                    viewModel.tron.smartContracts.multiSigRead
-                        .getContractStats("", "", address)
-                setOpenDeals(contractStats.first.toLong())
-                setClosedDeals(contractStats.second.toLong())
-            }
+        if (address != null) {
+            val contractStats =
+                viewModel.tron.smartContracts.multiSigRead
+                    .getContractStats("", "", address)
+            setOpenDeals(contractStats.first.toLong())
+            setClosedDeals(contractStats.second.toLong())
         }
     }
 
@@ -166,7 +164,11 @@ fun SmartHeaderInListFeature(
                             ) {
                                 DropdownMenuItem(
                                     onClick = {
-                                        clipboardManager.setText(AnnotatedString(address ?: ""))
+                                        scope.launch {
+                                            clipboard.setClipEntry(
+                                                ClipData.newPlainText("Wallet address", address ?: "").toClipEntry()
+                                            )
+                                        }
                                         expandedDropdownMenu = false
                                     },
                                     text = { Text("Скопировать") },

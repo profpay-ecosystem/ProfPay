@@ -1,17 +1,11 @@
 package com.profpay.wallet.data.database.repositories
 
-import androidx.lifecycle.LiveData
-import com.profpay.wallet.bridge.view_model.dto.ProfileDto
 import com.profpay.wallet.data.database.dao.ProfileDao
 import com.profpay.wallet.data.database.entities.ProfileEntity
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 interface ProfileRepo {
     suspend fun getProfileUserId(): Long
 
@@ -21,26 +15,17 @@ interface ProfileRepo {
     suspend fun insertNewProfile(profileEntity: ProfileEntity)
 
     // Получение TgId подтверждённого профиля
-    suspend fun getProfileTelegramIdLiveData(): LiveData<Long>
+    fun getProfileTelegramIdFlow(): Flow<Long?>
 
     suspend fun getProfileTelegramId(): Long?
 
-    suspend fun getProfileTgUsername(): LiveData<String>
+    fun getProfileTgUsernameFlow(): Flow<String?>
 
     // Получение кол-ва профилей в бд
     suspend fun isProfileExists(): Boolean
 
-    // Получение данных неподтверждённого профиля для UI
-    suspend fun getInactiveProfileFromVM(): Flow<ProfileDto>
-
-    // Получение данных подтверждённого профиля для UI
-    suspend fun getActiveProfileFromVM(): Flow<ProfileDto>
-
     // Удаление профиля по Tg-Id
     suspend fun deleteProfileByTgId(tgId: Long)
-
-    // Получение данных подтверждённого профиля
-    suspend fun getActiveProfile(): ProfileDto
 
     // Обновление активности профиля и access-token с временем его жизни
     suspend fun updateActiveTgId(
@@ -63,113 +48,51 @@ interface ProfileRepo {
 }
 
 @Singleton
-class ProfileRepoImpl
-    @Inject
-    constructor(
-        private val profileDao: ProfileDao,
-        @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    ) : ProfileRepo {
-        override suspend fun getProfileAppId(): String {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.getProfileAppId()
-            }
-        }
+class ProfileRepoImpl @Inject constructor(
+    private val profileDao: ProfileDao,
+) : ProfileRepo {
+    override suspend fun getProfileAppId(): String =
+        profileDao.getProfileAppId()
 
-        override suspend fun getProfileUserId(): Long {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.getProfileUserId()
-            }
-        }
+    override suspend fun getProfileUserId(): Long =
+        profileDao.getProfileUserId()
 
-        override suspend fun insertNewProfile(profileEntity: ProfileEntity) {
-            withContext(ioDispatcher) {
-                profileDao.insertNewProfile(profileEntity)
-            }
-        }
+    override suspend fun insertNewProfile(profileEntity: ProfileEntity) =
+        profileDao.insertNewProfile(profileEntity)
 
-        override suspend fun getProfileTelegramIdLiveData(): LiveData<Long> {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.getProfileTelegramIdLiveData()
-            }
-        }
+    override fun getProfileTelegramIdFlow(): Flow<Long?> =
+        profileDao.getProfileTelegramIdFlow()
 
-        override suspend fun getProfileTelegramId(): Long? {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.getProfileTelegramId()
-            }
-        }
+    override suspend fun getProfileTelegramId(): Long? =
+        profileDao.getProfileTelegramId()
 
-        override suspend fun getProfileTgUsername(): LiveData<String> {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.getProfileTgUsername()
-            }
-        }
+    override fun getProfileTgUsernameFlow(): Flow<String?> =
+        profileDao.getProfileTgUsernameFlow()
 
-        override suspend fun isProfileExists(): Boolean {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.isProfileExists()
-            }
-        }
+    override suspend fun isProfileExists(): Boolean =
+        profileDao.isProfileExists()
 
-        override suspend fun updateActiveTgId(
-            valActive: Boolean,
-            tgId: Long,
-            accessToken: String,
-            expiresAt: Long,
-        ) {
-            withContext(ioDispatcher) {
-                profileDao.updateActiveTgId(valActive, tgId, accessToken, expiresAt)
-            }
-        }
+    override suspend fun updateActiveTgId(
+        valActive: Boolean,
+        tgId: Long,
+        accessToken: String,
+        expiresAt: Long,
+    ) = profileDao.updateActiveTgId(valActive, tgId, accessToken, expiresAt)
 
-        override suspend fun updateProfileTelegramIdAndUsername(
-            telegramId: Long,
-            username: String,
-        ) {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.updateProfileTelegramIdAndUsername(telegramId, username)
-            }
-        }
+    override suspend fun updateProfileTelegramIdAndUsername(
+        telegramId: Long,
+        username: String,
+    ) = profileDao.updateProfileTelegramIdAndUsername(telegramId, username)
 
-        override suspend fun getDeviceToken(): String? {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.getDeviceToken()
-            }
-        }
+    override suspend fun getDeviceToken(): String? =
+        profileDao.getDeviceToken()
 
-        override suspend fun updateDeviceToken(deviceToken: String) {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.updateDeviceToken(deviceToken)
-            }
-        }
+    override suspend fun updateDeviceToken(deviceToken: String) =
+        profileDao.updateDeviceToken(deviceToken)
 
-        override suspend fun updateUserId(userId: Long) {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.updateUserId(userId)
-            }
-        }
+    override suspend fun updateUserId(userId: Long) =
+        profileDao.updateUserId(userId)
 
-        override suspend fun getInactiveProfileFromVM(): Flow<ProfileDto> {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.getInactiveProfileFromVM()
-            }
-        }
-
-        override suspend fun getActiveProfileFromVM(): Flow<ProfileDto> {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.getActiveProfileFromVM()
-            }
-        }
-
-        override suspend fun deleteProfileByTgId(tgId: Long) {
-            withContext(ioDispatcher) {
-                profileDao.deleteProfileByTgId(tgId)
-            }
-        }
-
-        override suspend fun getActiveProfile(): ProfileDto {
-            return withContext(ioDispatcher) {
-                return@withContext profileDao.getActiveProfile()
-            }
-        }
-    }
+    override suspend fun deleteProfileByTgId(tgId: Long) =
+        profileDao.deleteProfileByTgId(tgId)
+}

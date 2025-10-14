@@ -1,4 +1,5 @@
 package com.profpay.wallet.ui.feature.smartList.smartCard
+import android.content.ClipData
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -8,24 +9,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.Clipboard
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.profpay.wallet.R
 import com.profpay.wallet.ui.app.theme.LocalFontSize
+import kotlinx.coroutines.launch
 
 
 @Composable
 internal fun RowForSmartCardFeature(
     label: String,
     address: String,
-    clipboardManager: ClipboardManager,
+    clipboard: Clipboard,
     content: @Composable RowScope.() -> Unit = {},
 ) {
+    val scope = rememberCoroutineScope()
+
     Row(
         modifier = Modifier
             .padding(horizontal = 8.dp)
@@ -41,7 +46,11 @@ internal fun RowForSmartCardFeature(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.clickable {
-                clipboardManager.setText(AnnotatedString(address))
+                scope.launch {
+                    clipboard.setClipEntry(
+                        ClipData.newPlainText("Wallet address", address).toClipEntry()
+                    )
+                }
             },
         ) {
             Text(
