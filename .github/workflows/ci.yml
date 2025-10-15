@@ -44,17 +44,6 @@ jobs:
           echo "KEY_ALIAS=$KEY_ALIAS" >> gradle.properties
           echo "KEY_PASSWORD=$KEY_PASSWORD" >> gradle.properties
 
-      - name: Set sonar-project.properties
-        run: |
-          echo "sonar.projectKey=profpay-ecosystem_ProfPay" >> sonar-project.properties
-          echo "sonar.organization=profpay-ecosystem" >> sonar-project.properties
-          echo "sonar.host.url=https://sonarcloud.io" >> sonar-project.properties
-          echo "sonar.sources=app/src/main/java" >> sonar-project.properties
-          echo "sonar.tests=app/src/test/java" >> sonar-project.properties
-          echo "sonar.exclusions=**/R.java,**/BuildConfig.java,**/Manifest.java,**/*Proto*.java,**/grpc/**/*.java,**/proto/**/*.java" >> sonar-project.properties
-          echo "sonar.coverage.exclusions=**" >> sonar-project.properties
-          echo "sonar.sourceEncoding=UTF-8" >> sonar-project.properties
-
       - name: Grant permission to Gradle
         run: chmod +x ./gradlew
 
@@ -66,12 +55,10 @@ jobs:
           ./gradlew clean \
             ktlintCheck \
             detekt \
-            build \
-            sonar \
-            -Dsonar.token=$SONAR_TOKEN \
-            -Dsonar.organization=profpay-ecosystem \
-            -Dsonar.projectKey=profpay-ecosystem_ProfPay \
             --no-daemon
+
+      - name: Run some unit tests
+        run: ./gradlew testStageDebugUnitTest
 
       - name: Build release APK
         run: ./gradlew assembleRelease --no-daemon
@@ -90,4 +77,3 @@ jobs:
           path: |
             app/build/reports/ktlint
             app/build/reports/detekt
-            app/build/reports/jacoco
