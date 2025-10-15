@@ -58,7 +58,6 @@ jobs:
             assembleDebug \
             sonar \
             -Dsonar.token=$SONAR_TOKEN \
-            -Dsonar.host.url=$SONAR_HOST_URL \
             --no-daemon
 
       - name: Build release APK

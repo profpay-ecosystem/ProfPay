@@ -14,7 +14,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
     id("dev.detekt") version "2.0.0-alpha.0"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
-    id("jacoco")
+//    id("jacoco")
 }
 
 ktlint {
@@ -54,9 +54,9 @@ tasks.withType<Detekt>().configureEach {
     autoCorrect = true
 }
 
-jacoco {
-    toolVersion = "0.8.10"
-}
+//jacoco {
+//    toolVersion = "0.8.10"
+//}
 
 sonarqube {
     properties {
