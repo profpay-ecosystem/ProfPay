@@ -69,6 +69,8 @@ jobs:
             assembleDebug \
             sonar \
             -Dsonar.token=$SONAR_TOKEN \
+            -Dsonar.organization=profpay-ecosystem \
+            -Dsonar.projectKey=profpay-ecosystem_ProfPay \
             --no-daemon
 
       - name: Build release APK
