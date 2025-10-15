@@ -66,7 +66,7 @@ sonarqube {
         property("sonar.sources", "src/main/java")
         property("sonar.tests", "src/test/java,src/androidTest/java")
         property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest")
-        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+//        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
         property("sonar.kotlin.detekt.reportPaths", "build/reports/detekt/detekt.xml")
         property("sonar.kotlin.ktlint.reportPaths", "build/reports/ktlint/ktlint.xml")
     }
