@@ -1,11 +1,11 @@
-package com.profpay.wallet.data.flow_db.repo
+package com.profpay.wallet.data.repository.flow
 
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.CryptoAddressGrpcClient
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.di.module.IoDispatcher
 import com.profpay.wallet.tron.AddressGenerateFromSeedPhr
 import com.profpay.wallet.tron.AddressGenerateResult
 import com.profpay.wallet.tron.Tron

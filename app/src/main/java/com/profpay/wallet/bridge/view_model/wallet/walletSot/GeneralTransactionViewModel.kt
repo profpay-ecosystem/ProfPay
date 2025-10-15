@@ -8,9 +8,9 @@ import com.profpay.wallet.data.database.models.TokenWithPendingTransactions
 import com.profpay.wallet.data.database.repositories.TransactionsRepo
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
-import com.profpay.wallet.data.flow_db.repo.EstimateCommissionResult
-import com.profpay.wallet.data.flow_db.repo.WalletAddressRepo
+import com.profpay.wallet.data.di.module.IoDispatcher
+import com.profpay.wallet.data.repository.flow.EstimateCommissionResult
+import com.profpay.wallet.data.repository.flow.WalletAddressRepo
 import com.profpay.wallet.data.services.TransactionProcessorService
 import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.tron.Tron

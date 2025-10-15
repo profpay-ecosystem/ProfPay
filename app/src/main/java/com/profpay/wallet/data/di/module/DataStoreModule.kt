@@ -1,4 +1,4 @@
-package com.profpay.wallet.data.flow_db
+package com.profpay.wallet.data.di.module
 
 import android.content.Context
 import androidx.datastore.core.DataStore

@@ -3,7 +3,7 @@ package com.profpay.wallet.bridge.view_model.smart_contract.usecases
 import com.google.protobuf.ByteString
 import com.profpay.wallet.data.database.entities.wallet.AddressEntity
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.di.module.IoDispatcher
 import com.profpay.wallet.data.utils.toBigInteger
 import com.profpay.wallet.tron.Tron
 import kotlinx.coroutines.CoroutineDispatcher

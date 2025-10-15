@@ -1,6 +1,6 @@
 package com.profpay.wallet.backend.grpc.interceptor
 
-import com.profpay.wallet.data.flow_db.token.TokenProvider
+import com.profpay.wallet.data.di.token.TokenProvider
 import io.grpc.CallOptions
 import io.grpc.Channel
 import io.grpc.ClientCall

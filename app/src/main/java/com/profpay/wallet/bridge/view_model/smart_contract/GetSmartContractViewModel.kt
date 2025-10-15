@@ -26,11 +26,11 @@ import com.profpay.wallet.data.database.entities.wallet.SmartContractEntity
 import com.profpay.wallet.data.database.repositories.ProfileRepo
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
-import com.profpay.wallet.data.flow_db.repo.EstimateResourcePriceResult
-import com.profpay.wallet.data.flow_db.repo.SmartContractButtonType
-import com.profpay.wallet.data.flow_db.repo.SmartContractModalData
-import com.profpay.wallet.data.flow_db.repo.SmartContractRepo
+import com.profpay.wallet.data.di.module.IoDispatcher
+import com.profpay.wallet.data.repository.flow.EstimateResourcePriceResult
+import com.profpay.wallet.data.repository.flow.SmartContractButtonType
+import com.profpay.wallet.data.repository.flow.SmartContractModalData
+import com.profpay.wallet.data.repository.flow.SmartContractRepo
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel

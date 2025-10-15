@@ -3,7 +3,7 @@ package com.profpay.wallet.bridge.view_model.wallet
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.di.module.IoDispatcher
 import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher

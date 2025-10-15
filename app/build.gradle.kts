@@ -54,22 +54,6 @@ tasks.withType<Detekt>().configureEach {
     autoCorrect = true
 }
 
-tasks.register<JacocoReport>("jacocoTestReport") {
-    group = "verification"
-    description = "Generates coverage for unit tests"
-
-    dependsOn("testDebugUnitTest") // только unit-тесты
-    classDirectories.setFrom(fileTree("${buildDir}/tmp/kotlin-classes/debug") {
-        exclude(
-            "**/R.class",
-            "**/R$*.class",
-            "**/BuildConfig.*"
-        )
-    })
-    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
-    executionData.setFrom(fileTree(buildDir).include("**/testDebugUnitTest.exec"))
-}
-
 jacoco {
     toolVersion = "0.8.10"
 }
@@ -155,7 +139,6 @@ android {
 
     buildTypes {
         release {
-            isDebuggable = true
             isMinifyEnabled = false
             isShrinkResources = false
             proguardFiles(

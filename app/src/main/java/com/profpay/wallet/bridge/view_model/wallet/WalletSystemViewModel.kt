@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.data.database.dao.wallet.WalletProfileModel
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.di.module.IoDispatcher
 import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -16,8 +16,8 @@ import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
-import com.profpay.wallet.data.flow_db.repo.WalletSotRepo
+import com.profpay.wallet.data.di.module.IoDispatcher
+import com.profpay.wallet.data.repository.WalletSotRepo
 import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel

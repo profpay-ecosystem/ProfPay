@@ -3,7 +3,7 @@ package com.profpay.wallet.bridge.view_model.settings
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.data.flow_db.repo.ThemeAppRepo
+import com.profpay.wallet.data.repository.flow.ThemeAppRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

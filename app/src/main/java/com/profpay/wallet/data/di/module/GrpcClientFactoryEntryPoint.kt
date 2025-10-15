@@ -1,4 +1,4 @@
-package com.profpay.wallet.data.flow_db
+package com.profpay.wallet.data.di.module
 
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import dagger.hilt.EntryPoint

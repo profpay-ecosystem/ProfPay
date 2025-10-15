@@ -9,7 +9,7 @@ import com.profpay.wallet.data.database.entities.wallet.CentralAddressEntity
 import com.profpay.wallet.data.database.models.TransactionModel
 import com.profpay.wallet.data.database.repositories.TransactionsRepo
 import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.di.module.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow

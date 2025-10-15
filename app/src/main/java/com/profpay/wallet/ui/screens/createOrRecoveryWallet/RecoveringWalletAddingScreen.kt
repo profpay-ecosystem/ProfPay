@@ -37,7 +37,7 @@ import com.profpay.wallet.R
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletState
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletViewModel
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.WalletAddedViewModel
-import com.profpay.wallet.data.flow_db.repo.RecoveryResult
+import com.profpay.wallet.data.repository.flow.RecoveryResult
 import com.profpay.wallet.tron.AddressGenerateFromSeedPhr
 import com.profpay.wallet.ui.app.theme.BackgroundDark
 import com.profpay.wallet.ui.app.theme.BackgroundLight

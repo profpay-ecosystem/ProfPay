@@ -55,7 +55,6 @@ jobs:
           ./gradlew clean \
             ktlintCheck \
             detekt \
-            jacocoTestReport \
             assembleDebug \
             sonarqube \
             -Dsonar.login=$SONAR_TOKEN \

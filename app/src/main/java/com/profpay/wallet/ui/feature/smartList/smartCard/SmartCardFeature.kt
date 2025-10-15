@@ -13,7 +13,7 @@ import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewM
 import com.profpay.wallet.bridge.view_model.smart_contract.StatusData
 import com.profpay.wallet.bridge.view_model.smart_contract.usecases.isBuyerNotDeposited
 import com.profpay.wallet.bridge.view_model.smart_contract.usecases.isSellerNotPayedExpertFee
-import com.profpay.wallet.data.flow_db.repo.SmartContractButtonType
+import com.profpay.wallet.data.repository.flow.SmartContractButtonType
 import com.profpay.wallet.ui.feature.smartList.bottomSheets.bottomSheetDetails
 import kotlinx.coroutines.launch
 import org.example.protobuf.smart.SmartContractProto

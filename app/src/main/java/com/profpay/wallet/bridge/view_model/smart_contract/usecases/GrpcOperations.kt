@@ -1,7 +1,7 @@
 package com.profpay.wallet.bridge.view_model.smart_contract.usecases
 
 import com.profpay.wallet.data.database.repositories.ProfileRepo
-import com.profpay.wallet.data.flow_db.repo.SmartContractRepo
+import com.profpay.wallet.data.repository.flow.SmartContractRepo
 import org.example.protobuf.smart.SmartContractProto
 import org.example.protobuf.smart.SmartContractProto.CallContractTransactionData
 import org.example.protobuf.smart.SmartContractProto.DealContractChangeStatuses

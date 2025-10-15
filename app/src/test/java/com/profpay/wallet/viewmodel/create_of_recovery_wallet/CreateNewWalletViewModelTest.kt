@@ -4,7 +4,7 @@ import app.cash.turbine.test
 import cash.z.ecc.android.bip39.Mnemonics
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.CreateNewWalletState
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.CreateNewWalletViewModel
-import com.profpay.wallet.data.flow_db.repo.AddressAndMnemonicRepo
+import com.profpay.wallet.data.repository.flow.AddressAndMnemonicRepo
 import com.profpay.wallet.tron.AddressDataWithoutPrivKey
 import com.profpay.wallet.tron.AddressGenerateResult
 import com.profpay.wallet.tron.AddressesWithKeysForM

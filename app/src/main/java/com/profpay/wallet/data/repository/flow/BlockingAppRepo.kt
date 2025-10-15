@@ -1,9 +1,9 @@
-package com.profpay.wallet.data.flow_db.repo
+package com.profpay.wallet.data.repository.flow
 
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.profpay.wallet.R
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.di.module.IoDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow

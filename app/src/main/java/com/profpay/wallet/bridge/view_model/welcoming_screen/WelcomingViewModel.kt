@@ -7,7 +7,7 @@ import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.backend.grpc.UserGrpcClient
 import com.profpay.wallet.data.database.repositories.ProfileRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.di.module.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
