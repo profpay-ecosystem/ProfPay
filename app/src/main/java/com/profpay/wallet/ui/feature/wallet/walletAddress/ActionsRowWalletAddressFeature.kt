@@ -47,6 +47,35 @@ fun ActionsRowWalletAddressFeature(
 
     val bottomPadding = getBottomPadding()
 
+    val isGeneral = addressWithTokens?.addressEntity?.isGeneralAddress ?: false
+    val onClickSend = {
+        if (isGeneral) {
+            addressWithTokens.addressEntity.addressId?.let {
+                goToSendWalletAddress(it, tokenName)
+            }
+        } else {
+            if (!isActivated) {
+                stackedSnackbarHostState.showErrorSnackbar(
+                    title = "Перевод валюты невозможен",
+                    description = "Для перевода необходимо активировать адрес, отправив 1 TRX.",
+                    actionTitle = "Перейти",
+                    action = { goToSystemTRX() }
+                )
+            } else {
+                setIsOpenRejectReceiptSheet(true)
+            }
+        }
+    }
+    val onClickReceive = {
+        if (addressWithTokens?.addressEntity?.isGeneralAddress == true) {
+            openDialog = true
+        } else {
+            sharedPref.edit {
+                putString(PrefKeys.ADDRESS_FOR_RECEIVE, address)
+            }
+            goToReceive()
+        }
+    }
     Column(
         modifier =
             Modifier
@@ -71,23 +100,7 @@ fun ActionsRowWalletAddressFeature(
                     icon = R.drawable.icon_send,
                     modifier = Modifier.weight(0.5f),
                     onClick = {
-                        val isGeneral = addressWithTokens?.addressEntity?.isGeneralAddress ?: false
-                        if (isGeneral) {
-                            addressWithTokens.addressEntity.addressId?.let {
-                                goToSendWalletAddress(it, tokenName)
-                            }
-                        } else {
-                            if (!isActivated) {
-                                stackedSnackbarHostState.showErrorSnackbar(
-                                    title = "Перевод валюты невозможен",
-                                    description = "Для перевода необходимо активировать адрес, отправив 1 TRX.",
-                                    actionTitle = "Перейти",
-                                    action = { goToSystemTRX() }
-                                )
-                            } else {
-                                setIsOpenRejectReceiptSheet(true)
-                            }
-                        }
+                        onClickSend()
                     }
                 )
             }
@@ -98,14 +111,7 @@ fun ActionsRowWalletAddressFeature(
                 icon = R.drawable.icon_get,
                 modifier = Modifier.weight(0.5f),
                 onClick = {
-                    if (addressWithTokens?.addressEntity?.isGeneralAddress == true) {
-                        openDialog = true
-                    } else {
-                        sharedPref.edit {
-                            putString(PrefKeys.ADDRESS_FOR_RECEIVE, address)
-                        }
-                        goToReceive()
-                    }
+                    onClickReceive()
                 }
             )
         }
