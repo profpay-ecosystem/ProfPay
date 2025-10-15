@@ -6,9 +6,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.data.database.repositories.ProfileRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
-import com.profpay.wallet.data.flow_db.module.MainDispatcher
-import com.profpay.wallet.data.flow_db.repo.SettingsAccountRepo
+import com.profpay.wallet.data.di.module.IoDispatcher
+import com.profpay.wallet.data.di.module.MainDispatcher
+import com.profpay.wallet.data.repository.SettingsAccountRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch

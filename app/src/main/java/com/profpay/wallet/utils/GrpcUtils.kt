@@ -1,6 +1,6 @@
 package com.profpay.wallet.utils
 
-import com.profpay.wallet.data.flow_db.token.TokenProvider
+import com.profpay.wallet.data.di.token.TokenProvider
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
 import kotlinx.coroutines.sync.Mutex

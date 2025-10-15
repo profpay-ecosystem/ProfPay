@@ -3,8 +3,8 @@ package com.profpay.wallet.viewmodel.create_of_recovery_wallet
 import app.cash.turbine.test
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletState
 import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletViewModel
-import com.profpay.wallet.data.flow_db.repo.AddressAndMnemonicRepo
-import com.profpay.wallet.data.flow_db.repo.RecoveryResult
+import com.profpay.wallet.data.repository.flow.AddressAndMnemonicRepo
+import com.profpay.wallet.data.repository.flow.RecoveryResult
 import com.profpay.wallet.tron.AddressDataWithoutPrivKey
 import com.profpay.wallet.tron.AddressGenerateFromSeedPhr
 import com.profpay.wallet.tron.AddressesWithKeysForM

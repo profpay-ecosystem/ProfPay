@@ -1,7 +1,7 @@
-package com.profpay.wallet.data.flow_db.repo
+package com.profpay.wallet.data.repository.flow
 
 import android.content.SharedPreferences
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.di.module.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,7 +17,7 @@ interface ThemeAppRepo {
 
 class ThemeAppRepoImpl
     @Inject
-    constructor(@IoDispatcher private val ioDispatcher: CoroutineDispatcher) : ThemeAppRepo {
+    constructor(@param:IoDispatcher private val ioDispatcher: CoroutineDispatcher) : ThemeAppRepo {
         private val _isDarkTheme = MutableSharedFlow<Int>(replay = 1)
 
         // Получение числового значения текущей темы приложения

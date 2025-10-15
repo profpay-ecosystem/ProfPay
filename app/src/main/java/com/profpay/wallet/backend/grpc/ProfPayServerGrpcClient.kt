@@ -1,7 +1,7 @@
 package com.profpay.wallet.backend.grpc
 
 import com.google.protobuf.Empty
-import com.profpay.wallet.data.flow_db.token.SharedPrefsTokenProvider
+import com.profpay.wallet.data.di.token.SharedPrefsTokenProvider
 import com.profpay.wallet.utils.safeGrpcCall
 import io.grpc.ManagedChannel
 import kotlinx.coroutines.CoroutineDispatcher

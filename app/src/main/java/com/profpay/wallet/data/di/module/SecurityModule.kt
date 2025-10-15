@@ -1,4 +1,4 @@
-package com.profpay.wallet.data.flow_db.module
+package com.profpay.wallet.data.di.module
 
 import android.content.Context
 import com.profpay.wallet.security.KeystoreCryptoManager

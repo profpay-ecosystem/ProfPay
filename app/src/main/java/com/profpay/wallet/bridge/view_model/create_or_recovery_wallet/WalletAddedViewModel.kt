@@ -5,7 +5,7 @@ import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.PrefKeys
-import com.profpay.wallet.data.flow_db.repo.WalletAddedRepo
+import com.profpay.wallet.data.repository.WalletAddedRepo
 import com.profpay.wallet.tron.AddressesWithKeysForM
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry

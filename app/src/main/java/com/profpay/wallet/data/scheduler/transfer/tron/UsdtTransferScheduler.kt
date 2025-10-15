@@ -106,6 +106,10 @@ class UsdtTransferScheduler(
     ) = coroutineScope {
         if (transaction.type != "Transfer") return@coroutineScope
 
+        val blockTime = Instant.ofEpochMilli(transaction.block_timestamp)
+        val now = Instant.now()
+        val withinOneDay = Duration.between(blockTime, now).abs().toHours() <= 24
+
         val autoCheckAml = sharedPrefs.getBoolean(PrefKeys.AUTO_CHECK_AML, true)
 
         val senderAddressEntity = addressRepo.getAddressEntityByAddress(transaction.from)
@@ -157,10 +161,6 @@ class UsdtTransferScheduler(
         }
 
         if (receiverAddressEntity != null) {
-            val blockTime = Instant.ofEpochMilli(transaction.block_timestamp)
-            val now = Instant.now()
-
-            val withinOneDay = Duration.between(blockTime, now).abs().toHours() <= 24
             if (withinOneDay && autoCheckAml && senderAddressEntity == null) {
                 runCatching {
                     val (isSuccessful, message) =
@@ -186,16 +186,18 @@ class UsdtTransferScheduler(
             pendingTransactionRepo.deletePendingTransactionByTxId(transaction.transaction_id)
         }
 
-        if (isSender) {
-            notificationFunction(
-                "\uD83D\uDCB8 Отправлено: ${amount.toTokenAmount()} USDT",
-                "На ${transaction.to.take(6)}...${transaction.to.takeLast(4)}",
-            )
-        } else {
-            notificationFunction(
-                "\uD83D\uDCB0 Получено: ${amount.toTokenAmount()} USDT",
-                "От ${transaction.from.take(6)}...${transaction.from.takeLast(4)}",
-            )
+        if (withinOneDay) {
+            if (isSender) {
+                notificationFunction(
+                    "\uD83D\uDCB8 Отправлено: ${amount.toTokenAmount()} USDT",
+                    "На ${transaction.to.take(6)}...${transaction.to.takeLast(4)}",
+                )
+            } else {
+                notificationFunction(
+                    "\uD83D\uDCB0 Получено: ${amount.toTokenAmount()} USDT",
+                    "От ${transaction.from.take(6)}...${transaction.from.takeLast(4)}",
+                )
+            }
         }
     }
 
@@ -208,6 +210,10 @@ class UsdtTransferScheduler(
         if (contract.parameter.value.to_address == null || contract.parameter.value.amount == null) {
             return@coroutineScope
         }
+
+        val blockTime = Instant.ofEpochMilli(transaction.block_timestamp)
+        val now = Instant.now()
+        val withinOneDay = Duration.between(blockTime, now).abs().toHours() <= 24
 
         val ownerAddress =
             tron
@@ -279,10 +285,6 @@ class UsdtTransferScheduler(
         }
 
         if (receiverAddressEntity != null) {
-            val blockTime = Instant.ofEpochMilli(transaction.block_timestamp)
-            val now = Instant.now()
-
-            val withinOneDay = Duration.between(blockTime, now).abs().toHours() <= 24
             if (withinOneDay && contract.parameter.value.amount > 1000000 && senderAddressEntity == null && autoCheckAml) {
                 runCatching {
                     val (isSuccessful, message) =
@@ -307,8 +309,7 @@ class UsdtTransferScheduler(
         if (transactionExists) {
             pendingTransactionRepo.deletePendingTransactionByTxId(transaction.txID)
         }
-
-        if (typeValue != TransactionType.TRIGGER_SMART_CONTRACT.index) {
+        if (typeValue != TransactionType.TRIGGER_SMART_CONTRACT.index && withinOneDay) {
             if (isSender) {
                 notificationFunction(
                     "\uD83D\uDCB8 Отправлено: ${contract.parameter.value.amount.toBigInteger().toTokenAmount()} TRX",
@@ -380,6 +381,10 @@ class UsdtTransferScheduler(
             return@coroutineScope
         }
 
+        val blockTime = Instant.ofEpochMilli(transaction.block_timestamp)
+        val now = Instant.now()
+        val withinOneDay = Duration.between(blockTime, now).abs().toHours() <= 24
+
         val ownerAddress =
             tron
                 .addressUtilities
@@ -423,18 +428,20 @@ class UsdtTransferScheduler(
         val centralAddress = centralAddressRepo.getCentralAddress()
         val balance = tron.addressUtilities.getTrxBalance(centralAddress!!.address)
 
-        if (address == ownerAddress) {
-            centralAddressRepo.updateTrxBalance(balance)
-            notificationFunction(
-                "\uD83D\uDCB8 Отправлено: ${contract.parameter.value.amount.toBigInteger().toTokenAmount()} TRX",
-                "На ${toAddress.take(6)}...${toAddress.takeLast(4)}",
-            )
-        } else {
-            centralAddressRepo.updateTrxBalance(balance)
-            notificationFunction(
-                "\uD83D\uDCB0 Получено: ${contract.parameter.value.amount.toBigInteger().toTokenAmount()} TRX",
-                "От ${ownerAddress.take(6)}...${ownerAddress.takeLast(4)}",
-            )
+        if (withinOneDay) {
+            if (address == ownerAddress) {
+                centralAddressRepo.updateTrxBalance(balance)
+                notificationFunction(
+                    "\uD83D\uDCB8 Отправлено: ${contract.parameter.value.amount.toBigInteger().toTokenAmount()} TRX",
+                    "На ${toAddress.take(6)}...${toAddress.takeLast(4)}",
+                )
+            } else {
+                centralAddressRepo.updateTrxBalance(balance)
+                notificationFunction(
+                    "\uD83D\uDCB0 Получено: ${contract.parameter.value.amount.toBigInteger().toTokenAmount()} TRX",
+                    "От ${ownerAddress.take(6)}...${ownerAddress.takeLast(4)}",
+                )
+            }
         }
 
         val addresses = addressRepo.getAddressesSotsWithTokensByBlockchain("Tron")

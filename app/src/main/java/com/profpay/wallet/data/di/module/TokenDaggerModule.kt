@@ -1,7 +1,7 @@
-package com.profpay.wallet.data.flow_db
+package com.profpay.wallet.data.di.module
 
-import com.profpay.wallet.data.flow_db.token.SharedPrefsTokenProvider
-import com.profpay.wallet.data.flow_db.token.TokenProvider
+import com.profpay.wallet.data.di.token.SharedPrefsTokenProvider
+import com.profpay.wallet.data.di.token.TokenProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

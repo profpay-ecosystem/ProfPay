@@ -1,4 +1,4 @@
-package com.profpay.wallet.data.flow_db.token
+package com.profpay.wallet.data.di.token
 
 import android.content.Context
 import android.util.Base64

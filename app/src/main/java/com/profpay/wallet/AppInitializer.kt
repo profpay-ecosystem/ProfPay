@@ -20,7 +20,7 @@ import com.profpay.wallet.data.database.entities.wallet.TradingInsightsEntity
 import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.profpay.wallet.data.database.repositories.wallet.TradingInsightsRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.di.module.IoDispatcher
 import com.profpay.wallet.data.services.foreground.PusherService
 import com.profpay.wallet.tron.Tron
 import io.sentry.Sentry

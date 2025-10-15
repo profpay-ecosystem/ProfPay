@@ -11,9 +11,9 @@ import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
 import com.profpay.wallet.data.database.repositories.wallet.WalletProfileRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
-import com.profpay.wallet.data.flow_db.repo.EstimateCommissionResult
-import com.profpay.wallet.data.flow_db.repo.SendFromWalletRepo
+import com.profpay.wallet.data.di.module.IoDispatcher
+import com.profpay.wallet.data.repository.flow.EstimateCommissionResult
+import com.profpay.wallet.data.repository.flow.SendFromWalletRepo
 import com.profpay.wallet.data.services.TransactionProcessorService
 import com.profpay.wallet.data.utils.toBigInteger
 import com.profpay.wallet.data.utils.toSunAmount

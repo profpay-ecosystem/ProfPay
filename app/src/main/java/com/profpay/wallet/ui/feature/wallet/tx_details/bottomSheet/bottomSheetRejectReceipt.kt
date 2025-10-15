@@ -44,7 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.profpay.wallet.bridge.view_model.wallet.walletSot.TransferRejectUiEvent
 import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
 import com.profpay.wallet.data.database.models.AddressWithTokens
-import com.profpay.wallet.data.flow_db.repo.EstimateCommissionResult
+import com.profpay.wallet.data.repository.flow.EstimateCommissionResult
 import com.profpay.wallet.data.utils.toBigInteger
 import com.profpay.wallet.data.utils.toSunAmount
 import com.profpay.wallet.data.utils.toTokenAmount

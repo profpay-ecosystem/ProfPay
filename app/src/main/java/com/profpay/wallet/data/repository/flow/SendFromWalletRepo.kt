@@ -1,4 +1,4 @@
-package com.profpay.wallet.data.flow_db.repo
+package com.profpay.wallet.data.repository.flow
 
 import android.util.Log
 import com.profpay.wallet.AppConstants

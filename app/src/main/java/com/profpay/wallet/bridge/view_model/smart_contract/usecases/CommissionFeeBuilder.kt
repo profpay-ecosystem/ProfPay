@@ -5,7 +5,7 @@ import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.backend.grpc.ProfPayServerGrpcClient
 import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
-import com.profpay.wallet.data.flow_db.module.IoDispatcher
+import com.profpay.wallet.data.di.module.IoDispatcher
 import com.profpay.wallet.tron.Tron
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
@@ -20,7 +20,7 @@ class CommissionFeeBuilder
         private val addressRepo: AddressRepo,
         private val tron: Tron,
         grpcClientFactory: GrpcClientFactory,
-        @IoDispatcher private val dispatcher: CoroutineDispatcher,
+        @param:IoDispatcher private val dispatcher: CoroutineDispatcher,
     ) {
         private val profPayServerGrpcClient: ProfPayServerGrpcClient =
             grpcClientFactory.getGrpcClient(

@@ -14,7 +14,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
     id("dev.detekt") version "2.0.0-alpha.0"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
-    id("jacoco")
+//    id("jacoco")
 }
 
 ktlint {
@@ -54,25 +54,9 @@ tasks.withType<Detekt>().configureEach {
     autoCorrect = true
 }
 
-tasks.register<JacocoReport>("jacocoTestReport") {
-    group = "verification"
-    description = "Generates coverage for unit tests"
-
-    dependsOn("testDebugUnitTest") // только unit-тесты
-    classDirectories.setFrom(fileTree("${buildDir}/tmp/kotlin-classes/debug") {
-        exclude(
-            "**/R.class",
-            "**/R$*.class",
-            "**/BuildConfig.*"
-        )
-    })
-    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
-    executionData.setFrom(fileTree(buildDir).include("**/testDebugUnitTest.exec"))
-}
-
-jacoco {
-    toolVersion = "0.8.10"
-}
+//jacoco {
+//    toolVersion = "0.8.10"
+//}
 
 sonarqube {
     properties {
@@ -80,9 +64,10 @@ sonarqube {
         property("sonar.organization", "profpay-ecosystem")
         property("sonar.host.url", "https://sonarcloud.io")
         property("sonar.sources", "src/main/java")
-        property("sonar.tests", "src/test/java,src/androidTest/java")
+        property("sonar.tests", "src/test/java")
+        property("sonar.exclusions", "**/R.java,**/BuildConfig.java,**/Manifest.java,**/*Proto*.java,**/grpc/**/*.java,**/proto/**/*.java")
         property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest")
-        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+//        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
         property("sonar.kotlin.detekt.reportPaths", "build/reports/detekt/detekt.xml")
         property("sonar.kotlin.ktlint.reportPaths", "build/reports/ktlint/ktlint.xml")
     }
@@ -383,6 +368,11 @@ dependencies {
     // -------------------------------------------------
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    testRuntimeOnly(libs.protobuf.java)
+    testRuntimeOnly(libs.grpc.stub)
+    testRuntimeOnly(libs.grpc.netty)
+    testRuntimeOnly(libs.grpc.protobuf)
 
     // -------------------------------------------------
     // Annotation Processor

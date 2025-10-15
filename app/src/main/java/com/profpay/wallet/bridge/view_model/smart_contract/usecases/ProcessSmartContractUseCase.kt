@@ -5,7 +5,7 @@ import com.profpay.wallet.bridge.view_model.smart_contract.CompleteReturnData
 import com.profpay.wallet.bridge.view_model.smart_contract.CompleteStatusesEnum
 import com.profpay.wallet.bridge.view_model.smart_contract.usecases.estimate.ProcessContractEstimatorUseCase
 import com.profpay.wallet.data.database.repositories.ProfileRepo
-import com.profpay.wallet.data.flow_db.repo.SmartContractRepo
+import com.profpay.wallet.data.repository.flow.SmartContractRepo
 import com.profpay.wallet.data.utils.toByteString
 import com.profpay.wallet.data.utils.toSunAmount
 import org.example.protobuf.smart.SmartContractProto

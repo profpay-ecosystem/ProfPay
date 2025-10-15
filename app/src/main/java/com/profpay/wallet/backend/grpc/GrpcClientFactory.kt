@@ -1,7 +1,7 @@
 package com.profpay.wallet.backend.grpc
 
 import com.profpay.wallet.backend.grpc.interceptor.JwtAuthInterceptor
-import com.profpay.wallet.data.flow_db.token.SharedPrefsTokenProvider
+import com.profpay.wallet.data.di.token.SharedPrefsTokenProvider
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import javax.inject.Inject

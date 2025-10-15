@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.data.flow_db.module.MainDispatcher
+import com.profpay.wallet.data.di.module.MainDispatcher
 import com.profpay.wallet.data.services.AppLockManager
 import com.profpay.wallet.security.KeystoreEncryptionUtils
 import com.profpay.wallet.security.SecureDataStore

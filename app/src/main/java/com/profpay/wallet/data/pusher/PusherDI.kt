@@ -1,7 +1,7 @@
 package com.profpay.wallet.data.pusher
 
 import com.profpay.wallet.data.database.repositories.ProfileRepo
-import com.profpay.wallet.data.flow_db.repo.SmartContractRepo
+import com.profpay.wallet.data.repository.flow.SmartContractRepo
 
 class PusherDI(
     val smartContractStorage: SmartContractRepo,

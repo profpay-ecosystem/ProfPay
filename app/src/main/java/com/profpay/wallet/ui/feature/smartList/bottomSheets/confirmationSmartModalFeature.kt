@@ -36,8 +36,8 @@ import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.bridge.view_model.smart_contract.CompleteReturnData
 import com.profpay.wallet.bridge.view_model.smart_contract.CompleteStatusesEnum
 import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
-import com.profpay.wallet.data.flow_db.repo.SmartContractButtonType
-import com.profpay.wallet.data.flow_db.repo.SmartContractModalData
+import com.profpay.wallet.data.repository.flow.SmartContractButtonType
+import com.profpay.wallet.data.repository.flow.SmartContractModalData
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.GreenColor

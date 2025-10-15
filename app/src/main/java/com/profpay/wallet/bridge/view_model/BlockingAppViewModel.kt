@@ -2,8 +2,8 @@ package com.profpay.wallet.bridge.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.data.flow_db.repo.BlockingAppRepo
-import com.profpay.wallet.data.flow_db.repo.BlockingAppRepoState
+import com.profpay.wallet.data.repository.flow.BlockingAppRepo
+import com.profpay.wallet.data.repository.flow.BlockingAppRepoState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

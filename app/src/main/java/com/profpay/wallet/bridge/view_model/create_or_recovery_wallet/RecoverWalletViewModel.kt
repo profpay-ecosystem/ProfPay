@@ -2,8 +2,8 @@ package com.profpay.wallet.bridge.view_model.create_or_recovery_wallet
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.data.flow_db.repo.AddressAndMnemonicRepo
-import com.profpay.wallet.data.flow_db.repo.RecoveryResult
+import com.profpay.wallet.data.repository.flow.AddressAndMnemonicRepo
+import com.profpay.wallet.data.repository.flow.RecoveryResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

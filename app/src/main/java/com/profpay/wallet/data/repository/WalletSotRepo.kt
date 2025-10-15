@@ -1,4 +1,4 @@
-package com.profpay.wallet.data.flow_db.repo
+package com.profpay.wallet.data.repository
 
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.CryptoAddressGrpcClient

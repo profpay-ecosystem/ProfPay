@@ -2,7 +2,7 @@ package com.profpay.wallet.bridge.view_model.create_or_recovery_wallet
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.data.flow_db.repo.AddressAndMnemonicRepo
+import com.profpay.wallet.data.repository.flow.AddressAndMnemonicRepo
 import com.profpay.wallet.tron.AddressGenerateResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
