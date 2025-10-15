@@ -56,8 +56,8 @@ jobs:
             ktlintCheck \
             detekt \
             assembleDebug \
-            sonarqube \
-            -Dsonar.login=$SONAR_TOKEN \
+            sonar \
+            -Dsonar.token=$SONAR_TOKEN \
             -Dsonar.host.url=$SONAR_HOST_URL \
             --no-daemon
 
