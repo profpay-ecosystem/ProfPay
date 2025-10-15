@@ -47,7 +47,7 @@ jobs:
       - name: Grant permission to Gradle
         run: chmod +x ./gradlew
 
-      - name: Run static analysis and tests
+      - name: Run static analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -58,7 +58,7 @@ jobs:
             --no-daemon
 
       - name: Run some unit tests
-        run: ./gradlew testStageDebugUnitTest
+        run: ./gradlew testDebugUnitTest
 
       - name: Build release APK
         run: ./gradlew assembleRelease --no-daemon
