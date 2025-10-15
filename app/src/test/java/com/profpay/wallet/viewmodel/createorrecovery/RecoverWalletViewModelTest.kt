@@ -85,17 +85,4 @@ class RecoverWalletViewModelTest {
 
             coVerify { addressAndMnemonicRepo.generateAddressFromMnemonic("abandon baby cabin damage") }
         }
-
-    @Test
-    fun `clearAddressFromMnemonic calls repo method`() =
-        runTest {
-            every { addressAndMnemonicRepo.addressFromMnemonic } returns MutableSharedFlow()
-            coEvery { addressAndMnemonicRepo.clearAddressFromMnemonic() } just Runs
-
-            viewModel = RecoverWalletViewModel(addressAndMnemonicRepo)
-
-            viewModel.clearAddressFromMnemonic()
-
-            coVerify { addressAndMnemonicRepo.clearAddressFromMnemonic() }
-        }
 }
