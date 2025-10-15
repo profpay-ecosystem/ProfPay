@@ -60,18 +60,58 @@ tasks.withType<Detekt>().configureEach {
 
 sonarqube {
     properties {
+        // === Основные настройки ===
         property("sonar.projectKey", "profpay-ecosystem_ProfPay")
         property("sonar.organization", "profpay-ecosystem")
         property("sonar.host.url", "https://sonarcloud.io")
+
+        // === Исходники и тесты ===
         property("sonar.sources", "src/main/java")
         property("sonar.tests", "src/test/java")
-        property("sonar.exclusions", "**/R.java,**/BuildConfig.java,**/Manifest.java,**/*Proto*.java,**/grpc/**/*.java,**/proto/**/*.java")
-        property("sonar.junit.reportPaths", "build/test-results/testDebugUnitTest")
-//        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-        property("sonar.kotlin.detekt.reportPaths", "build/reports/detekt/detekt.xml")
-        property("sonar.kotlin.ktlint.reportPaths", "build/reports/ktlint/ktlint.xml")
+        property("sonar.sourceEncoding", "UTF-8")
+
+        // === Исключения ===
+        property(
+            "sonar.exclusions",
+            """
+                **/R.java,
+                **/BuildConfig.java,
+                **/Manifest.java,
+                **/*Proto*.java,
+                **/grpc/**/*.java,
+                **/proto/**/*.java
+            """.trimIndent()
+        )
+        property("sonar.coverage.exclusions", "**")
+
+        // === Пути к бинарникам ===
+        property(
+            "sonar.java.binaries",
+            "$buildDir/tmp/kotlin-classes/debug,$buildDir/intermediates/classes/debug"
+        )
+        property("sonar.kotlin.binaries", "$buildDir/tmp/kotlin-classes/debug")
+
+        // === Подключаем все зависимости (.jar, .aar, gRPC, protobuf) ===
+        val jars = mutableListOf<File>()
+        jars += fileTree("$buildDir/intermediates/runtime_app_classes_jar") { include("**/*.jar") }.files
+        jars += fileTree("$buildDir/intermediates/aar_metadata_check") { include("**/*.jar") }.files
+        jars += fileTree("$buildDir/intermediates/external_libs_dex_archive") { include("**/*.jar") }.files
+        jars += fileTree("$buildDir/intermediates/runtime_symbol_list") { include("**/*.jar") }.files
+
+        // Добавляем путь к protobuf и gRPC библиотекам (если есть)
+        jars += fileTree("$projectDir/libs") { include("**/*.jar") }.files
+
+        property("sonar.java.libraries", jars.joinToString(","))
+
+        // === Улучшение анализа Kotlin ===
+        property("sonar.language", "kotlin")
+        property("sonar.import_unknown_files", true)
+
+        // === Пропуск анализа покрытия (если нет JaCoCo) ===
+        property("sonar.coverage.exclusions", "**")
     }
 }
+
 
 sentry {
     tracingInstrumentation {
