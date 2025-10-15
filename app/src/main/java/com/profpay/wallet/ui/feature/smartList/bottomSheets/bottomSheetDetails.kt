@@ -35,7 +35,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
 import com.profpay.wallet.bridge.view_model.smart_contract.usecases.isAddressZero
 import com.profpay.wallet.data.utils.toBigInteger
 import com.profpay.wallet.data.utils.toTokenAmount
