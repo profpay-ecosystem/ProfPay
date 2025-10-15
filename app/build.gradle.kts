@@ -90,6 +90,7 @@ sonarqube {
             "$buildDir/tmp/kotlin-classes/debug,$buildDir/intermediates/classes/debug"
         )
         property("sonar.kotlin.binaries", "$buildDir/tmp/kotlin-classes/debug")
+        property("sonar.java.binaries", "$buildDir/tmp/kotlin-classes/debug")
 
         // === Подключаем все зависимости (.jar, .aar, gRPC, protobuf) ===
         val jars = mutableListOf<File>()

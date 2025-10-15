@@ -66,12 +66,11 @@ jobs:
           ./gradlew clean \
             ktlintCheck \
             detekt \
-            assembleDebug \
+            build \
             sonar \
             -Dsonar.token=$SONAR_TOKEN \
             -Dsonar.organization=profpay-ecosystem \
             -Dsonar.projectKey=profpay-ecosystem_ProfPay \
-            -Dsonar.exclusions=**/R.java,**/BuildConfig.java,**/Manifest.java,**/*Proto*.java,**/grpc/**/*.java,**/proto/**/*.java \
             --no-daemon
 
       - name: Build release APK
