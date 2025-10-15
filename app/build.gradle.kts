@@ -367,6 +367,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    testRuntimeOnly(libs.protobuf.java)
+    testRuntimeOnly(libs.grpc.stub)
+    testRuntimeOnly(libs.grpc.netty)
+    testRuntimeOnly(libs.grpc.protobuf)
+
     // -------------------------------------------------
     // Annotation Processor
     // -------------------------------------------------
