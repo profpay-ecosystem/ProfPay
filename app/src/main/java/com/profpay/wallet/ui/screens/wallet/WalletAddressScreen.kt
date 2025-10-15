@@ -16,15 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.PrefKeys
-import com.profpay.wallet.bridge.view_model.dto.TokenName
-import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
+import com.profpay.wallet.bridge.viewmodel.wallet.walletSot.WalletAddressViewModel
 import com.profpay.wallet.data.database.models.TransactionModel
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.components.custom.CustomBottomCard
 import com.profpay.wallet.ui.components.custom.CustomScaffoldWallet
 import com.profpay.wallet.ui.components.custom.CustomTabRow
 import com.profpay.wallet.ui.components.custom.CustomTopAppBar
-import com.profpay.wallet.ui.feature.wallet.tx_details.bottomSheet.bottomSheetRejectReceipt
+import com.profpay.wallet.ui.feature.wallet.txdetails.bottomSheet.bottomSheetRejectReceipt
 import com.profpay.wallet.ui.feature.wallet.walletAddress.ActionsRowWalletAddressFeature
 import com.profpay.wallet.ui.feature.wallet.walletAddress.TopCardForWalletAddressFeature
 import com.profpay.wallet.ui.feature.wallet.walletAddress.horizontalListsTrans.TransactionsHPagerWalletAddressFeature
@@ -92,15 +92,18 @@ fun WalletAddressScreen(
             transactionsByAddressSender + transactionsByAddressReceiver
         }
 
-    val groupedAllTransaction = remember(allTransaction) {
-        viewModel.getListTransactionToTimestamp(allTransaction)
-    }
-    val groupedSenderTransaction = remember(transactionsByAddressSender) {
-        viewModel.getListTransactionToTimestamp(transactionsByAddressSender)
-    }
-    val groupedReceiveTransaction = remember(transactionsByAddressReceiver) {
-        viewModel.getListTransactionToTimestamp(transactionsByAddressReceiver)
-    }
+    val groupedAllTransaction =
+        remember(allTransaction) {
+            viewModel.getListTransactionToTimestamp(allTransaction)
+        }
+    val groupedSenderTransaction =
+        remember(transactionsByAddressSender) {
+            viewModel.getListTransactionToTimestamp(transactionsByAddressSender)
+        }
+    val groupedReceiveTransaction =
+        remember(transactionsByAddressReceiver) {
+            viewModel.getListTransactionToTimestamp(transactionsByAddressReceiver)
+        }
 
     LaunchedEffect(addressWithTokens) {
         if (addressWithTokens == null) return@LaunchedEffect
@@ -143,14 +146,15 @@ fun WalletAddressScreen(
                 pagerState = pagerState,
                 viewModel = viewModel,
                 stackedSnackbarHostState = stackedSnackbarHostState,
-                groupedTransactions = GroupedTransactions(
-                    all = groupedAllTransaction,
-                    sender = groupedSenderTransaction,
-                    receiver = groupedReceiveTransaction,
-                ),
+                groupedTransactions =
+                    GroupedTransactions(
+                        all = groupedAllTransaction,
+                        sender = groupedSenderTransaction,
+                        receiver = groupedReceiveTransaction,
+                    ),
                 goToTXDetailsScreen = { goToTXDetailsScreen() },
                 goToSystemTRX = { goToSystemTRX() },
-                addressWithTokens = addressWithTokens
+                addressWithTokens = addressWithTokens,
             )
         }
     }
@@ -168,4 +172,3 @@ fun WalletAddressScreen(
         setIsOpenRejectReceiptSheet = { setIsOpenRejectReceiptSheet(true) },
     )
 }
-

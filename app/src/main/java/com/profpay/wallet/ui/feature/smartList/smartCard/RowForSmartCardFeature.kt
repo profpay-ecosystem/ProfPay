@@ -21,7 +21,6 @@ import com.profpay.wallet.R
 import com.profpay.wallet.ui.app.theme.LocalFontSize
 import kotlinx.coroutines.launch
 
-
 @Composable
 internal fun RowForSmartCardFeature(
     label: String,
@@ -32,10 +31,11 @@ internal fun RowForSmartCardFeature(
     val scope = rememberCoroutineScope()
 
     Row(
-        modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .padding(top = 4.dp)
-            .fillMaxWidth(),
+        modifier =
+            Modifier
+                .padding(horizontal = 8.dp)
+                .padding(top = 4.dp)
+                .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -45,13 +45,14 @@ internal fun RowForSmartCardFeature(
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable {
-                scope.launch {
-                    clipboard.setClipEntry(
-                        ClipData.newPlainText("Wallet address", address).toClipEntry()
-                    )
-                }
-            },
+            modifier =
+                Modifier.clickable {
+                    scope.launch {
+                        clipboard.setClipEntry(
+                            ClipData.newPlainText("Wallet address", address).toClipEntry(),
+                        )
+                    }
+                },
         ) {
             Text(
                 text = "${address.take(5)}...${address.takeLast(5)}",

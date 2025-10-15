@@ -16,12 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
+import com.profpay.wallet.bridge.viewmodel.wallet.walletSot.WalletAddressViewModel
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.data.database.models.TransactionModel
 import com.profpay.wallet.ui.app.theme.BackgroundIcon
 import com.profpay.wallet.ui.shared.utils.formatDate
-
 
 @Composable
 fun TransactionHistoryList(
@@ -39,9 +38,10 @@ fun TransactionHistoryList(
 
     if (condition) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
             contentPadding = PaddingValues(0.dp),
             verticalArrangement = Arrangement.Top,
         ) {

@@ -15,9 +15,9 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
-import com.profpay.wallet.bridge.view_model.pin_lock.PinLockViewModel
-import com.profpay.wallet.bridge.view_model.settings.ThemeState
-import com.profpay.wallet.bridge.view_model.settings.ThemeViewModel
+import com.profpay.wallet.bridge.viewmodel.pinlock.PinLockViewModel
+import com.profpay.wallet.bridge.viewmodel.settings.ThemeState
+import com.profpay.wallet.bridge.viewmodel.settings.ThemeViewModel
 import com.profpay.wallet.data.services.AppLockManager
 import com.profpay.wallet.data.services.NetworkMonitor
 import com.profpay.wallet.ui.app.navigation.MyApp
@@ -42,7 +42,7 @@ class MainActivity : FragmentActivity() {
 
         window.setFlags(
             WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE
+            WindowManager.LayoutParams.FLAG_SECURE,
         )
 
         Pushy.listen(this)

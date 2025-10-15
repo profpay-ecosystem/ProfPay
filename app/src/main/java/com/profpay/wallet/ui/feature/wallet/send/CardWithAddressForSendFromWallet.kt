@@ -22,7 +22,6 @@ import com.profpay.wallet.ui.app.theme.PubAddressDark
 import com.profpay.wallet.ui.app.theme.redColor
 import com.profpay.wallet.ui.app.theme.transparent
 
-
 @Composable
 fun CardWithAddressForSendFromWallet(
     title: String,

@@ -4,8 +4,8 @@ import android.database.sqlite.SQLiteConstraintException
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.backend.grpc.ProfPayServerGrpcClient
-import com.profpay.wallet.bridge.view_model.dto.TokenName
-import com.profpay.wallet.bridge.view_model.dto.transfer.TransferResult
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
+import com.profpay.wallet.bridge.viewmodel.dto.transfer.TransferResult
 import com.profpay.wallet.data.database.entities.wallet.AddressEntity
 import com.profpay.wallet.data.database.entities.wallet.PendingTransactionEntity
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
@@ -79,22 +79,25 @@ class TransactionProcessorService
             val addressEntity = addressRepo.getAddressEntityByAddress(sender) ?: return fail("Адрес отправителя не найден")
 
             // Достаём приватный ключ
-            val privKeyBytes = resolvePrivateKey(
-                walletId = addressEntity.walletId,
-                addressEntity = addressEntity,
-                resolvePrivateKeyDeps = ResolvePrivateKeyDeps(
-                    addressRepo = addressRepo,
-                    walletProfileRepo = walletProfileRepo,
-                    keystoreCryptoManager = keystoreCryptoManager,
-                    tron = tron
+            val privKeyBytes =
+                resolvePrivateKey(
+                    walletId = addressEntity.walletId,
+                    addressEntity = addressEntity,
+                    resolvePrivateKeyDeps =
+                        ResolvePrivateKeyDeps(
+                            addressRepo = addressRepo,
+                            walletProfileRepo = walletProfileRepo,
+                            keystoreCryptoManager = keystoreCryptoManager,
+                            tron = tron,
+                        ),
                 )
-            )
             // Получаем адрес для комиссии
-            val commissionAddressData = getCommissionAddressData(
-                tokenName = tokenName,
-                privKeyBytes = privKeyBytes,
-                addressEntity = addressEntity,
-            )
+            val commissionAddressData =
+                getCommissionAddressData(
+                    tokenName = tokenName,
+                    privKeyBytes = privKeyBytes,
+                    addressEntity = addressEntity,
+                )
             // Валидируем
             try {
                 validateBalances(sender, commissionAddressData, tokenName, commission, tokenEntity, amount)
@@ -113,7 +116,7 @@ class TransactionProcessorService
                     fromAddress = commissionAddressData.address,
                     toAddress = trxFeeAddress,
                     privateKey = commissionAddressData.privateKey,
-                    amount = commission
+                    amount = commission,
                 )
 
             val estimateCommissionBandwidth =
@@ -152,12 +155,12 @@ class TransactionProcessorService
             return if (tokenName == TokenName.TRX.tokenName || isGeneralAddress) {
                 CommissionAddressData(
                     address = addressEntity.address,
-                    privateKey = privKeyBytes
+                    privateKey = privKeyBytes,
                 )
             } else {
                 CommissionAddressData(
                     address = centralAddr.address,
-                    privateKey = ByteUtils.parseHex(centralAddr.privateKey)
+                    privateKey = ByteUtils.parseHex(centralAddr.privateKey),
                 )
             }
         }
@@ -401,4 +404,4 @@ class TransactionProcessorService
                 return result
             }
         }
-}
+    }

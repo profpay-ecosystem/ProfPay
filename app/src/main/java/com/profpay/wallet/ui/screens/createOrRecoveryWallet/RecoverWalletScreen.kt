@@ -46,9 +46,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverUiEvent
-import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletState
-import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.RecoverWalletViewModel
+import com.profpay.wallet.bridge.viewmodel.createorrecovery.RecoverUiEvent
+import com.profpay.wallet.bridge.viewmodel.createorrecovery.RecoverWalletState
+import com.profpay.wallet.bridge.viewmodel.createorrecovery.RecoverWalletViewModel
 import com.profpay.wallet.data.repository.flow.RecoveryResult
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonDark
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
@@ -68,7 +68,7 @@ fun RecoverWalletScreen(
     var seedPhrase by remember { mutableStateOf("") }
     val openDialog = remember { mutableStateOf(false) }
 
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.mutableState.collectAsStateWithLifecycle()
     val uiEvent by viewModel.uiEvent.collectAsStateWithLifecycle()
 
     // Текущая клавиатура

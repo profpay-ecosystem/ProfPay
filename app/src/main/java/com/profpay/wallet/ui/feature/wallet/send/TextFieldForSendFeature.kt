@@ -16,25 +16,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.profpay.wallet.bridge.view_model.dto.TokenName
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
 import com.profpay.wallet.ui.app.theme.PubAddressDark
 import com.profpay.wallet.ui.app.theme.transparent
-
 
 @Composable
 fun TextFieldForSendFeature(
     sumSending: String,
     currentTokenName: TokenName,
     tokenBalance: String,
-    onSumChange: (String) -> Unit
+    onSumChange: (String) -> Unit,
 ) {
     Card(
         shape = RoundedCornerShape(10.dp),
         modifier = Modifier.padding(vertical = 4.dp),
         elevation = CardDefaults.cardElevation(10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+            ),
     ) {
         TextField(
             value = sumSending,
@@ -73,20 +73,22 @@ fun TextFieldForSendFeature(
                     }
                 }
             },
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-                focusedIndicatorColor = MaterialTheme.colorScheme.transparent,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.transparent,
-                disabledIndicatorColor = MaterialTheme.colorScheme.transparent,
-                focusedContainerColor = MaterialTheme.colorScheme.transparent,
-                unfocusedContainerColor = MaterialTheme.colorScheme.transparent,
-                cursorColor = MaterialTheme.colorScheme.onBackground,
-                selectionColors = TextSelectionColors(
-                    handleColor = MaterialTheme.colorScheme.onBackground,
-                    backgroundColor = MaterialTheme.colorScheme.transparent,
+            colors =
+                TextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.transparent,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.transparent,
+                    disabledIndicatorColor = MaterialTheme.colorScheme.transparent,
+                    focusedContainerColor = MaterialTheme.colorScheme.transparent,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.transparent,
+                    cursorColor = MaterialTheme.colorScheme.onBackground,
+                    selectionColors =
+                        TextSelectionColors(
+                            handleColor = MaterialTheme.colorScheme.onBackground,
+                            backgroundColor = MaterialTheme.colorScheme.transparent,
+                        ),
                 ),
-            ),
         )
     }
 }

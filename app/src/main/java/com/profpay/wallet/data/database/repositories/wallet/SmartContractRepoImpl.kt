@@ -17,18 +17,16 @@ interface SmartContractRepo {
 }
 
 @Singleton
-class SmartContractRepoImpl @Inject constructor(
-    private val smartContractDao: SmartContractDao,
-) : SmartContractRepo {
-    override suspend fun insert(addressEntity: SmartContractEntity): Long =
-        smartContractDao.insert(addressEntity)
+class SmartContractRepoImpl
+    @Inject
+    constructor(
+        private val smartContractDao: SmartContractDao,
+    ) : SmartContractRepo {
+        override suspend fun insert(addressEntity: SmartContractEntity): Long = smartContractDao.insert(addressEntity)
 
-    override fun getSmartContractFlow(): Flow<SmartContractEntity?> =
-        smartContractDao.getSmartContractFlow()
+        override fun getSmartContractFlow(): Flow<SmartContractEntity?> = smartContractDao.getSmartContractFlow()
 
-    override suspend fun getSmartContract(): SmartContractEntity? =
-        smartContractDao.getSmartContract()
+        override suspend fun getSmartContract(): SmartContractEntity? = smartContractDao.getSmartContract()
 
-    override suspend fun restoreSmartContract(contractAddress: String) =
-        smartContractDao.restoreSmartContract(contractAddress)
-}
+        override suspend fun restoreSmartContract(contractAddress: String) = smartContractDao.restoreSmartContract(contractAddress)
+    }

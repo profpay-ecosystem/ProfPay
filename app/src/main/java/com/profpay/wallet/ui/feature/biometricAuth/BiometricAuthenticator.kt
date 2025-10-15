@@ -18,7 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.pin_lock.PinLockViewModel
+import com.profpay.wallet.bridge.viewmodel.pinlock.PinLockViewModel
 import com.profpay.wallet.ui.shared.sharedPref
 
 @Composable

@@ -59,8 +59,8 @@ fun ReceiveFromWalletSotsScreen(goToBack: () -> Unit) {
 
     val extraText =
         "Мой публичный адрес для получения USDT:\n" +
-                "${addressForReceive}\n\n" +
-                "Данное сообщение отправлено с помощью приложения ProfPay Wallet"
+            "${addressForReceive}\n\n" +
+            "Данное сообщение отправлено с помощью приложения ProfPay Wallet"
 
     val intent = Intent(Intent.ACTION_SEND)
     intent.type = "text/plain"
@@ -71,9 +71,10 @@ fun ReceiveFromWalletSotsScreen(goToBack: () -> Unit) {
         CustomTopAppBar(title = "Receive", goToBack = { goToBack() })
         CustomBottomCard(
             modifier = Modifier.weight(0.8f),
-            modifierColumn = Modifier
-                .padding(vertical = 8.dp, horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
+            modifierColumn =
+                Modifier
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             bottomPadding = bottomPadding,
         ) {
@@ -137,8 +138,9 @@ fun ReceiveFromWalletSotsScreen(goToBack: () -> Unit) {
                         onClick = {
                             scope.launch {
                                 clipboard.setClipEntry(
-                                    ClipData.newPlainText("Wallet address", addressForReceive)
-                                        .toClipEntry()
+                                    ClipData
+                                        .newPlainText("Wallet address", addressForReceive)
+                                        .toClipEntry(),
                                 )
                             }
                             stackedSnackbarHostState.showSuccessSnackbar(
@@ -181,5 +183,3 @@ fun ReceiveFromWalletSotsScreen(goToBack: () -> Unit) {
         }
     }
 }
-
-

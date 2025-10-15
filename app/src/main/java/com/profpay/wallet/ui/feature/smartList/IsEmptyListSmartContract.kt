@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
+import com.profpay.wallet.bridge.viewmodel.smartcontract.GetSmartContractViewModel
 import kotlinx.coroutines.launch
 
 @Composable

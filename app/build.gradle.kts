@@ -54,9 +54,9 @@ tasks.withType<Detekt>().configureEach {
     autoCorrect = true
 }
 
-//jacoco {
+// jacoco {
 //    toolVersion = "0.8.10"
-//}
+// }
 
 sentry {
     tracingInstrumentation {
@@ -81,7 +81,7 @@ android {
         create("release") {
             storeFile = file(System.getenv("KEYSTORE_FILE") ?: project.findProperty("KEYSTORE_FILE") as String)
             storePassword = System.getenv("KEYSTORE_PASSWORD") ?: project.findProperty("KEYSTORE_PASSWORD") as String
-            keyAlias = System.getenv("KEY_ALIAS")  ?: project.findProperty("KEY_ALIAS") as String
+            keyAlias = System.getenv("KEY_ALIAS") ?: project.findProperty("KEY_ALIAS") as String
             keyPassword = System.getenv("KEY_PASSWORD") ?: project.findProperty("KEY_PASSWORD") as String
         }
     }
@@ -206,9 +206,6 @@ protobuf {
         artifact = "com.google.protobuf:protoc:4.30.2"
     }
     plugins {
-        id("java") {
-            artifact = "com.google.protobuf:protoc-gen-java:3.25.3"
-        }
         id("grpc") {
             artifact = "io.grpc:protoc-gen-grpc-java:1.72.0"
         }

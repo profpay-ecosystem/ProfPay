@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.pin_lock.PinLockViewModel
+import com.profpay.wallet.bridge.viewmodel.pinlock.PinLockViewModel
 import com.profpay.wallet.ui.feature.lockScreen.InputDots
 import com.profpay.wallet.ui.feature.lockScreen.NumberBoard
 import kotlinx.coroutines.delay

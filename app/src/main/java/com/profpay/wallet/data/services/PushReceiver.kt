@@ -9,7 +9,6 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.graphics.Color
 import android.media.RingtoneManager
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.google.protobuf.ByteString
 import com.profpay.wallet.MainActivity

@@ -8,11 +8,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.viewModelScope
-import com.profpay.wallet.bridge.view_model.smart_contract.ContractButtonVisibleType
-import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
-import com.profpay.wallet.bridge.view_model.smart_contract.StatusData
-import com.profpay.wallet.bridge.view_model.smart_contract.usecases.isBuyerNotDeposited
-import com.profpay.wallet.bridge.view_model.smart_contract.usecases.isSellerNotPayedExpertFee
+import com.profpay.wallet.bridge.viewmodel.smartcontract.ContractButtonVisibleType
+import com.profpay.wallet.bridge.viewmodel.smartcontract.GetSmartContractViewModel
+import com.profpay.wallet.bridge.viewmodel.smartcontract.StatusData
+import com.profpay.wallet.bridge.viewmodel.smartcontract.usecases.isBuyerNotDeposited
+import com.profpay.wallet.bridge.viewmodel.smartcontract.usecases.isSellerNotPayedExpertFee
 import com.profpay.wallet.data.repository.flow.SmartContractButtonType
 import com.profpay.wallet.ui.feature.smartList.bottomSheets.bottomSheetDetails
 import kotlinx.coroutines.launch
@@ -83,4 +83,3 @@ fun SmartCardFeature(
         },
     )
 }
-

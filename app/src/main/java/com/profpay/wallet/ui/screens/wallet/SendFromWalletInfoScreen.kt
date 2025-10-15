@@ -16,8 +16,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.profpay.wallet.bridge.view_model.dto.TokenName
-import com.profpay.wallet.bridge.view_model.wallet.send.SendFromWalletViewModel
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
+import com.profpay.wallet.bridge.viewmodel.wallet.send.SendFromWalletViewModel
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.components.custom.CustomBottomCard
 import com.profpay.wallet.ui.components.custom.CustomScaffoldWallet
@@ -98,7 +98,6 @@ fun SendFromWalletInfoScreen(
             snackbar = stackedSnackbarHostState,
         )
 
-
     CustomScaffoldWallet(
         stackedSnackbarHostState = stackedSnackbarHostState,
         keyboardController = keyboardController,
@@ -108,9 +107,10 @@ fun SendFromWalletInfoScreen(
 
         CustomBottomCard(
             modifier = Modifier.weight(0.8f),
-            modifierColumn = Modifier
-                .padding(vertical = 8.dp, horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
+            modifierColumn =
+                Modifier
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState()),
             bottomPadding = bottomPadding,
         ) {
             CardWithAddressForSendFromWallet(
@@ -121,14 +121,14 @@ fun SendFromWalletInfoScreen(
             )
             RowSumForSendFeature(
                 tokenBalance = uiState.tokenBalance.toTokenAmount().toString(),
-                currentTokenName = currentTokenName
+                currentTokenName = currentTokenName,
             )
 
             TextFieldForSendFeature(
                 sumSending = sumSending,
                 currentTokenName = currentTokenName,
                 tokenBalance = uiState.tokenBalance.toTokenAmount().toString(),
-                onSumChange = { sumSending = it }
+                onSumChange = { sumSending = it },
             )
 
             SendWarningTextFeature(uiState.warning)
@@ -138,9 +138,8 @@ fun SendFromWalletInfoScreen(
                     if (viewModel.tron.addressUtilities.isValidTronAddress(addressSending)) {
                         setIsOpenTransferProcessingSheet(true)
                     }
-                }
+                },
             )
         }
     }
 }
-

@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.profpay.wallet.ui.app.theme.redColor
 
-
 @Composable
 fun SendWarningTextFeature(uiStateWarning: String?) {
     if (uiStateWarning != null) {

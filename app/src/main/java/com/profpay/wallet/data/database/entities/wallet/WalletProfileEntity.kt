@@ -18,9 +18,9 @@ data class WalletProfileEntity(
         if (other !is WalletProfileEntity) return false
 
         return id == other.id &&
-                name == other.name &&
-                iv.contentEquals(other.iv) &&
-                cipherText.contentEquals(other.cipherText)
+            name == other.name &&
+            iv.contentEquals(other.iv) &&
+            cipherText.contentEquals(other.cipherText)
     }
 
     override fun hashCode(): Int {

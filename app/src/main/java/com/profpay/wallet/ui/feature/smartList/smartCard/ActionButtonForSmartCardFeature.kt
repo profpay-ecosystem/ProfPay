@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 import com.profpay.wallet.ui.app.theme.LocalFontSize
 import com.profpay.wallet.ui.app.theme.backgroundContainerButtonLight
 
-
 @Composable
 internal fun ActionButtonForSmartCardFeature(
     text: String,
@@ -25,12 +24,14 @@ internal fun ActionButtonForSmartCardFeature(
     Button(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier
-            .padding(horizontal = 8.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = color,
-            contentColor = MaterialTheme.colorScheme.backgroundContainerButtonLight,
-        ),
+        modifier =
+            modifier
+                .padding(horizontal = 8.dp),
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = color,
+                contentColor = MaterialTheme.colorScheme.backgroundContainerButtonLight,
+            ),
         shape = RoundedCornerShape(12.dp),
     ) {
         Text(

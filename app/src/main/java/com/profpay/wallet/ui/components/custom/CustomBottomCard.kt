@@ -26,17 +26,18 @@ fun CustomBottomCard(
     verticalScroll: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val columnModifier = if (verticalScroll) {
-        modifierColumn.verticalScroll(rememberScrollState())
-    } else {
-        modifierColumn
-    }
+    val columnModifier =
+        if (verticalScroll) {
+            modifierColumn.verticalScroll(rememberScrollState())
+        } else {
+            modifierColumn
+        }
 
     Card(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
     ) {
         Column(
             modifier =

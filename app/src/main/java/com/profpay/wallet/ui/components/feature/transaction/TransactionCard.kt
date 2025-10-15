@@ -22,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-
 @Composable
 fun TransactionCard(
     title: String,
@@ -34,10 +33,11 @@ fun TransactionCard(
     extraContent: @Composable (() -> Unit) = {},
 ) {
     Card(
-        modifier = modifier
-            .padding(vertical = 4.dp)
-            .fillMaxWidth()
-            .shadow(7.dp, RoundedCornerShape(10.dp)),
+        modifier =
+            modifier
+                .padding(vertical = 4.dp)
+                .fillMaxWidth()
+                .shadow(7.dp, RoundedCornerShape(10.dp)),
         onClick = { onClick() },
     ) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
@@ -51,12 +51,13 @@ fun TransactionCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .paint(
-                                painterResource(id = iconRes),
-                                contentScale = ContentScale.FillBounds,
-                            )
+                        modifier =
+                            Modifier
+                                .size(40.dp)
+                                .paint(
+                                    painterResource(id = iconRes),
+                                    contentScale = ContentScale.FillBounds,
+                                ),
                     )
                     Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                         Text(text = title, style = MaterialTheme.typography.bodyLarge)

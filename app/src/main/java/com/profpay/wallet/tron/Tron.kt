@@ -1,7 +1,7 @@
 package com.profpay.wallet.tron
 
 import android.content.Context
-import com.profpay.wallet.tron.smart_contract.SmartContract
+import com.profpay.wallet.tron.smartcontract.SmartContract
 import javax.inject.Inject
 
 class Tron

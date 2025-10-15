@@ -16,18 +16,19 @@ interface PendingTransactionRepo {
 }
 
 @Singleton
-class PendingTransactionRepoImpl @Inject constructor(
-    private val pendingTransactionDao: PendingTransactionDao,
-) : PendingTransactionRepo {
-    override suspend fun insert(pendingTransactionEntity: PendingTransactionEntity): Long =
-        pendingTransactionDao.insert(pendingTransactionEntity)
+class PendingTransactionRepoImpl
+    @Inject
+    constructor(
+        private val pendingTransactionDao: PendingTransactionDao,
+    ) : PendingTransactionRepo {
+        override suspend fun insert(pendingTransactionEntity: PendingTransactionEntity): Long =
+            pendingTransactionDao.insert(pendingTransactionEntity)
 
-    override suspend fun pendingTransactionIsExistsByTxId(txid: String): Boolean =
-        pendingTransactionDao.pendingTransactionIsExistsByTxId(txid)
+        override suspend fun pendingTransactionIsExistsByTxId(txid: String): Boolean =
+            pendingTransactionDao.pendingTransactionIsExistsByTxId(txid)
 
-    override suspend fun deletePendingTransactionByTxId(txid: String) =
-        pendingTransactionDao.deletePendingTransactionByTxId(txid)
+        override suspend fun deletePendingTransactionByTxId(txid: String) = pendingTransactionDao.deletePendingTransactionByTxId(txid)
 
-    override suspend fun getExpiredTransactions(currentTime: Long): List<PendingTransactionEntity> =
-        pendingTransactionDao.getExpiredTransactions(currentTime)
-}
+        override suspend fun getExpiredTransactions(currentTime: Long): List<PendingTransactionEntity> =
+            pendingTransactionDao.getExpiredTransactions(currentTime)
+    }

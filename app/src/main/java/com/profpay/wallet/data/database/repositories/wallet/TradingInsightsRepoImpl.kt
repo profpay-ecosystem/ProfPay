@@ -19,20 +19,19 @@ interface TradingInsightsRepo {
 }
 
 @Singleton
-class TradingInsightsRepoImpl @Inject constructor(
-    private val tradingInsightsDao: TradingInsightsDao,
-) : TradingInsightsRepo {
-    override suspend fun insert(tradingInsightsEntity: TradingInsightsEntity): Long =
-        tradingInsightsDao.insert(tradingInsightsEntity)
+class TradingInsightsRepoImpl
+    @Inject
+    constructor(
+        private val tradingInsightsDao: TradingInsightsDao,
+    ) : TradingInsightsRepo {
+        override suspend fun insert(tradingInsightsEntity: TradingInsightsEntity): Long = tradingInsightsDao.insert(tradingInsightsEntity)
 
-    override suspend fun doesSymbolExist(symbol: String): Boolean =
-        tradingInsightsDao.doesSymbolExist(symbol)
+        override suspend fun doesSymbolExist(symbol: String): Boolean = tradingInsightsDao.doesSymbolExist(symbol)
 
-    override suspend fun updatePriceChangePercentage24h(
-        symbol: String,
-        priceChangePercentage24h: Double,
-    ) = tradingInsightsDao.updatePriceChangePercentage24h(symbol, priceChangePercentage24h)
+        override suspend fun updatePriceChangePercentage24h(
+            symbol: String,
+            priceChangePercentage24h: Double,
+        ) = tradingInsightsDao.updatePriceChangePercentage24h(symbol, priceChangePercentage24h)
 
-    override suspend fun getPriceChangePercentage24h(symbol: String): Double =
-        tradingInsightsDao.getPriceChangePercentage24h(symbol)
-}
+        override suspend fun getPriceChangePercentage24h(symbol: String): Double = tradingInsightsDao.getPriceChangePercentage24h(symbol)
+    }

@@ -23,7 +23,6 @@ import com.profpay.wallet.ui.app.theme.BackgroundLight
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.app.theme.ProgressIndicator
 
-
 @Composable
 fun ContentBottomSheetTransferProcessing(onClick: () -> Unit) {
     Column(

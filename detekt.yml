@@ -1,0 +1,42 @@
+style:
+    MagicNumber:
+        active: false
+    MaxLineLength:
+        active: false
+    WildcardImport:
+        active: false
+    UnusedPrivateMember:
+        active: false
+    DataClassShouldBeImmutable:
+        active: false
+    ReturnCount:
+        active: false
+    ComplexCondition:
+        active: false
+    NestedBlockDepth:
+        active: false
+    LongMethod:
+        active: false
+    LargeClass:
+        active: false
+exceptions:
+    TooGenericExceptionCaught:
+        active: false
+    TooGenericExceptionThrown:
+        active: false
+    InstanceOfCheckForException:
+        active: false
+naming:
+    TopLevelPropertyNaming:
+        active: false
+    FunctionNaming:
+        active: false
+    VariableNaming:
+        active: false
+    PackageNaming:
+        active: false
+coroutines:
+    InjectDispatcher:
+        active: false
+    SuspendFunWithCoroutineScopeReceiver:
+        active: false

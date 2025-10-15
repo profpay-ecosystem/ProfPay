@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.core.content.edit
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.profpay.wallet.ui.app.navigation.bottom_bar.HomeBottomNavBar
+import com.profpay.wallet.ui.app.navigation.bottombar.HomeBottomNavBar
 import com.profpay.wallet.ui.app.navigation.graphs.HomeNavGraph
 import com.profpay.wallet.ui.shared.sharedPref
 

@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.profpay.wallet.bridge.view_model.wallet.WalletSystemViewModel
+import com.profpay.wallet.bridge.viewmodel.wallet.WalletSystemViewModel
 import com.profpay.wallet.ui.components.custom.CustomBottomCard
 import com.profpay.wallet.ui.components.custom.CustomScaffoldWallet
 import com.profpay.wallet.ui.components.custom.CustomTopAppBar
@@ -27,10 +27,9 @@ fun WalletSystemScreen(
     goToCoRA: () -> Unit,
     viewModel: WalletSystemViewModel = hiltViewModel(),
 ) {
-
     val walletList by viewModel.getListAllWallets().observeAsState(emptyList())
 
-    CustomScaffoldWallet() { bottomPadding ->
+    CustomScaffoldWallet { bottomPadding ->
         CustomTopAppBar(title = "Wallet System", goToBack = { goToBack() })
         CustomBottomCard(
             modifier = Modifier.weight(0.8f),
@@ -50,7 +49,7 @@ fun WalletSystemScreen(
                 walletList = walletList,
                 goToWalletInfo = { goToWalletInfo() },
             )
-            ButtonAddWalletSystemFeature(goToCoRA = {goToCoRA()})
+            ButtonAddWalletSystemFeature(goToCoRA = { goToCoRA() })
         }
     }
 }

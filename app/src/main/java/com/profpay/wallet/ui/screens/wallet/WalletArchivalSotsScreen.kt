@@ -14,8 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.profpay.wallet.bridge.view_model.dto.TokenName
-import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletArchivalSotViewModel
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
+import com.profpay.wallet.bridge.viewmodel.wallet.walletSot.WalletArchivalSotViewModel
 import com.profpay.wallet.ui.components.custom.CustomBottomCard
 import com.profpay.wallet.ui.components.custom.CustomScaffoldWallet
 import com.profpay.wallet.ui.components.custom.CustomTabRow
@@ -44,22 +44,24 @@ fun WalletArchivalSotsScreen(
             blockchainName = TokenName.valueOf(token).blockchainName,
         ).observeAsState(emptyList())
 
-    val addressWTAWithFunds = remember(addressWithTokensArchival) {
-        viewModel.getAddressesWTAWithFunds(
-            addressWithTokensArchival,
-            token,
-        )
-    }
-    CustomScaffoldWallet() { bottomPadding ->
+    val addressWTAWithFunds =
+        remember(addressWithTokensArchival) {
+            viewModel.getAddressesWTAWithFunds(
+                addressWithTokensArchival,
+                token,
+            )
+        }
+    CustomScaffoldWallet { bottomPadding ->
         CustomTopAppBar(title = "Wallet Archival Sots", goToBack = { goToBack() })
         TopCardForArchivalAddressFeature(
             title = "Архив сот",
-            text = "Список ваших замененных адресов сот."
+            text = "Список ваших замененных адресов сот.",
         )
         CustomBottomCard(
             modifier = Modifier.weight(0.8f),
-            modifierColumn = Modifier
-                .padding(vertical = 8.dp),
+            modifierColumn =
+                Modifier
+                    .padding(vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             bottomPadding = bottomPadding,
         ) {
@@ -70,10 +72,11 @@ fun WalletArchivalSotsScreen(
                 state = pagerState,
                 modifier = Modifier.fillMaxWidth(),
             ) { page ->
-                val list = when (page) {
-                    0 -> addressWithTokensArchival
-                    else -> addressWTAWithFunds
-                }
+                val list =
+                    when (page) {
+                        0 -> addressWithTokensArchival
+                        else -> addressWTAWithFunds
+                    }
 
                 if (list.isNotEmpty()) {
                     ArchivalAddressListFeature(
@@ -81,11 +84,12 @@ fun WalletArchivalSotsScreen(
                         goToWalletAddress = goToWalletAddress,
                     )
                 } else {
-                    val emptyMessage = if (page == 0) {
-                        "У вас пока нет архивных сот..."
-                    } else {
-                        "Нет архивных сот\nс средствами..."
-                    }
+                    val emptyMessage =
+                        if (page == 0) {
+                            "У вас пока нет архивных сот..."
+                        } else {
+                            "Нет архивных сот\nс средствами..."
+                        }
                     EmptyArchivalListFeature(emptyMessage)
                 }
             }

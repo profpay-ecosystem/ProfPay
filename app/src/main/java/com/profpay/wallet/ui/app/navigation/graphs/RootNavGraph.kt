@@ -13,8 +13,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.profpay.wallet.PrefKeys
-import com.profpay.wallet.bridge.view_model.pin_lock.LockState
-import com.profpay.wallet.bridge.view_model.pin_lock.PinLockViewModel
+import com.profpay.wallet.bridge.viewmodel.pinlock.LockState
+import com.profpay.wallet.bridge.viewmodel.pinlock.PinLockViewModel
 import com.profpay.wallet.data.services.NetworkMonitor
 import com.profpay.wallet.ui.app.navigation.HomeScreen
 import com.profpay.wallet.ui.app.navigation.graphs.navGraph.coRAddressNavGraph

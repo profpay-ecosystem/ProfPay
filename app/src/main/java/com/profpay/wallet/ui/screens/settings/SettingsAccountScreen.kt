@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.settings.SettingsAccountViewModel
+import com.profpay.wallet.bridge.viewmodel.settings.SettingsAccountViewModel
 import com.profpay.wallet.ui.shared.sharedPref
 import com.profpay.wallet.ui.widgets.SettingsBotWidget
 import kotlinx.coroutines.launch
@@ -72,7 +72,7 @@ fun SettingsAccountScreen(
             onLoaded = { u, a ->
                 userId = u
                 appId = a
-            }
+            },
         )
     }
 
@@ -298,7 +298,7 @@ fun RowSettingsAccountFeature(
                     .clickable {
                         scope.launch {
                             clipboard.setClipEntry(
-                                ClipData.newPlainText("Telegram Data", info).toClipEntry()
+                                ClipData.newPlainText("Telegram Data", info).toClipEntry(),
                             )
                         }
                     },

@@ -9,48 +9,48 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.navigation.NavBackStackEntry
 
-internal const val animEnterDuration = 280
-internal const val animExitDuration = 350
+internal const val ANIM_ENTER_DURATION = 280
+internal const val ANIM_EXIT_DURATION = 350
 
 val enterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
     slideIntoContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
-        animationSpec = tween(animEnterDuration),
+        animationSpec = tween(ANIM_ENTER_DURATION),
     )
 }
 
 val exitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
     slideOutOfContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
-        animationSpec = tween(animExitDuration),
+        animationSpec = tween(ANIM_EXIT_DURATION),
     )
 }
 
 val popEnterTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
     slideIntoContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
-        animationSpec = tween(animEnterDuration),
+        animationSpec = tween(ANIM_ENTER_DURATION),
     )
 }
 
 val popExitTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
     slideOutOfContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
-        animationSpec = tween(animExitDuration),
+        animationSpec = tween(ANIM_EXIT_DURATION),
     )
 }
 
 val enterTabScreenTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
     fadeIn(
         initialAlpha = 0.99f,
-        animationSpec = snap(animEnterDuration),
+        animationSpec = snap(ANIM_ENTER_DURATION),
     )
 }
 
 val exitTabScreenTransition: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
     fadeOut(
         targetAlpha = 0.99f,
-        animationSpec = snap(animExitDuration),
+        animationSpec = snap(ANIM_EXIT_DURATION),
     )
 }
 

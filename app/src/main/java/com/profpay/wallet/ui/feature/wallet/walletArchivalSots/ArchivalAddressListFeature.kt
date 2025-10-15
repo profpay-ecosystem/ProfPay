@@ -10,16 +10,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.profpay.wallet.data.database.models.AddressWithTokens
 
-
 @Composable
 fun ArchivalAddressListFeature(
     addresses: List<AddressWithTokens>,
     goToWalletAddress: () -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
         contentPadding = PaddingValues(bottom = 80.dp),
     ) {
         items(addresses) { addressWithTokens ->

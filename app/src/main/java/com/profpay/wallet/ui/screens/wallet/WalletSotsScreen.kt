@@ -55,8 +55,8 @@ import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.PrefKeys
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.dto.TokenName
-import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletSotViewModel
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
+import com.profpay.wallet.bridge.viewmodel.wallet.walletSot.WalletSotViewModel
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.BackgroundIcon2

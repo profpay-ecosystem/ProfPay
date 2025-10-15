@@ -44,7 +44,7 @@ data class WalletProfileModel(
 
 data class WalletProfileCipher(
     @ColumnInfo(name = "iv") val iv: ByteArray,
-    @ColumnInfo(name = "cipher_text") val cipherText: ByteArray
+    @ColumnInfo(name = "cipher_text") val cipherText: ByteArray,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

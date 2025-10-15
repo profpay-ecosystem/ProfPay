@@ -18,11 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import com.profpay.wallet.PrefKeys
-import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
+import com.profpay.wallet.bridge.viewmodel.wallet.walletSot.WalletAddressViewModel
 import com.profpay.wallet.data.database.entities.wallet.TransactionEntity
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.ui.components.feature.transaction.TransactionCard
-import com.profpay.wallet.ui.feature.wallet.tx_details.bottomSheet.bottomSheetTransOnGeneralReceipt
+import com.profpay.wallet.ui.feature.wallet.txdetails.bottomSheet.bottomSheetTransOnGeneralReceipt
 import com.profpay.wallet.ui.feature.wallet.walletAddress.model.toUiModel
 import com.profpay.wallet.ui.shared.sharedPref
 
@@ -51,12 +51,13 @@ fun CardHistoryTransactionsForWAFeature(
         viewModel.isGeneralAddress(transactionEntity.receiverAddress)
     }
 
-    val uiModel = transactionEntity.toUiModel(
-        typeTransaction = typeTransaction,
-        address = address,
-        addressWa = addressWa ?: "",
-        isGeneralAddressReceive = isGeneralAddressReceive,
-    )
+    val uiModel =
+        transactionEntity.toUiModel(
+            typeTransaction = typeTransaction,
+            address = address,
+            addressWa = addressWa ?: "",
+            isGeneralAddressReceive = isGeneralAddressReceive,
+        )
 
     val (_, setIsOpenTransOnGeneralReceiptSheet) =
         bottomSheetTransOnGeneralReceipt(
@@ -94,22 +95,23 @@ private fun GeneralReceiveCardButtonFeature(
     setIsOpenTransOnGeneralReceiptSheet: (Boolean) -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .fillMaxWidth()
-            .shadow(7.dp, RoundedCornerShape(7.dp))
-            .clickable {
-                if (!isActivated) {
-                    stackedSnackbarHostState.showErrorSnackbar(
-                        title = "Перевод валюты невозможен",
-                        description = "Для активации необходимо перейти в «Системный TRX»",
-                        actionTitle = "Перейти",
-                        action = { goToSystemTRX() },
-                    )
-                } else {
-                    setIsOpenTransOnGeneralReceiptSheet(true)
-                }
-            },
+        modifier =
+            Modifier
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .fillMaxWidth()
+                .shadow(7.dp, RoundedCornerShape(7.dp))
+                .clickable {
+                    if (!isActivated) {
+                        stackedSnackbarHostState.showErrorSnackbar(
+                            title = "Перевод валюты невозможен",
+                            description = "Для активации необходимо перейти в «Системный TRX»",
+                            actionTitle = "Перейти",
+                            action = { goToSystemTRX() },
+                        )
+                    } else {
+                        setIsOpenTransOnGeneralReceiptSheet(true)
+                    }
+                },
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),

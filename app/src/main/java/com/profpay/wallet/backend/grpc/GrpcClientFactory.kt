@@ -19,15 +19,14 @@ class GrpcClientFactory
         private fun getOrCreateChannel(
             host: String,
             port: Int,
-        ): ManagedChannel {
-            return channels.getOrPut("$host:$port") {
+        ): ManagedChannel =
+            channels.getOrPut("$host:$port") {
                 ManagedChannelBuilder
                     .forAddress(host, port)
                     .useTransportSecurity()
                     .intercept(JwtAuthInterceptor(token))
                     .build()
             }
-        }
 
         @Suppress("UNCHECKED_CAST")
         fun <T> getGrpcClient(

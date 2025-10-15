@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
-import com.profpay.wallet.bridge.view_model.dto.TokenName
-import com.profpay.wallet.bridge.view_model.wallet.WalletInfoViewModel
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
+import com.profpay.wallet.bridge.viewmodel.wallet.WalletInfoViewModel
 import com.profpay.wallet.data.database.entities.wallet.TokenEntity
 import com.profpay.wallet.data.database.models.TransactionModel
 import com.profpay.wallet.ui.components.feature.transaction.TransactionCardType
@@ -39,8 +39,7 @@ fun HorizontalPagerWalletInfoFeature(
                             .padding(
                                 vertical = 8.dp,
                                 horizontal = 8.dp,
-                            )
-                            .fillMaxSize(),
+                            ).fillMaxSize(),
                 ) {
                     itemsIndexed(listTokensWithTotalBalance) { _, tokenEntity ->
                         if (tokenEntity != null) {
@@ -83,5 +82,4 @@ fun HorizontalPagerWalletInfoFeature(
             }
         }
     }
-
 }

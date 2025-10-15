@@ -134,7 +134,7 @@ fun CreateNewWalletWidget(
                             .clickable {
                                 scope.launch {
                                     clipboard.setClipEntry(
-                                        ClipData.newPlainText("Wallet address", String(charMnemonic)).toClipEntry()
+                                        ClipData.newPlainText("Wallet address", String(charMnemonic)).toClipEntry(),
                                     )
                                 }
                             },

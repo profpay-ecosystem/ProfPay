@@ -19,9 +19,11 @@ import androidx.compose.ui.unit.sp
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.GreenColor
 
-
 @Composable
-fun ButtonSendFeature(onClick: () -> Unit, isButtonEnabled: Boolean) {
+fun ButtonSendFeature(
+    onClick: () -> Unit,
+    isButtonEnabled: Boolean,
+) {
     Column(
         modifier =
             Modifier
@@ -52,5 +54,4 @@ fun ButtonSendFeature(onClick: () -> Unit, isButtonEnabled: Boolean) {
             )
         }
     }
-
 }

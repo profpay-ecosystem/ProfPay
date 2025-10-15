@@ -53,8 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.settings.SettingsViewModel
-import com.profpay.wallet.bridge.view_model.settings.ThemeViewModel
+import com.profpay.wallet.bridge.viewmodel.settings.SettingsViewModel
+import com.profpay.wallet.bridge.viewmodel.settings.ThemeViewModel
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.shared.getTextValueTheme
 import com.profpay.wallet.ui.shared.sharedPref

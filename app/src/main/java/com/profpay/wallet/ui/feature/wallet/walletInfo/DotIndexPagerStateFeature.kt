@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DotIndexPagerStateFeature(pagerState: PagerState){
+fun DotIndexPagerStateFeature(pagerState: PagerState) {
     Row(
         modifier =
             Modifier

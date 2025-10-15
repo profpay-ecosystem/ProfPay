@@ -11,9 +11,8 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 object SecurityModule {
-
     @Provides
-    fun provideKeyStoreHelper(@ApplicationContext context: Context): KeystoreCryptoManager {
-        return KeystoreCryptoManager(context)
-    }
+    fun provideKeyStoreHelper(
+        @ApplicationContext context: Context,
+    ): KeystoreCryptoManager = KeystoreCryptoManager(context)
 }

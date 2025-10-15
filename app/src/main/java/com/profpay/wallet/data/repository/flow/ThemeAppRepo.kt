@@ -17,7 +17,9 @@ interface ThemeAppRepo {
 
 class ThemeAppRepoImpl
     @Inject
-    constructor(@param:IoDispatcher private val ioDispatcher: CoroutineDispatcher) : ThemeAppRepo {
+    constructor(
+        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    ) : ThemeAppRepo {
         private val _isDarkTheme = MutableSharedFlow<Int>(replay = 1)
 
         // Получение числового значения текущей темы приложения

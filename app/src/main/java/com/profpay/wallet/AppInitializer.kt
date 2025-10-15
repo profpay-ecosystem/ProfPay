@@ -42,7 +42,7 @@ class AppInitializer
         private val tradingInsightsRepo: TradingInsightsRepo,
         private val tron: Tron,
         private val centralAddressRepo: CentralAddressRepo,
-        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher
+        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) {
         suspend fun initialize(
             sharedPrefs: SharedPreferences,
@@ -67,8 +67,8 @@ class AppInitializer
                     CentralAddressEntity(
                         address = address.address,
                         publicKey = address.publicKey,
-                        privateKey = address.privateKey
-                    )
+                        privateKey = address.privateKey,
+                    ),
                 )
 
                 sharedPrefs.edit { putString(PrefKeys.DEVICE_TOKEN, deviceToken) }

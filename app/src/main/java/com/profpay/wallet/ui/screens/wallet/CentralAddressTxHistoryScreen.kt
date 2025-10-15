@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.profpay.wallet.bridge.view_model.dto.TokenName
-import com.profpay.wallet.bridge.view_model.wallet.transaction.CentralAddressTxHistoryViewModel
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
+import com.profpay.wallet.bridge.viewmodel.wallet.transaction.CentralAddressTxHistoryViewModel
 import com.profpay.wallet.data.database.models.TransactionModel
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.components.custom.CustomBottomCard

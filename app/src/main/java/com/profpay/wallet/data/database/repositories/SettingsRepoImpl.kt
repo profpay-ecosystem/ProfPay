@@ -27,39 +27,33 @@ interface SettingsRepo {
 }
 
 @Singleton
-class SettingsRepoImpl @Inject constructor(
-    private val settingsDao: SettingsDao,
-) : SettingsRepo {
-    /**
-     * Для изменения(добавления) любых данных в таблицу необходимо использовать эту функцию
-     */
-    override suspend fun insertNewSettings(settingsEntity: SettingsEntity) {
-        if (!isSettingsExists()) {
-            settingsDao.insertNewSettings(settingsEntity)
+class SettingsRepoImpl
+    @Inject
+    constructor(
+        private val settingsDao: SettingsDao,
+    ) : SettingsRepo {
+        /**
+         * Для изменения(добавления) любых данных в таблицу необходимо использовать эту функцию
+         */
+        override suspend fun insertNewSettings(settingsEntity: SettingsEntity) {
+            if (!isSettingsExists()) {
+                settingsDao.insertNewSettings(settingsEntity)
+            }
         }
+
+        override suspend fun getCountRecordSettings(): Int = settingsDao.getCountRecordSettings()
+
+        override suspend fun getSettings(): SettingsEntity? = settingsDao.getSettings()
+
+        override suspend fun getLanguageCode(): String = settingsDao.getLanguageCode()
+
+        override fun getSettingsFlow(): Flow<SettingsEntity> = settingsDao.getSettingsFlow()
+
+        override suspend fun updateActiveBot(active: Boolean) = settingsDao.updateActiveBot(active)
+
+        override suspend fun updateBotToken(botToken: String) = settingsDao.updateBotToken(botToken)
+
+        override suspend fun updateAutoAML(autoAML: Boolean) = settingsDao.updateAutoAML(autoAML)
+
+        override suspend fun isSettingsExists(): Boolean = settingsDao.isSettingsExists()
     }
-
-    override suspend fun getCountRecordSettings(): Int =
-        settingsDao.getCountRecordSettings()
-
-    override suspend fun getSettings(): SettingsEntity? =
-        settingsDao.getSettings()
-
-    override suspend fun getLanguageCode(): String =
-        settingsDao.getLanguageCode()
-
-    override fun getSettingsFlow(): Flow<SettingsEntity> =
-        settingsDao.getSettingsFlow()
-
-    override suspend fun updateActiveBot(active: Boolean) =
-        settingsDao.updateActiveBot(active)
-
-    override suspend fun updateBotToken(botToken: String) =
-        settingsDao.updateBotToken(botToken)
-
-    override suspend fun updateAutoAML(autoAML: Boolean) =
-        settingsDao.updateAutoAML(autoAML)
-
-    override suspend fun isSettingsExists(): Boolean =
-        settingsDao.isSettingsExists()
-}

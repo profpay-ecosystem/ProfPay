@@ -18,12 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import com.profpay.wallet.PrefKeys
-import com.profpay.wallet.bridge.view_model.dto.TokenName
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.shared.sharedPref
 import java.math.BigInteger
-
 
 @Composable
 internal fun CardArchivalAddressFeature(
@@ -54,7 +53,7 @@ internal fun CardArchivalAddressFeature(
             sharedPref.edit {
                 putString(
                     PrefKeys.ADDRESS_FOR_WALLET_ADDRESS,
-                    addressWithTokens.addressEntity.address
+                    addressWithTokens.addressEntity.address,
                 )
             }
             goToWalletAddress()
@@ -71,7 +70,7 @@ internal fun CardArchivalAddressFeature(
                     Text(
                         text =
                             "${addressWithTokens.addressEntity.address.take(7)}..." +
-                                    "${addressWithTokens.addressEntity.address.takeLast(7)} ",
+                                "${addressWithTokens.addressEntity.address.takeLast(7)} ",
                         style = MaterialTheme.typography.bodyLarge,
                     )
 

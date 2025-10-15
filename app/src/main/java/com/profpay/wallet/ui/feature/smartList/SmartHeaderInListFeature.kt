@@ -48,7 +48,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
+import com.profpay.wallet.bridge.viewmodel.smartcontract.GetSmartContractViewModel
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.LocalFontSize
 import com.profpay.wallet.ui.feature.smartList.bottomSheets.bottomSheetReissueContract
@@ -166,7 +166,7 @@ fun SmartHeaderInListFeature(
                                     onClick = {
                                         scope.launch {
                                             clipboard.setClipEntry(
-                                                ClipData.newPlainText("Wallet address", address ?: "").toClipEntry()
+                                                ClipData.newPlainText("Wallet address", address ?: "").toClipEntry(),
                                             )
                                         }
                                         expandedDropdownMenu = false

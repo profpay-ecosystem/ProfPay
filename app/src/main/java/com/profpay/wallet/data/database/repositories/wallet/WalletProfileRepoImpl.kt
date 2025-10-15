@@ -30,35 +30,31 @@ interface WalletProfileRepo {
 }
 
 @Singleton
-class WalletProfileRepoImpl @Inject constructor(
-    private val walletProfileDao: WalletProfileDao,
-) : WalletProfileRepo {
-    override suspend fun insert(walletProfileEntity: WalletProfileEntity): Long {
-        val number = getCountRecords() + 1
-        val entityWithName = walletProfileEntity.copy(name = "Wallet $number")
-        return walletProfileDao.insert(entityWithName)
+class WalletProfileRepoImpl
+    @Inject
+    constructor(
+        private val walletProfileDao: WalletProfileDao,
+    ) : WalletProfileRepo {
+        override suspend fun insert(walletProfileEntity: WalletProfileEntity): Long {
+            val number = getCountRecords() + 1
+            val entityWithName = walletProfileEntity.copy(name = "Wallet $number")
+            return walletProfileDao.insert(entityWithName)
+        }
+
+        override suspend fun getWalletNameById(walletId: Long): String? = walletProfileDao.getWalletNameById(walletId)
+
+        override fun getListAllWalletsFlow(): Flow<List<WalletProfileModel>> = walletProfileDao.getListAllWalletsFlow()
+
+        override suspend fun getCountRecords(): Long = walletProfileDao.getCountRecords()
+
+        override suspend fun updateNameById(
+            id: Long,
+            newName: String,
+        ) = walletProfileDao.updateNameById(id, newName)
+
+        override suspend fun deleteWalletProfile(id: Long) = walletProfileDao.deleteWalletProfile(id)
+
+        override suspend fun hasAnyWalletProfile(): Boolean = walletProfileDao.hasAnyWalletProfile()
+
+        override suspend fun getWalletCipherData(id: Long): WalletProfileCipher = walletProfileDao.getWalletCipherData(id)
     }
-
-    override suspend fun getWalletNameById(walletId: Long): String? =
-        walletProfileDao.getWalletNameById(walletId)
-
-    override fun getListAllWalletsFlow(): Flow<List<WalletProfileModel>> =
-        walletProfileDao.getListAllWalletsFlow()
-
-    override suspend fun getCountRecords(): Long =
-        walletProfileDao.getCountRecords()
-
-    override suspend fun updateNameById(
-        id: Long,
-        newName: String,
-    ) = walletProfileDao.updateNameById(id, newName)
-
-    override suspend fun deleteWalletProfile(id: Long) =
-        walletProfileDao.deleteWalletProfile(id)
-
-    override suspend fun hasAnyWalletProfile(): Boolean =
-        walletProfileDao.hasAnyWalletProfile()
-
-    override suspend fun getWalletCipherData(id: Long): WalletProfileCipher =
-        walletProfileDao.getWalletCipherData(id)
-}

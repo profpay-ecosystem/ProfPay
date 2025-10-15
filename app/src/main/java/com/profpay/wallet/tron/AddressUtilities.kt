@@ -107,8 +107,9 @@ class AddressUtilities {
         val deterministicKey: DeterministicKey = generateKeys(mnemonicCode.toSeed(validate = true), index)
 
         // Генерация адреса из публичного ключа
-        val address = public2Address(deterministicKey.pubKeyPoint.getEncoded(false))
-            ?: throw IllegalStateException("Не удалось создать публичный адрес")
+        val address =
+            public2Address(deterministicKey.pubKeyPoint.getEncoded(false))
+                ?: throw IllegalStateException("Не удалось создать публичный адрес")
 
         return AddressDataWithPrivKey(
             address = address,
@@ -129,7 +130,10 @@ class AddressUtilities {
      *
      * @throws IllegalArgumentException если энтропия некорректна или не удалось сгенерировать мнемонику.
      */
-    fun derivePrivateKeyFromEntropy(entropy: ByteArray, index: Int): ByteArray {
+    fun derivePrivateKeyFromEntropy(
+        entropy: ByteArray,
+        index: Int,
+    ): ByteArray {
         // Генерация мнемонической фразы из энтропии по стандарту BIP-39
         val mnemonicCode = Mnemonics.MnemonicCode(entropy)
 

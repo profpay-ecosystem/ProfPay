@@ -22,15 +22,26 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object DaoModule {
     @Provides fun provideAddressDao(db: AppDatabase): AddressDao = db.getAddressDao()
+
     @Provides fun provideTokenDao(db: AppDatabase): TokenDao = db.getTokenDao()
+
     @Provides fun provideWalletProfileDao(db: AppDatabase): WalletProfileDao = db.getWalletProfileDao()
+
     @Provides fun provideSettingsDao(db: AppDatabase): SettingsDao = db.getSettingsDao()
+
     @Provides fun provideProfileDao(db: AppDatabase): ProfileDao = db.getProfileDao()
+
     @Provides fun provideTransactionsDao(db: AppDatabase): TransactionsDao = db.getTransactionsDao()
+
     @Provides fun provideCentralAddressDao(db: AppDatabase): CentralAddressDao = db.getCentralAddressDao()
+
     @Provides fun provideSmartContractDao(db: AppDatabase): SmartContractDao = db.getSmartContractDao()
+
     @Provides fun provideExchangeRatesDao(db: AppDatabase): ExchangeRatesDao = db.getExchangeRatesDao()
+
     @Provides fun provideTradingInsightsDao(db: AppDatabase): TradingInsightsDao = db.getTradingInsightsDao()
+
     @Provides fun providePendingTransactionDao(db: AppDatabase): PendingTransactionDao = db.getPendingTransactionDao()
+
     @Provides fun providePendingAmlTransactionDao(db: AppDatabase): PendingAmlTransactionDao = db.getPendingAmlTransactionDao()
 }

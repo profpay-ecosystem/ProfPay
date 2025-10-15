@@ -22,20 +22,21 @@ interface TokenRepo {
 }
 
 @Singleton
-class TokenRepoImpl @Inject constructor(
-    private val tokenDao: TokenDao,
-) : TokenRepo {
-    override suspend fun insert(tokenEntity: TokenEntity): Long =
-        tokenDao.insert(tokenEntity)
+class TokenRepoImpl
+    @Inject
+    constructor(
+        private val tokenDao: TokenDao,
+    ) : TokenRepo {
+        override suspend fun insert(tokenEntity: TokenEntity): Long = tokenDao.insert(tokenEntity)
 
-    override suspend fun updateTronBalanceViaId(
-        amount: BigInteger,
-        addressId: Long,
-        tokenName: String,
-    ) = tokenDao.updateTronBalanceViaId(amount, addressId, tokenName)
+        override suspend fun updateTronBalanceViaId(
+            amount: BigInteger,
+            addressId: Long,
+            tokenName: String,
+        ) = tokenDao.updateTronBalanceViaId(amount, addressId, tokenName)
 
-    override suspend fun getTokenIdByAddressIdAndTokenName(
-        addressId: Long,
-        tokenName: String,
-    ): Long = tokenDao.getTokenIdByAddressIdAndTokenName(addressId, tokenName)
-}
+        override suspend fun getTokenIdByAddressIdAndTokenName(
+            addressId: Long,
+            tokenName: String,
+        ): Long = tokenDao.getTokenIdByAddressIdAndTokenName(addressId, tokenName)
+    }

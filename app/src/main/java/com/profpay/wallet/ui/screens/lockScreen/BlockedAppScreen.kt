@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.BlockingAppViewModel
+import com.profpay.wallet.bridge.viewmodel.BlockingAppViewModel
 import com.profpay.wallet.ui.app.theme.LocalFontSize
 
 @Composable

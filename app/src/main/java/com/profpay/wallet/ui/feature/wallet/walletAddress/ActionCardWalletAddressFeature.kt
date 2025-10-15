@@ -24,26 +24,28 @@ fun ActionCardWalletAddressFeature(
     text: String,
     icon: Int,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Card(
-        modifier = modifier
-            .padding(horizontal = 8.dp)
-            .shadow(7.dp, RoundedCornerShape(10.dp))
-            .clickable(onClick = onClick)
-            .fillMaxHeight(),
+        modifier =
+            modifier
+                .padding(horizontal = 8.dp)
+                .shadow(7.dp, RoundedCornerShape(10.dp))
+                .clickable(onClick = onClick)
+                .fillMaxHeight(),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 4.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 4.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = icon),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onBackground
+                tint = MaterialTheme.colorScheme.onBackground,
             )
             Text(text = text)
         }

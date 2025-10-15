@@ -12,34 +12,36 @@ interface SettingsAccountRepo {
     suspend fun getUserTelegramData()
 }
 
-class SettingsAccountRepoImpl @Inject constructor(
-    private val profileRepo: ProfileRepo,
-    grpcClientFactory: GrpcClientFactory,
-) : SettingsAccountRepo {
-    private val userGrpcClient: UserGrpcClient =
-        grpcClientFactory.getGrpcClient(
-            UserGrpcClient::class.java,
-            AppConstants.Network.GRPC_ENDPOINT,
-            AppConstants.Network.GRPC_PORT,
-        )
+class SettingsAccountRepoImpl
+    @Inject
+    constructor(
+        private val profileRepo: ProfileRepo,
+        grpcClientFactory: GrpcClientFactory,
+    ) : SettingsAccountRepo {
+        private val userGrpcClient: UserGrpcClient =
+            grpcClientFactory.getGrpcClient(
+                UserGrpcClient::class.java,
+                AppConstants.Network.GRPC_ENDPOINT,
+                AppConstants.Network.GRPC_PORT,
+            )
 
-    override suspend fun getUserTelegramData() {
-        val result = userGrpcClient.getUserTelegramData(profileRepo.getProfileAppId())
-        result.fold(
-            onSuccess = {
-                profileRepo.updateProfileTelegramIdAndUsername(
-                    telegramId = it.telegramId,
-                    username = it.username,
-                )
-            },
-            onFailure = { throwable ->
-                if (throwable is CancellationException) {
-                    throw throwable
-                } else {
-                    Sentry.captureException(throwable)
-                    throw RuntimeException(throwable)
-                }
-            },
-        )
+        override suspend fun getUserTelegramData() {
+            val result = userGrpcClient.getUserTelegramData(profileRepo.getProfileAppId())
+            result.fold(
+                onSuccess = {
+                    profileRepo.updateProfileTelegramIdAndUsername(
+                        telegramId = it.telegramId,
+                        username = it.username,
+                    )
+                },
+                onFailure = { throwable ->
+                    if (throwable is CancellationException) {
+                        throw throwable
+                    } else {
+                        Sentry.captureException(throwable)
+                        throw RuntimeException(throwable)
+                    }
+                },
+            )
+        }
     }
-}

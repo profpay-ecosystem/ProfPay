@@ -34,7 +34,6 @@ import com.profpay.wallet.ui.screens.createOrRecoveryWallet.BottomButtonsForCoRF
 import com.profpay.wallet.ui.screens.createOrRecoveryWallet.TitleCreateOrRecoveryWalletFeature
 import kotlin.random.Random
 
-
 @Composable
 fun SeedPhraseConfirmationWidget(
     addressGenerateResult: AddressGenerateResult,
@@ -149,4 +148,3 @@ fun selectWordByIndex(group: Pair<Int, List<CharArray>>): Pair<Int, String> {
 
     return group.first to selectWord
 }
-

@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.smart_contract.GetSmartContractViewModel
+import com.profpay.wallet.bridge.viewmodel.smartcontract.GetSmartContractViewModel
 import com.profpay.wallet.ui.feature.smartList.bottomSheets.bottomSheetCreateContract
 
 @Composable

@@ -48,51 +48,42 @@ interface ProfileRepo {
 }
 
 @Singleton
-class ProfileRepoImpl @Inject constructor(
-    private val profileDao: ProfileDao,
-) : ProfileRepo {
-    override suspend fun getProfileAppId(): String =
-        profileDao.getProfileAppId()
+class ProfileRepoImpl
+    @Inject
+    constructor(
+        private val profileDao: ProfileDao,
+    ) : ProfileRepo {
+        override suspend fun getProfileAppId(): String = profileDao.getProfileAppId()
 
-    override suspend fun getProfileUserId(): Long =
-        profileDao.getProfileUserId()
+        override suspend fun getProfileUserId(): Long = profileDao.getProfileUserId()
 
-    override suspend fun insertNewProfile(profileEntity: ProfileEntity) =
-        profileDao.insertNewProfile(profileEntity)
+        override suspend fun insertNewProfile(profileEntity: ProfileEntity) = profileDao.insertNewProfile(profileEntity)
 
-    override fun getProfileTelegramIdFlow(): Flow<Long?> =
-        profileDao.getProfileTelegramIdFlow()
+        override fun getProfileTelegramIdFlow(): Flow<Long?> = profileDao.getProfileTelegramIdFlow()
 
-    override suspend fun getProfileTelegramId(): Long? =
-        profileDao.getProfileTelegramId()
+        override suspend fun getProfileTelegramId(): Long? = profileDao.getProfileTelegramId()
 
-    override fun getProfileTgUsernameFlow(): Flow<String?> =
-        profileDao.getProfileTgUsernameFlow()
+        override fun getProfileTgUsernameFlow(): Flow<String?> = profileDao.getProfileTgUsernameFlow()
 
-    override suspend fun isProfileExists(): Boolean =
-        profileDao.isProfileExists()
+        override suspend fun isProfileExists(): Boolean = profileDao.isProfileExists()
 
-    override suspend fun updateActiveTgId(
-        valActive: Boolean,
-        tgId: Long,
-        accessToken: String,
-        expiresAt: Long,
-    ) = profileDao.updateActiveTgId(valActive, tgId, accessToken, expiresAt)
+        override suspend fun updateActiveTgId(
+            valActive: Boolean,
+            tgId: Long,
+            accessToken: String,
+            expiresAt: Long,
+        ) = profileDao.updateActiveTgId(valActive, tgId, accessToken, expiresAt)
 
-    override suspend fun updateProfileTelegramIdAndUsername(
-        telegramId: Long,
-        username: String,
-    ) = profileDao.updateProfileTelegramIdAndUsername(telegramId, username)
+        override suspend fun updateProfileTelegramIdAndUsername(
+            telegramId: Long,
+            username: String,
+        ) = profileDao.updateProfileTelegramIdAndUsername(telegramId, username)
 
-    override suspend fun getDeviceToken(): String? =
-        profileDao.getDeviceToken()
+        override suspend fun getDeviceToken(): String? = profileDao.getDeviceToken()
 
-    override suspend fun updateDeviceToken(deviceToken: String) =
-        profileDao.updateDeviceToken(deviceToken)
+        override suspend fun updateDeviceToken(deviceToken: String) = profileDao.updateDeviceToken(deviceToken)
 
-    override suspend fun updateUserId(userId: Long) =
-        profileDao.updateUserId(userId)
+        override suspend fun updateUserId(userId: Long) = profileDao.updateUserId(userId)
 
-    override suspend fun deleteProfileByTgId(tgId: Long) =
-        profileDao.deleteProfileByTgId(tgId)
-}
+        override suspend fun deleteProfileByTgId(tgId: Long) = profileDao.deleteProfileByTgId(tgId)
+    }

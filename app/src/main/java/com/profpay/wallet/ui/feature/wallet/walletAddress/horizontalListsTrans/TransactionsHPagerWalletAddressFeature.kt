@@ -6,12 +6,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.profpay.wallet.bridge.view_model.wallet.walletSot.WalletAddressViewModel
+import com.profpay.wallet.bridge.viewmodel.wallet.walletSot.WalletAddressViewModel
 import com.profpay.wallet.data.database.models.AddressWithTokens
 import com.profpay.wallet.ui.components.feature.transaction.TransactionCardType
 import com.profpay.wallet.ui.components.feature.transaction.TransactionHistoryList
 import com.profpay.wallet.ui.feature.wallet.walletAddress.model.GroupedTransactions
-
 
 @Composable
 fun TransactionsHPagerWalletAddressFeature(
@@ -29,15 +28,16 @@ fun TransactionsHPagerWalletAddressFeature(
     ) { page ->
         when (page) {
             // Все транзакции
-            0 -> TransactionHistoryList(
-                groupedTransaction = groupedTransactions.all,
-                type = TransactionCardType.WA,
-                viewModel = viewModel,
-                addressWithTokens = addressWithTokens,
-                stackedSnackbarHostState = stackedSnackbarHostState,
-                goToSystemTRX = { goToSystemTRX() },
-                goToTXDetailsScreen = { goToTXDetailsScreen() },
-            )
+            0 ->
+                TransactionHistoryList(
+                    groupedTransaction = groupedTransactions.all,
+                    type = TransactionCardType.WA,
+                    viewModel = viewModel,
+                    addressWithTokens = addressWithTokens,
+                    stackedSnackbarHostState = stackedSnackbarHostState,
+                    goToSystemTRX = { goToSystemTRX() },
+                    goToTXDetailsScreen = { goToTXDetailsScreen() },
+                )
             // Отправленные
             1 -> {
                 TransactionHistoryList(

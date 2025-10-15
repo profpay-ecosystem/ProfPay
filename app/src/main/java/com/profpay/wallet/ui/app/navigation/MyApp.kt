@@ -5,8 +5,8 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.profpay.wallet.bridge.view_model.BlockingAppState
-import com.profpay.wallet.bridge.view_model.BlockingAppViewModel
+import com.profpay.wallet.bridge.viewmodel.BlockingAppState
+import com.profpay.wallet.bridge.viewmodel.BlockingAppViewModel
 import com.profpay.wallet.data.services.NetworkMonitor
 import com.profpay.wallet.ui.app.navigation.graphs.RootNavigationGraph
 

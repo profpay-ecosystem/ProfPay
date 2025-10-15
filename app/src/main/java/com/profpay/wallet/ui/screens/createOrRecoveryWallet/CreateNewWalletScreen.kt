@@ -17,8 +17,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.CreateNewWalletState
-import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.CreateNewWalletViewModel
+import com.profpay.wallet.bridge.viewmodel.createorrecovery.CreateNewWalletState
+import com.profpay.wallet.bridge.viewmodel.createorrecovery.CreateNewWalletViewModel
 import com.profpay.wallet.ui.widgets.CreateNewWalletWidget
 
 @OptIn(ExperimentalMaterial3Api::class)

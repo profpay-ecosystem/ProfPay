@@ -19,20 +19,19 @@ interface ExchangeRatesRepo {
 }
 
 @Singleton
-class ExchangeRatesRepoImpl @Inject constructor(
-    private val exchangeRatesDao: ExchangeRatesDao,
-) : ExchangeRatesRepo {
-    override suspend fun insert(exchangeRatesEntity: ExchangeRatesEntity): Long =
-        exchangeRatesDao.insert(exchangeRatesEntity)
+class ExchangeRatesRepoImpl
+    @Inject
+    constructor(
+        private val exchangeRatesDao: ExchangeRatesDao,
+    ) : ExchangeRatesRepo {
+        override suspend fun insert(exchangeRatesEntity: ExchangeRatesEntity): Long = exchangeRatesDao.insert(exchangeRatesEntity)
 
-    override suspend fun doesSymbolExist(symbol: String): Boolean =
-        exchangeRatesDao.doesSymbolExist(symbol)
+        override suspend fun doesSymbolExist(symbol: String): Boolean = exchangeRatesDao.doesSymbolExist(symbol)
 
-    override suspend fun updateExchangeRate(
-        symbol: String,
-        value: Double,
-    ) = exchangeRatesDao.updateExchangeRate(symbol, value)
+        override suspend fun updateExchangeRate(
+            symbol: String,
+            value: Double,
+        ) = exchangeRatesDao.updateExchangeRate(symbol, value)
 
-    override suspend fun getExchangeRateValue(symbol: String): Double =
-        exchangeRatesDao.getExchangeRateValue(symbol)
-}
+        override suspend fun getExchangeRateValue(symbol: String): Double = exchangeRatesDao.getExchangeRateValue(symbol)
+    }

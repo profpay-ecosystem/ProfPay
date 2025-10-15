@@ -36,11 +36,12 @@ class Transactions {
         privateKey: ByteArray,
         amount: Long,
     ): String {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT,
-            AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            ByteUtils.formatHex(privateKey)
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                ByteUtils.formatHex(privateKey),
+            )
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
         val contract: Contract = wrapper.getContract(contractAddress)
@@ -55,11 +56,12 @@ class Transactions {
         privateKey: String,
         amount: Long,
     ): String {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT,
-            AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            privateKey
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                privateKey,
+            )
 
         val txnExt: TransactionExtention =
             wrapper.transfer(
@@ -84,11 +86,12 @@ class Transactions {
         privateKey: ByteArray,
         amount: BigInteger,
     ): EstimateEnergyData {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT,
-            AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            ByteUtils.formatHex(privateKey)
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                ByteUtils.formatHex(privateKey),
+            )
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
         val transfer =
@@ -125,11 +128,12 @@ class Transactions {
         privateKey: ByteArray,
         amount: BigInteger,
     ): SignedTransactionData {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT,
-            AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            ByteUtils.formatHex(privateKey)
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                ByteUtils.formatHex(privateKey),
+            )
 
         val txnExt: TransactionExtention = wrapper.transfer(fromAddress, toAddress, amount.toLong())
         if (Response.TransactionReturn.response_code.SUCCESS !== txnExt.result.code) {
@@ -154,11 +158,12 @@ class Transactions {
         privateKey: ByteArray,
         amount: BigInteger,
     ): SignedTransactionData {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT,
-            AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            ByteUtils.formatHex(privateKey)
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                ByteUtils.formatHex(privateKey),
+            )
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
         val transfer =
@@ -198,11 +203,12 @@ class Transactions {
         privateKey: ByteArray,
         amount: BigInteger,
     ): EstimateBandwidthData {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT,
-            AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            ByteUtils.formatHex(privateKey)
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                ByteUtils.formatHex(privateKey),
+            )
 
         val txnExt: TransactionExtention =
             wrapper.transfer(
@@ -226,11 +232,12 @@ class Transactions {
         privateKey: ByteArray,
         amount: BigInteger,
     ): EstimateBandwidthData {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT,
-            AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            ByteUtils.formatHex(privateKey)
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                ByteUtils.formatHex(privateKey),
+            )
         val contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 
         val transfer =
@@ -268,11 +275,12 @@ class Transactions {
         address: String,
         privateKey: ByteArray,
     ): EstimateBandwidthData {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT,
-            AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            ByteUtils.formatHex(privateKey)
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                ByteUtils.formatHex(privateKey),
+            )
 
         val func = FunctionEncoder.encode(function)
 
@@ -302,11 +310,12 @@ class Transactions {
         address: String,
         privateKey: ByteArray,
     ): EstimateEnergyData {
-        val wrapper = ApiWrapper(
-            AppConstants.Network.TRON_GRPC_ENDPOINT,
-            AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-            ByteUtils.formatHex(privateKey)
-        )
+        val wrapper =
+            ApiWrapper(
+                AppConstants.Network.TRON_GRPC_ENDPOINT,
+                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
+                ByteUtils.formatHex(privateKey),
+            )
 
         val func = FunctionEncoder.encode(function)
         val energyRequired =

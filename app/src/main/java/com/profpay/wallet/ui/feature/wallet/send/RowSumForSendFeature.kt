@@ -9,11 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.profpay.wallet.bridge.view_model.dto.TokenName
-
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
 
 @Composable
-fun RowSumForSendFeature(tokenBalance: String, currentTokenName: TokenName) {
+fun RowSumForSendFeature(
+    tokenBalance: String,
+    currentTokenName: TokenName,
+) {
     Row(
         modifier =
             Modifier

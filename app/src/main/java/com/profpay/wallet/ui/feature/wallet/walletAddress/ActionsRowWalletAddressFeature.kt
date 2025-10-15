@@ -59,7 +59,7 @@ fun ActionsRowWalletAddressFeature(
                     title = "Перевод валюты невозможен",
                     description = "Для перевода необходимо активировать адрес, отправив 1 TRX.",
                     actionTitle = "Перейти",
-                    action = { goToSystemTRX() }
+                    action = { goToSystemTRX() },
                 )
             } else {
                 setIsOpenRejectReceiptSheet(true)
@@ -101,7 +101,7 @@ fun ActionsRowWalletAddressFeature(
                     modifier = Modifier.weight(0.5f),
                     onClick = {
                         onClickSend()
-                    }
+                    },
                 )
             }
 
@@ -112,7 +112,7 @@ fun ActionsRowWalletAddressFeature(
                 modifier = Modifier.weight(0.5f),
                 onClick = {
                     onClickReceive()
-                }
+                },
             )
         }
     }
@@ -129,12 +129,13 @@ fun ActionsRowWalletAddressFeature(
             },
             onDismissRequest = { openDialog = false },
             dialogTitle = "Главный адрес",
-            dialogText = """
+            dialogText =
+                """
                 Пополнение главной соты не рекомендуется.
                 Вместо этого скопируйте любую доп-соту и пополните её. 
                 После AML проверки вы сможете перевести валюту на центральную соту, 
                 так ваш центральный адрес будет чист всегда.
-            """.trimIndent(),
+                """.trimIndent(),
             textConfirmButton = "Всё-равно продолжить",
             textDismissButton = "Закрыть",
         )

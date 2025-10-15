@@ -13,24 +13,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 
 val ColorScheme.white: Color
-@Composable
-get() = Color.White
+    @Composable
+    get() = Color.White
 
 val ColorScheme.transparent: Color
-@Composable
-get() = Color.Transparent
+    @Composable
+    get() = Color.Transparent
 
 val ColorScheme.redColor: Color
-@Composable
-get() = RedColor
+    @Composable
+    get() = RedColor
 
 val ColorScheme.greenColor: Color
-@Composable
-get() = GreenColor
+    @Composable
+    get() = GreenColor
 
 val ColorScheme.backgroundContainerButtonLight: Color
-@Composable
-get() = BackgroundContainerButtonLight
+    @Composable
+    get() = BackgroundContainerButtonLight
 
 private val DarkColorPalette =
     darkColorScheme(
@@ -89,5 +89,3 @@ fun WalletNavigationBottomBarTheme(
         content = content,
     )
 }
-
-

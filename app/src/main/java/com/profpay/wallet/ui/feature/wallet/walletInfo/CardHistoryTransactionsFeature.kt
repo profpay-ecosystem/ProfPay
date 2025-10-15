@@ -15,10 +15,11 @@ fun CardHistoryTransactionsFeature(
     transactionEntity: TransactionEntity,
     onClick: () -> Unit = {},
 ) {
-    val uiModel = transactionEntity.toUiModel(
-        typeTransaction = typeTransaction,
-        address = address,
-    )
+    val uiModel =
+        transactionEntity.toUiModel(
+            typeTransaction = typeTransaction,
+            address = address,
+        )
     TransactionCard(
         title = uiModel.title,
         details = uiModel.details,

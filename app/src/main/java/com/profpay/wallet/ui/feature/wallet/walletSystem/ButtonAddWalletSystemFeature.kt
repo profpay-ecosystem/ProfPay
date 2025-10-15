@@ -17,9 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ButtonAddWalletSystemFeature(
-    goToCoRA: () -> Unit,
-) {
+fun ButtonAddWalletSystemFeature(goToCoRA: () -> Unit) {
     Row(
         modifier =
             Modifier
@@ -44,5 +42,4 @@ fun ButtonAddWalletSystemFeature(
             )
         }
     }
-
 }

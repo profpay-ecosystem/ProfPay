@@ -32,14 +32,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.profpay.wallet.bridge.view_model.wallet.send.SendFromWalletViewModel
+import com.profpay.wallet.bridge.viewmodel.wallet.send.SendFromWalletViewModel
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.BackgroundLight
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.app.theme.PubAddressDark
 import com.profpay.wallet.utils.decimalFormat
 import java.math.BigInteger
-
 
 @Composable
 fun ContentBottomSheetTransferConfirmation(
@@ -62,7 +61,7 @@ fun ContentBottomSheetTransferConfirmation(
 
     LaunchedEffect(isActivated) {
         setCreateNewAccountFeeInSystemContract(
-            viewModel.tron.addressUtilities.getCreateNewAccountFeeInSystemContract()
+            viewModel.tron.addressUtilities.getCreateNewAccountFeeInSystemContract(),
         )
     }
 

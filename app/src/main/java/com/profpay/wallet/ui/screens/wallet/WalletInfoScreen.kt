@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.profpay.wallet.bridge.view_model.wallet.WalletInfoViewModel
+import com.profpay.wallet.bridge.viewmodel.wallet.WalletInfoViewModel
 import com.profpay.wallet.ui.components.custom.CustomBottomCard
 import com.profpay.wallet.ui.components.custom.CustomScaffoldWallet
 import com.profpay.wallet.ui.components.custom.CustomTopAppBar

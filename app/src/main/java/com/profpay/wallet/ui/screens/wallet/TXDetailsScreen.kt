@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.profpay.wallet.bridge.view_model.dto.TokenName
-import com.profpay.wallet.bridge.view_model.wallet.TXDetailsViewModel
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
+import com.profpay.wallet.bridge.viewmodel.wallet.TXDetailsViewModel
 import com.profpay.wallet.data.database.entities.wallet.TransactionStatusCode
 import com.profpay.wallet.data.database.entities.wallet.getTransactionStatusName
 import com.profpay.wallet.data.utils.toBigInteger
@@ -29,8 +29,8 @@ import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.components.custom.CustomBottomCard
 import com.profpay.wallet.ui.components.custom.CustomScaffoldWallet
 import com.profpay.wallet.ui.components.custom.CustomTopAppBar
-import com.profpay.wallet.ui.feature.wallet.tx_details.CardTextForTxDetailsFeature
-import com.profpay.wallet.ui.feature.wallet.tx_details.aml.AmlAndButtonGetAmlForTXDetailsFeature
+import com.profpay.wallet.ui.feature.wallet.txdetails.CardTextForTxDetailsFeature
+import com.profpay.wallet.ui.feature.wallet.txdetails.aml.AmlAndButtonGetAmlForTXDetailsFeature
 import com.profpay.wallet.ui.shared.sharedPref
 import com.profpay.wallet.ui.shared.utils.convertTimestampToDateTime
 import com.profpay.wallet.utils.decimalFormat
@@ -96,18 +96,21 @@ fun TXDetailsScreen(
         viewModel.getWalletNameById(walletId)
     }
 
-    val currentTokenName = TokenName.entries.find { it.tokenName == transactionEntity?.tokenName }
-        ?: TokenName.USDT
+    val currentTokenName =
+        TokenName.entries.find { it.tokenName == transactionEntity?.tokenName }
+            ?: TokenName.USDT
 
     CustomScaffoldWallet(stackedSnackbarHostState = stackedSnackbarHostState) { bottomPadding ->
         CustomTopAppBar(title = "TX Details", goToBack = { goToBack() })
         CustomBottomCard(
-            modifier = Modifier
-                .weight(0.8f)
-                .shadow(7.dp, RoundedCornerShape(16.dp)),
-            modifierColumn = Modifier
-                .padding(vertical = 8.dp, horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .weight(0.8f)
+                    .shadow(7.dp, RoundedCornerShape(16.dp)),
+            modifierColumn =
+                Modifier
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState()),
             bottomPadding = bottomPadding,
         ) {
             CardTextForTxDetailsFeature(
@@ -118,11 +121,12 @@ fun TXDetailsScreen(
             )
             CardTextForTxDetailsFeature(
                 title = "Статус транзакции",
-                contentText = getTransactionStatusName(
-                    TransactionStatusCode.fromIndex(
-                        transactionEntity?.statusCode ?: 3
-                    )
-                ),
+                contentText =
+                    getTransactionStatusName(
+                        TransactionStatusCode.fromIndex(
+                            transactionEntity?.statusCode ?: 3,
+                        ),
+                    ),
                 stackedSnackbarHostState = stackedSnackbarHostState,
                 isDropdownMenu = false,
             )
@@ -183,13 +187,13 @@ fun TXDetailsScreen(
                     setAmlReleaseDialog = setAmlReleaseDialog,
                     amlButtonIsEnabled = amlButtonIsEnabled,
                     setAmlButtonIsEnabled = setAmlButtonIsEnabled,
-                    amlFeeResultText = (amlFeeResult?.toBigInteger()?.toTokenAmount()
-                        ?: 0).toString(),
+                    amlFeeResultText =
+                        (
+                            amlFeeResult?.toBigInteger()?.toTokenAmount()
+                                ?: 0
+                        ).toString(),
                 )
             }
         }
     }
 }
-
-
-

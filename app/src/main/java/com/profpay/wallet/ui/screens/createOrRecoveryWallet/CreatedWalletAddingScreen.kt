@@ -33,9 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.SeedPhraseConfirmationState
-import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.SeedPhraseConfirmationViewModel
-import com.profpay.wallet.bridge.view_model.create_or_recovery_wallet.WalletAddedViewModel
+import com.profpay.wallet.bridge.viewmodel.createorrecovery.SeedPhraseConfirmationState
+import com.profpay.wallet.bridge.viewmodel.createorrecovery.SeedPhraseConfirmationViewModel
+import com.profpay.wallet.bridge.viewmodel.createorrecovery.WalletAddedViewModel
 import com.profpay.wallet.tron.AddressGenerateResult
 import com.profpay.wallet.ui.app.theme.BackgroundDark
 import com.profpay.wallet.ui.app.theme.BackgroundLight
@@ -44,7 +44,7 @@ import com.profpay.wallet.ui.shared.sharedPref
 @Composable
 fun CreatedWalletAddingScreen(
     goToHome: () -> Unit,
-    viewModel: SeedPhraseConfirmationViewModel = hiltViewModel()
+    viewModel: SeedPhraseConfirmationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     Scaffold { padding ->

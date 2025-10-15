@@ -48,7 +48,7 @@ import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.PrefKeys
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.welcoming_screen.WelcomingViewModel
+import com.profpay.wallet.bridge.viewmodel.welcoming.WelcomingViewModel
 import com.profpay.wallet.ui.app.navigation.graphs.Graph
 import com.profpay.wallet.ui.app.navigation.graphs.navGraph.OnboardingScreen
 import com.profpay.wallet.ui.app.theme.BackgroundDark
@@ -348,7 +348,10 @@ fun AnimatedFadingTextList(
     }
 }
 
-private fun calculateAlpha(offset: Float?, fadeDistancePx: Float): Float {
+private fun calculateAlpha(
+    offset: Float?,
+    fadeDistancePx: Float,
+): Float {
     if (offset == null) return 1f
 
     return when {

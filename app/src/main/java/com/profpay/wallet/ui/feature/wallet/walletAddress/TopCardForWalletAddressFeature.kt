@@ -23,11 +23,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.profpay.wallet.bridge.view_model.dto.TokenName
-
+import com.profpay.wallet.bridge.viewmodel.dto.TokenName
 
 @Composable
-fun TopCardForWalletAddressFeature(tokenNameObj: TokenName, tokenBalanceWithoutFrozen: String) {
+fun TopCardForWalletAddressFeature(
+    tokenNameObj: TokenName,
+    tokenBalanceWithoutFrozen: String,
+) {
     Card(
         modifier =
             Modifier

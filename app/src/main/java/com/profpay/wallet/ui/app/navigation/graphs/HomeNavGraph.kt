@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.profpay.wallet.ui.app.navigation.bottom_bar.BottomBarScreen
+import com.profpay.wallet.ui.app.navigation.bottombar.BottomBarScreen
 import com.profpay.wallet.ui.app.navigation.graphs.navGraph.coRAddressFromWalletSystemNG
 import com.profpay.wallet.ui.app.navigation.graphs.navGraph.profileNavGraph
 import com.profpay.wallet.ui.app.navigation.graphs.navGraph.settingsNavGraph

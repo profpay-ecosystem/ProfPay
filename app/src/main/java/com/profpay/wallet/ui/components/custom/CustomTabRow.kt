@@ -16,7 +16,6 @@ import com.profpay.wallet.ui.app.theme.transparent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun CustomTabRow(
     titles: List<String>,

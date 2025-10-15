@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.profpay.wallet.bridge.view_model.settings.SettingsViewModel
+import com.profpay.wallet.bridge.viewmodel.settings.SettingsViewModel
 import kotlinx.coroutines.launch
 
 @Composable

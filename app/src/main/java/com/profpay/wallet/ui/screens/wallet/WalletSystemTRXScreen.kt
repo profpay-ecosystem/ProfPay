@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.view_model.wallet.WalletSystemTRXScreenViewModel
+import com.profpay.wallet.bridge.viewmodel.wallet.WalletSystemTRXScreenViewModel
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.feature.wallet.bottomSheetReissueAddress
 import com.profpay.wallet.ui.shared.sharedPref
@@ -263,7 +263,7 @@ fun WalletSystemTRXScreen(
                                 onClick = {
                                     scope.launch {
                                         clipboard.setClipEntry(
-                                            ClipData.newPlainText("Wallet address", address).toClipEntry()
+                                            ClipData.newPlainText("Wallet address", address).toClipEntry(),
                                         )
                                     }
                                     stackedSnackbarHostState.showSuccessSnackbar(

@@ -17,13 +17,11 @@ class AppDatabaseModule {
     @Singleton
     fun provideAppDatabase(
         @ApplicationContext appContext: Context,
-    ): AppDatabase {
-        return Room
+    ): AppDatabase =
+        Room
             .databaseBuilder(
                 appContext,
                 AppDatabase::class.java,
                 "room_crypto_wallet.db",
-            )
-            .build()
-    }
+            ).build()
 }

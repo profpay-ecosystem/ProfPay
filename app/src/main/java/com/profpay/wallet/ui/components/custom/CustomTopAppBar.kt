@@ -25,10 +25,13 @@ import com.profpay.wallet.R
 import com.profpay.wallet.ui.app.theme.transparent
 import com.profpay.wallet.ui.app.theme.white
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopAppBar(modifier: Modifier = Modifier, title: String, goToBack: () -> Unit,) {
+fun CustomTopAppBar(
+    modifier: Modifier = Modifier,
+    title: String,
+    goToBack: () -> Unit,
+) {
     TopAppBar(
         title = {
             Text(
@@ -69,7 +72,11 @@ fun CustomTopAppBar(modifier: Modifier = Modifier, title: String, goToBack: () -
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTopAppBar(title: String, goToNext: () -> Unit, iconNext: ImageVector) {
+fun CustomTopAppBar(
+    title: String,
+    goToNext: () -> Unit,
+    iconNext: ImageVector,
+) {
     TopAppBar(
         title = {
             Row(

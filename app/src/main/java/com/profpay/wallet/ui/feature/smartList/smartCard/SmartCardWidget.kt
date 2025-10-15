@@ -39,8 +39,8 @@ import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import com.profpay.wallet.bridge.view_model.smart_contract.ContractButtonVisibleType
-import com.profpay.wallet.bridge.view_model.smart_contract.StatusData
+import com.profpay.wallet.bridge.viewmodel.smartcontract.ContractButtonVisibleType
+import com.profpay.wallet.bridge.viewmodel.smartcontract.StatusData
 import com.profpay.wallet.data.utils.toBigInteger
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.LocalFontSize
@@ -51,7 +51,6 @@ import com.profpay.wallet.ui.feature.wallet.HexagonShape
 import kotlinx.coroutines.launch
 import org.example.protobuf.smart.SmartContractProto
 import java.math.BigInteger
-
 
 @Composable
 internal fun SmartCardWidget(
@@ -159,11 +158,11 @@ internal fun SmartCardWidget(
                 Text(
                     text = "$${item.amount.toBigInteger().toTokenAmount()} (+$${
                         (
-                                item.dealData.totalExpertCommissions.toBigInteger() /
-                                        BigInteger.valueOf(
-                                            2,
-                                        )
-                                ).toTokenAmount()
+                            item.dealData.totalExpertCommissions.toBigInteger() /
+                                BigInteger.valueOf(
+                                    2,
+                                )
+                        ).toTokenAmount()
                     })",
                     fontSize = LocalFontSize.Huge.fS,
                     color = RedColor,
@@ -182,7 +181,7 @@ internal fun SmartCardWidget(
                         onClick = {
                             scope.launch {
                                 clipboard.setClipEntry(
-                                    ClipData.newPlainText("Wallet address", item.smartContractAddress ?: "").toClipEntry()
+                                    ClipData.newPlainText("Wallet address", item.smartContractAddress ?: "").toClipEntry(),
                                 )
                             }
                         },
@@ -201,7 +200,7 @@ internal fun SmartCardWidget(
                         text = {
                             Text(
                                 "Перейти в Tron Scan",
-                                fontWeight = FontWeight.SemiBold
+                                fontWeight = FontWeight.SemiBold,
                             )
                         },
                     )
@@ -239,8 +238,8 @@ internal fun SmartCardWidget(
                                     .padding(8.dp),
                             text =
                                 "Будет списана половина комиссии на адрес смарт-контракта\n" +
-                                        "в размере $${((item.dealData.totalExpertCommissions / 2).toBigInteger()).toTokenAmount()}, " +
-                                        "вторая часть будет списана у контрагента",
+                                    "в размере $${((item.dealData.totalExpertCommissions / 2).toBigInteger()).toTokenAmount()}, " +
+                                    "вторая часть будет списана у контрагента",
                             fontSize = LocalFontSize.Medium.fS,
                             color = MaterialTheme.colorScheme.redColor,
                         )

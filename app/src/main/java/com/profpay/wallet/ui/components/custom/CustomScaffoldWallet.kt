@@ -33,7 +33,6 @@ fun getBottomPadding(): Float {
     return bottomPadding
 }
 
-
 @Composable
 fun CustomScaffoldWallet(
     modifier: Modifier = Modifier,
@@ -98,8 +97,7 @@ fun CustomScaffoldWallet(
                     .paint(
                         painterResource(id = R.drawable.wallet_background),
                         contentScale = ContentScale.FillBounds,
-                    )
-                    .clickable {
+                    ).clickable {
                         keyboardController?.hide()
                         focusManager.clearFocus()
                     },
@@ -143,4 +141,3 @@ fun CustomScaffoldWallet(
         }
     }
 }
-

@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.Transaction
 import androidx.room.TypeConverters
-import com.profpay.wallet.bridge.view_model.dto.BlockchainName
+import com.profpay.wallet.bridge.viewmodel.dto.BlockchainName
 import com.profpay.wallet.data.database.dao.ProfileDao
 import com.profpay.wallet.data.database.dao.SettingsDao
 import com.profpay.wallet.data.database.dao.TransactionsDao
@@ -87,9 +87,10 @@ abstract class AppDatabase : RoomDatabase() {
 
         val walletId = getWalletProfileDao().insert(entityWithName)
 
-        val defaultTokens = BlockchainName.entries
-            .flatMap { blockchain -> blockchain.tokens }
-            .map { it.tokenName }
+        val defaultTokens =
+            BlockchainName.entries
+                .flatMap { blockchain -> blockchain.tokens }
+                .map { it.tokenName }
 
         addresses.forEach { address ->
             val addressId = getAddressDao().insert(address.copy(walletId = walletId))

@@ -36,5 +36,4 @@ class NetworkMonitor(
         val request = NetworkRequest.Builder().build()
         connectivityManager.registerNetworkCallback(request, networkCallback)
     }
-
 }

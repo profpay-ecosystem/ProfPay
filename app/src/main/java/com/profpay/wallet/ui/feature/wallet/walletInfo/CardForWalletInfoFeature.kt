@@ -28,7 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.profpay.wallet.backend.http.models.binance.BinanceSymbolEnum
 import com.profpay.wallet.backend.http.models.coingecko.CoinSymbolEnum
-import com.profpay.wallet.bridge.view_model.wallet.WalletInfoViewModel
+import com.profpay.wallet.bridge.viewmodel.wallet.WalletInfoViewModel
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.app.theme.RedColor

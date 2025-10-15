@@ -14,7 +14,7 @@ fun CACardHistoryTransactionsFeature(
     val (title, details) =
         "Получено" to "Откуда: ${transactionEntity.senderAddress.take(5)}...${
             transactionEntity.senderAddress.takeLast(
-                5
+                5,
             )
         }"
     TransactionCard(
