@@ -28,6 +28,7 @@ import com.profpay.wallet.ui.feature.wallet.tx_details.bottomSheet.bottomSheetRe
 import com.profpay.wallet.ui.feature.wallet.walletAddress.ActionsRowWalletAddressFeature
 import com.profpay.wallet.ui.feature.wallet.walletAddress.TopCardForWalletAddressFeature
 import com.profpay.wallet.ui.feature.wallet.walletAddress.horizontalListsTrans.TransactionsHPagerWalletAddressFeature
+import com.profpay.wallet.ui.feature.wallet.walletAddress.model.GroupedTransactions
 import com.profpay.wallet.ui.shared.sharedPref
 import rememberStackedSnackbarHostState
 
@@ -87,10 +88,18 @@ fun WalletAddressScreen(
         ).observeAsState(emptyList())
 
     val allTransaction: List<TransactionModel> =
-        transactionsByAddressSender + transactionsByAddressReceiver
+        remember(transactionsByAddressSender, transactionsByAddressReceiver) {
+            transactionsByAddressSender + transactionsByAddressReceiver
+        }
 
-    val groupedTransaction = remember(allTransaction) {
+    val groupedAllTransaction = remember(allTransaction) {
         viewModel.getListTransactionToTimestamp(allTransaction)
+    }
+    val groupedSenderTransaction = remember(transactionsByAddressSender) {
+        viewModel.getListTransactionToTimestamp(transactionsByAddressSender)
+    }
+    val groupedReceiveTransaction = remember(transactionsByAddressReceiver) {
+        viewModel.getListTransactionToTimestamp(transactionsByAddressReceiver)
     }
 
     LaunchedEffect(addressWithTokens) {
@@ -134,9 +143,11 @@ fun WalletAddressScreen(
                 pagerState = pagerState,
                 viewModel = viewModel,
                 stackedSnackbarHostState = stackedSnackbarHostState,
-                groupedAllTransaction = groupedTransaction,
-                transactionsByAddressSender = transactionsByAddressSender,
-                transactionsByAddressReceiver = transactionsByAddressReceiver,
+                groupedTransactions = GroupedTransactions(
+                    all = groupedAllTransaction,
+                    sender = groupedSenderTransaction,
+                    receiver = groupedReceiveTransaction,
+                ),
                 goToTXDetailsScreen = { goToTXDetailsScreen() },
                 goToSystemTRX = { goToSystemTRX() },
                 addressWithTokens = addressWithTokens
@@ -157,3 +168,4 @@ fun WalletAddressScreen(
         setIsOpenRejectReceiptSheet = { setIsOpenRejectReceiptSheet(true) },
     )
 }
+
