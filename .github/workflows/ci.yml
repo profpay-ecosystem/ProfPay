@@ -50,7 +50,7 @@ jobs:
           echo "sonar.organization=profpay-ecosystem" >> sonar-project.properties
           echo "sonar.host.url=https://sonarcloud.io" >> sonar-project.properties
           echo "sonar.sources=app/src/main/java" >> sonar-project.properties
-          echo "sonar.tests=app/src/test/java,app/src/androidTest/java" >> sonar-project.properties
+          echo "sonar.tests=app/src/test/java" >> sonar-project.properties
           echo "sonar.exclusions=**/R.java,**/BuildConfig.java,**/Manifest.java,**/*Proto*.java,**/grpc/**/*.java,**/proto/**/*.java" >> sonar-project.properties
           echo "sonar.coverage.exclusions=**" >> sonar-project.properties
           echo "sonar.sourceEncoding=UTF-8" >> sonar-project.properties
@@ -71,6 +71,7 @@ jobs:
             -Dsonar.token=$SONAR_TOKEN \
             -Dsonar.organization=profpay-ecosystem \
             -Dsonar.projectKey=profpay-ecosystem_ProfPay \
+            -Dsonar.exclusions=**/R.java,**/BuildConfig.java,**/Manifest.java,**/*Proto*.java,**/grpc/**/*.java,**/proto/**/*.java \
             --no-daemon
 
       - name: Build release APK
