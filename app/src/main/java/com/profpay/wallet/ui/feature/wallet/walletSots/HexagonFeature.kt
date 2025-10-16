@@ -56,36 +56,6 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-private class HexagonWithCircleShape(
-    private val rotate: Boolean = false,
-) : Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density,
-    ): Outline {
-        val path =
-            RoundedPolygon(
-                numVertices = 6,
-                radius = size.minDimension / 2,
-                centerX = size.width / 2,
-                centerY = size.height / 2,
-                rounding =
-                    CornerRounding(
-                        size.minDimension / 15f,
-                        smoothing = 0.75f,
-                    ),
-            ).toPath()
-        if (rotate) {
-            val matrix = Matrix()
-            matrix.postRotate(30f, size.width / 2, size.height / 2)
-            path.transform(matrix)
-        }
-
-        return Outline.Generic(path.asComposePath())
-    }
-}
-
 class HexagonShape(
     private val rotate: Boolean = false,
 ) : Shape {
@@ -179,9 +149,9 @@ fun HexagonsFeature(
             Box(
                 modifier =
                     Modifier
-                        .clip(HexagonWithCircleShape(clickSot1))
+                        .clip(HexagonShape(clickSot1))
                         .size(size / 4)
-                        .border(size / 80, HexagonColor1, HexagonWithCircleShape(clickSot1))
+                        .border(size / 80, HexagonColor1, HexagonShape(clickSot1))
                         .clickable {
                             openDialog = !openDialog
                         }.animateContentSize(),

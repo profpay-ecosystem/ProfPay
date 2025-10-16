@@ -40,7 +40,7 @@ class AddressAndMnemonicRepoImpl
         val addressRepo: AddressRepo,
         private val tron: Tron,
         grpcClientFactory: GrpcClientFactory,
-        @IoDispatcher private val dispatcher: CoroutineDispatcher,
+        @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : AddressAndMnemonicRepo {
         private val cryptoAddressGrpcClient: CryptoAddressGrpcClient =
             grpcClientFactory.getGrpcClient(
@@ -56,7 +56,7 @@ class AddressAndMnemonicRepoImpl
 
         // Триггер на обновление данных нового кошелька
         override suspend fun generateNewAddressAndMnemonic() {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 val addressAndMnemonic = tron.addressUtilities.generateAddressAndMnemonic()
                 _addressAndMnemonic.emit(addressAndMnemonic)
             }
@@ -74,7 +74,7 @@ class AddressAndMnemonicRepoImpl
 
         // Триггер на обновление данных восстановленного кошелька по мнемонике(сид-фразе)
         override suspend fun generateAddressFromMnemonic(mnemonic: String) {
-            withContext(dispatcher) {
+            withContext(ioDispatcher) {
                 try {
                     val generalAddress = tron.addressUtilities.getGeneralAddressBySeedPhrase(mnemonic)
 
