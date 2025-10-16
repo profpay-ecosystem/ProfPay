@@ -63,7 +63,9 @@ internal fun AddressCardForWalletSotsFeature(
         onClick = onAddressClick
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -74,25 +76,25 @@ internal fun AddressCardForWalletSotsFeature(
                     balance = formattedBalance
                 )
             }
-
-            IconButton(onClick = { expandedMenu = !expandedMenu }) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.icon_more_vert),
-                    contentDescription = null,
-                    tint = BackgroundIcon2,
-                    modifier = Modifier.size(25.dp)
+            Column(verticalArrangement = Arrangement.Center) {
+                IconButton(onClick = { expandedMenu = !expandedMenu }) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.icon_more_vert),
+                        contentDescription = null,
+                        tint = BackgroundIcon2,
+                        modifier = Modifier.size(25.dp)
+                    )
+                }
+                AddressMenu(
+                    expanded = expandedMenu,
+                    onDismiss = { expandedMenu = false },
+                    onReplaceClick = {
+                        onReplaceAddressClick()
+                        expandedMenu = false
+                    },
+                    canReplace = isAddressCanReplace
                 )
             }
-
-            AddressMenu(
-                expanded = expandedMenu,
-                onDismiss = { expandedMenu = false },
-                onReplaceClick = {
-                    onReplaceAddressClick()
-                    expandedMenu = false
-                },
-                canReplace = isAddressCanReplace
-            )
         }
     }
 }
