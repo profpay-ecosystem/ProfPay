@@ -47,7 +47,7 @@ import com.profpay.wallet.ui.app.theme.LocalFontSize
 import com.profpay.wallet.ui.app.theme.RedColor
 import com.profpay.wallet.ui.app.theme.greenColor
 import com.profpay.wallet.ui.app.theme.redColor
-import com.profpay.wallet.ui.feature.wallet.HexagonShape
+import com.profpay.wallet.ui.feature.wallet.walletSots.HexagonShape
 import kotlinx.coroutines.launch
 import org.example.protobuf.smart.SmartContractProto
 import java.math.BigInteger

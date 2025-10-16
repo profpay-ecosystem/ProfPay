@@ -2,6 +2,7 @@ package com.profpay.wallet.ui.app.theme
 
 import androidx.compose.ui.graphics.Color
 
+val HexagonColor1 = Color(0xFF6A0E8D)
 val HexagonColor2 = Color(0xFF29A512)
 val HexagonColor3 = Color(0xFFFFA200)
 val HexagonColor4 = Color(0xFF0019FF)
@@ -9,9 +10,6 @@ val HexagonColor5 = Color(0xFF00FE00)
 val HexagonColor6 = Color(0xFFF6DA00)
 val HexagonColor7 = Color(0xFF0099D7)
 
-// val Purple200 = Color(0xFFBB86FC)
-// val Purple500 = Color(0xFF6200EE)
-// val Purple700 = Color(0xFF3700B3)
 val ProgressIndicator = Color(0xFF0EC1E0)
 val SwitchColor = Color(0xFF50A8EB)
 
