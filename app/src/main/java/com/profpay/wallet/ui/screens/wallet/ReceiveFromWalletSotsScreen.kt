@@ -20,10 +20,10 @@ import com.profpay.wallet.R
 import com.profpay.wallet.ui.components.custom.ActionButtonData
 import com.profpay.wallet.ui.components.custom.CustomActionButtonsRow
 import com.profpay.wallet.ui.components.custom.CustomBottomCard
+import com.profpay.wallet.ui.components.custom.CustomQRCodeAddressBlock
 import com.profpay.wallet.ui.components.custom.CustomScaffoldWallet
 import com.profpay.wallet.ui.components.custom.CustomTopAppBar
 import com.profpay.wallet.ui.feature.wallet.receiveFromWalletSots.CardForReceiveFromWalletSotsFeature
-import com.profpay.wallet.ui.components.custom.CustomQRCodeAddressBlock
 import com.profpay.wallet.ui.shared.sharedPref
 import com.profpay.wallet.utils.generateQRCode
 import kotlinx.coroutines.launch
