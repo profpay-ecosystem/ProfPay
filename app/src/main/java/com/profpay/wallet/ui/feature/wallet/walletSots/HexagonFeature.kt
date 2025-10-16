@@ -1,4 +1,4 @@
-package com.profpay.wallet.ui.feature.wallet
+package com.profpay.wallet.ui.feature.wallet.walletSots
 
 import android.graphics.Matrix
 import androidx.compose.animation.animateContentSize
@@ -29,8 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asComposePath
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
@@ -45,6 +43,7 @@ import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.toPath
 import com.profpay.wallet.PrefKeys
 import com.profpay.wallet.data.database.models.AddressWithTokens
+import com.profpay.wallet.ui.app.theme.HexagonColor1
 import com.profpay.wallet.ui.app.theme.HexagonColor2
 import com.profpay.wallet.ui.app.theme.HexagonColor3
 import com.profpay.wallet.ui.app.theme.HexagonColor4
@@ -57,7 +56,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-class HexagonWithCircleShape(
+private class HexagonWithCircleShape(
     private val rotate: Boolean = false,
 ) : Shape {
     override fun createOutline(
@@ -127,8 +126,6 @@ fun HexagonsFeature(
     val sharedPref = sharedPref()
     var openDialog by remember { mutableStateOf(false) }
 
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
-
     val listColors: List<Color> =
         listOf(
             HexagonColor2,
@@ -184,8 +181,7 @@ fun HexagonsFeature(
                     Modifier
                         .clip(HexagonWithCircleShape(clickSot1))
                         .size(size / 4)
-//                        .background(Color(0xFF6A0E8D,))
-                        .border(size / 80, Color(0xFF6A0E8D), HexagonWithCircleShape(clickSot1))
+                        .border(size / 80, HexagonColor1, HexagonWithCircleShape(clickSot1))
                         .clickable {
                             openDialog = !openDialog
                         }.animateContentSize(),
@@ -253,7 +249,7 @@ fun HexagonsFeature(
     }
 }
 
-fun generateHexagonPoints(): List<Pair<Float, Float>> {
+private fun generateHexagonPoints(): List<Pair<Float, Float>> {
     val angleStep = (2 * PI / 6).toFloat()
     val radius = 1.5f // Радиус круга, содержащего точки шестиугольника
 
