@@ -14,6 +14,7 @@ import com.example.telegramWallet.data.database.dao.TransactionsDao
 import com.example.telegramWallet.data.database.dao.wallet.AddressDao
 import com.example.telegramWallet.data.database.dao.wallet.CentralAddressDao
 import com.example.telegramWallet.data.database.dao.wallet.ExchangeRatesDao
+import com.example.telegramWallet.data.database.dao.wallet.PendingAmlTransactionDao
 import com.example.telegramWallet.data.database.dao.wallet.PendingTransactionDao
 import com.example.telegramWallet.data.database.dao.wallet.SmartContractDao
 import com.example.telegramWallet.data.database.dao.wallet.TokenDao
@@ -25,6 +26,7 @@ import com.example.telegramWallet.data.database.entities.StatesEntity
 import com.example.telegramWallet.data.database.entities.wallet.AddressEntity
 import com.example.telegramWallet.data.database.entities.wallet.CentralAddressEntity
 import com.example.telegramWallet.data.database.entities.wallet.ExchangeRatesEntity
+import com.example.telegramWallet.data.database.entities.wallet.PendingAmlTransactionEntity
 import com.example.telegramWallet.data.database.entities.wallet.PendingTransactionEntity
 import com.example.telegramWallet.data.database.entities.wallet.SmartContractEntity
 import com.example.telegramWallet.data.database.entities.wallet.TokenEntity
@@ -34,9 +36,9 @@ import com.example.telegramWallet.data.database.entities.wallet.WalletProfileEnt
 
 // Создание Базы Данных
 @Database(
-    version = 33,
+    version = 35,
     autoMigrations = [
-        AutoMigration(from = 25, to = 26, spec = AppDatabase.AutoMigrationFrom25To26::class)
+        AutoMigration(from = 25, to = 26, spec = AppDatabase.AutoMigrationFrom25To26::class),
     ],
     entities = [
         AddressEntity::class,
@@ -51,24 +53,38 @@ import com.example.telegramWallet.data.database.entities.wallet.WalletProfileEnt
         SmartContractEntity::class,
         ExchangeRatesEntity::class,
         TradingInsightsEntity::class,
-        PendingTransactionEntity::class
+        PendingTransactionEntity::class,
+        PendingAmlTransactionEntity::class,
     ],
-    exportSchema = true
+    exportSchema = true,
 )
 @TypeConverters(DateConverter::class, BigIntegerConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getAddressDao(): AddressDao
+
     abstract fun getTokenDao(): TokenDao
+
     abstract fun getWalletProfileDao(): WalletProfileDao
+
     abstract fun getProfileDao(): ProfileDao
+
     abstract fun getSettingsDao(): SettingsDao
+
     abstract fun getStatesDao(): StatesDao
+
     abstract fun getTransactionsDao(): TransactionsDao
+
     abstract fun getCentralAddressDao(): CentralAddressDao
+
     abstract fun getSmartContractDao(): SmartContractDao
+
     abstract fun getExchangeRatesDao(): ExchangeRatesDao
+
     abstract fun getTradingInsightsDao(): TradingInsightsDao
+
     abstract fun getPendingTransactionDao(): PendingTransactionDao
+
+    abstract fun getPendingAmlTransactionDao(): PendingAmlTransactionDao
 
     @DeleteColumn.Entries(
         DeleteColumn(tableName = "central_address", columnName = "trx_balance"),
@@ -81,6 +97,5 @@ abstract class AppDatabase : RoomDatabase() {
         RenameColumn(tableName = "tokens", fromColumnName = "new_frozen_balance", toColumnName = "frozen_balance"),
         RenameColumn(tableName = "transactions", fromColumnName = "new_amount", toColumnName = "amount"),
     )
-    class AutoMigrationFrom25To26: AutoMigrationSpec
+    class AutoMigrationFrom25To26 : AutoMigrationSpec
 }
-

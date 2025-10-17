@@ -46,11 +46,10 @@ android {
         minSdk = 29
         targetSdk = 35
         versionCode = 5
-
 //        MAJOR: Внесение изменений, ломающих обратную совместимость.
 //        MINOR: Добавление новых функций без нарушения совместимости.
 //        PATCH: Исправление ошибок и незначительные улучшения без изменения функциональности.
-        versionName = "5.9.27" // MAJOR.MINOR.PATCH
+        versionName = "8.9.27" // MAJOR.MINOR.PATCH
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -62,7 +61,6 @@ android {
             }
         }
     }
-
     applicationVariants.all {
         val variant = this
         variant.outputs
