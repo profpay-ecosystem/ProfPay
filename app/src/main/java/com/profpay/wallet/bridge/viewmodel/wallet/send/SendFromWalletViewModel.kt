@@ -89,13 +89,22 @@ class SendFromWalletViewModel @Inject constructor(
     private val _isActivated = MutableStateFlow(false)
     val isActivated: StateFlow<Boolean> = _isActivated
 
-    fun checkActivation(address: String) =
-        viewModelScope.launch {
-            _isActivated.value =
-                withContext(ioDispatcher) {
-                    tron.addressUtilities.isAddressActivated(address)
-                }
-        }
+    private val _isSmartContractAddress = MutableStateFlow(false)
+    val isSmartContractAddress: StateFlow<Boolean> = _isSmartContractAddress
+
+    fun checkActivation(address: String) = viewModelScope.launch {
+        _isActivated.value =
+            withContext(ioDispatcher) {
+                tron.addressUtilities.isAddressActivated(address)
+            }
+    }
+
+    fun isSmartContractAddress(address: String) = viewModelScope.launch {
+        _isSmartContractAddress.value =
+            withContext(ioDispatcher) {
+                tron.addressUtilities.isContractAddress(address)
+            }
+    }
 
     fun loadAddressWithTokens(
         addressId: Long,
