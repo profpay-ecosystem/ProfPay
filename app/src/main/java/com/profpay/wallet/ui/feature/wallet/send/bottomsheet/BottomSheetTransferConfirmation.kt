@@ -58,9 +58,7 @@ fun bottomSheetTransferConfirmation(
 
     LaunchedEffect(uiEvent) {
         when (uiEvent) {
-            is TransferUiEvent.Idle -> {
-                // Пусто
-            }
+            is TransferUiEvent.Idle -> Unit
             is TransferUiEvent.Success -> setIsConfirmTransaction(true)
             is TransferUiEvent.Error -> {
                 val e = uiEvent as TransferUiEvent.Error
