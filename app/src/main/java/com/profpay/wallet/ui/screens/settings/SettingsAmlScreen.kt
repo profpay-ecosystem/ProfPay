@@ -87,18 +87,6 @@ fun SettingsAmlScreen(goToBack: () -> Unit) {
                         }
                     }
                 },
-                actions = {
-                    run {
-                        IconButton(onClick = { /*goToBack()*/ }) {
-                            Icon(
-                                modifier = Modifier.size(24.dp),
-                                imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
-                                contentDescription = "",
-                                tint = Color.White,
-                            )
-                        }
-                    }
-                },
             )
 
             Card(

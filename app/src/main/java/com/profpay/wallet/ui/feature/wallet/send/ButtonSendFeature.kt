@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.GreenColor
+import com.profpay.wallet.ui.extensions.protectFromTapjacking
 
 @Composable
 fun ButtonSendFeature(
@@ -38,6 +39,7 @@ fun ButtonSendFeature(
             enabled = isButtonEnabled,
             modifier =
                 Modifier
+                    .protectFromTapjacking()
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
                     .padding(vertical = 8.dp, horizontal = 4.dp),

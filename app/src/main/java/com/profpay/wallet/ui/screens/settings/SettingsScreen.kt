@@ -25,7 +25,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,43 +46,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.profpay.wallet.R
-import com.profpay.wallet.bridge.viewmodel.settings.SettingsViewModel
 import com.profpay.wallet.bridge.viewmodel.settings.ThemeViewModel
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.shared.getTextValueTheme
 import com.profpay.wallet.ui.shared.sharedPref
-import rememberStackedSnackbarHostState
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SettingsScreen(
     themeVM: ThemeViewModel = hiltViewModel(),
-    viewModel: SettingsViewModel = hiltViewModel(),
-    goToLockGraph: () -> Unit,
-    goToTheme: () -> Unit,
     goToSettingsNotifications: () -> Unit,
     goToSettingsAccount: () -> Unit,
     goToSettingsSecurity: () -> Unit,
     goToSettingsAml: () -> Unit,
 ) {
-    val snackbarHostState = rememberStackedSnackbarHostState()
-
     var openThemeChoice by remember { mutableStateOf(false) }
 
     val shared = sharedPref()
     var themeSharedInt by remember { mutableIntStateOf(shared.getInt("valueTheme", 2)) }
-
-    val isHiddenB: Boolean = shared.getBoolean(stringResource(R.string.IS_HIDDEN_BALANCES), false)
-    val checkHiddenAllBalances = remember { mutableStateOf(isHiddenB) }
-
-    val isTestNet: Boolean = shared.getBoolean(stringResource(R.string.IS_TEST_NETWORK), false)
-    val checkIsTestNet = remember { mutableStateOf(isTestNet) }
 
     val bottomPadding = sharedPref().getFloat("bottomPadding", 54f)
 
@@ -109,30 +94,6 @@ fun SettingsScreen(
                     TopAppBarDefaults.topAppBarColors(
                         containerColor = Color.Transparent,
                     ),
-                navigationIcon = {
-//                    run {
-//                        IconButton(onClick = { goToBack() }) {
-//                            Icon(
-//                                modifier = Modifier.size(34.dp),
-//                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-//                                contentDescription = "Back",
-//                                tint = Color.White
-//                            )
-//                        }
-//                    }
-                },
-                actions = {
-                    run {
-                        IconButton(onClick = { /*goToBack()*/ }) {
-                            Icon(
-                                modifier = Modifier.size(24.dp),
-                                imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
-                                contentDescription = "",
-                                tint = Color.White,
-                            )
-                        }
-                    }
-                },
             )
 
             Card(
@@ -321,64 +282,6 @@ fun SettingsScreen(
                         label = "Политика \nКонфиденциальности",
                         smallLabel = true,
                     )
-
-//
-//                        RowSettingsButtonHiddenWithoutDivider(
-//                            textContent = "Скрыть все балансы",
-//                            modifier = Modifier,
-//                            funcRight = {
-//                                Switch(
-//                                    checked = checkHiddenAllBalances.value,
-//                                    onCheckedChange = {
-//                                        checkHiddenAllBalances.value = it
-//                                        shared.edit().putBoolean("isHiddenBalances", it).apply()
-//                                    },
-//                                    colors = SwitchDefaults.colors(
-//                                        checkedThumbColor = MaterialTheme.colorScheme.primaryContainer,
-//                                        checkedTrackColor = MaterialTheme.colorScheme.primary,
-//                                        checkedBorderColor = MaterialTheme.colorScheme.background,
-//                                        uncheckedThumbColor = MaterialTheme.colorScheme.onSecondary,
-//                                        uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-//                                        uncheckedBorderColor = MaterialTheme.colorScheme.background
-//                                    )
-//                                )
-//                            }
-//                        )
-//                        RowSettingsButtonHiddenWithoutDivider(
-//                            textContent = "Тестовая Nile-сеть",
-//                            modifier = Modifier,
-//                            funcRight = {
-//                                Switch(
-//                                    checked = checkIsTestNet.value,
-//                                    onCheckedChange = {
-//                                        checkIsTestNet.value = it
-//                                        shared.edit().putBoolean("isTestNetwork", it).apply()
-//                                    },
-//                                    colors = SwitchDefaults.colors(
-//                                        checkedThumbColor = MaterialTheme.colorScheme.primaryContainer,
-//                                        checkedTrackColor = MaterialTheme.colorScheme.primary,
-//                                        checkedBorderColor = MaterialTheme.colorScheme.background,
-//                                        uncheckedThumbColor = MaterialTheme.colorScheme.onSecondary,
-//                                        uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-//                                        uncheckedBorderColor = MaterialTheme.colorScheme.background
-//                                    )
-//                                )
-//                            }
-//                        )
-//
-//
-//                        RowSettingsButtonHiddenWithoutDivider(
-//                            textContent = "Сменить пин-код",
-//                            funcRight = {
-//                                Icon(
-//                                    Icons.Filled.KeyboardArrowRight,
-//                                    contentDescription = "Вправо"
-//                                )
-//                            },
-//                            modifier = Modifier.clickable(onClick = {
-//                                goToLockGraph()
-//                            })
-//                        )
                     Spacer(modifier = Modifier.size(10.dp))
                 }
             }

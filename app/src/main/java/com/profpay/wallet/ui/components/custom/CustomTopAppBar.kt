@@ -55,18 +55,6 @@ fun CustomTopAppBar(
                 }
             }
         },
-        actions = {
-            run {
-                IconButton(onClick = { }) {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
-                        contentDescription = "alert",
-                        tint = MaterialTheme.colorScheme.white,
-                    )
-                }
-            }
-        },
     )
 }
 
@@ -103,17 +91,5 @@ fun CustomTopAppBar(
             TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.transparent,
             ),
-        actions = {
-            run {
-                IconButton(onClick = { }) {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        imageVector = ImageVector.vectorResource(id = R.drawable.icon_alert),
-                        contentDescription = "alert",
-                        tint = MaterialTheme.colorScheme.white,
-                    )
-                }
-            }
-        },
     )
 }
