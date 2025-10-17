@@ -37,6 +37,7 @@ import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.BackgroundLight
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.app.theme.PubAddressDark
+import com.profpay.wallet.ui.extensions.protectFromTapjacking
 import com.profpay.wallet.utils.decimalFormat
 import java.math.BigInteger
 
@@ -316,6 +317,7 @@ fun ContentBottomSheetTransferConfirmation(
                 },
                 modifier =
                     Modifier
+                        .protectFromTapjacking()
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min)
                         .padding(horizontal = 4.dp, vertical = 16.dp),

@@ -56,7 +56,8 @@ class TransactionsRepoImpl
         override suspend fun insertNewTransaction(transactionsEntity: TransactionEntity) =
             transactionsDao.insertNewTransaction(transactionsEntity)
 
-        override suspend fun transactionExistsViaTxid(txid: String): Int = transactionsDao.transactionExistsViaTxid(txid)
+        override suspend fun transactionExistsViaTxid(txid: String): Int =
+            transactionsDao.transactionExistsViaTxid(txid)
 
         override fun getAllRelatedTransactionsFlow(walletId: Long): Flow<List<TransactionModel>> =
             transactionsDao.getAllRelatedTransactionsFlow(walletId)
@@ -64,14 +65,17 @@ class TransactionsRepoImpl
         override fun getTransactionFlowById(transactionId: Long): Flow<TransactionEntity> =
             transactionsDao.getTransactionFlowById(transactionId)
 
-        override suspend fun transactionSetProcessedUpdateTrueById(id: Long) = transactionsDao.transactionSetProcessedUpdateTrueById(id)
+        override suspend fun transactionSetProcessedUpdateTrueById(id: Long) =
+            transactionsDao.transactionSetProcessedUpdateTrueById(id)
 
         override suspend fun transactionSetProcessedUpdateFalseByTxId(txId: String) =
             transactionsDao.transactionSetProcessedUpdateFalseByTxId(txId)
 
-        override suspend fun getTransactionByTxId(txId: String): TransactionEntity = transactionsDao.getTransactionByTxId(txId)
+        override suspend fun getTransactionByTxId(txId: String): TransactionEntity =
+            transactionsDao.getTransactionByTxId(txId)
 
-        override suspend fun transactionSetProcessedUpdateFalseById(id: Long) = transactionsDao.transactionSetProcessedUpdateFalseById(id)
+        override suspend fun transactionSetProcessedUpdateFalseById(id: Long) =
+            transactionsDao.transactionSetProcessedUpdateFalseById(id)
 
         override suspend fun transactionSetProcessedUpdateTrueByTxId(txId: String) =
             transactionsDao.transactionSetProcessedUpdateTrueByTxId(txId)

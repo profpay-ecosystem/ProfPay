@@ -173,10 +173,33 @@ class AddressAndMnemonicRepoImplTest {
     }
 
     @Test
-    fun `generateAddressFromMnemonic uses IO dispatcher`() {
-        // Confirm that the logic inside `generateAddressFromMnemonic` is executed on the provided `ioDispatcher`.
-        // TODO implement test
-    }
+    fun `generateAddressFromMnemonic uses IO dispatcher`() = runTest(testScheduler) {
+        val mockProfileRepo = mockk<ProfileRepo>(relaxed = true)
+        val mockAddressRepo = mockk<AddressRepo>(relaxed = true)
+        val mockGrpcClient = mockk<CryptoAddressGrpcClient>(relaxed = true)
+        val mockGrpcClientFactory = mockk<GrpcClientFactory>()
+
+        every { mockGrpcClientFactory.getGrpcClient(CryptoAddressGrpcClient::class.java, any(), any()) } returns mockGrpcClient
+
+        val repo = AddressAndMnemonicRepoImpl(
+            tron = Tron(mockContext),
+            ioDispatcher = ioDispatcher,
+            profileRepo = mockProfileRepo,
+            addressRepo = mockAddressRepo,
+            grpcClientFactory = mockGrpcClientFactory
+        )
+
+        var executedOnIoDispatcher = false
+
+        val job = launch(ioDispatcher) {
+            repo.generateAddressFromMnemonic("word ".repeat(12).trim())
+            executedOnIoDispatcher = (coroutineContext[CoroutineDispatcher] as CoroutineDispatcher) == ioDispatcher
+        }
+
+        testScheduler.advanceUntilIdle()
+
+        assertTrue("Expected generateAddressFromMnemonic to run on ioDispatcher", executedOnIoDispatcher)
+        job.cancel()    }
 
     @Test
     fun `recoveryWallet successful with existing remote account`() {

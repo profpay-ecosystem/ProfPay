@@ -54,9 +54,12 @@ fun UnifiedTransactionCard(
                 address = currentAddress,
             )
 
-        TransactionCardType.WA ->
+        TransactionCardType.WA -> {
+            if (viewModel == null || stackedSnackbarHostState == null || addressWithTokens == null) {
+                return
+            }
             CardHistoryTransactionsForWAFeature(
-                viewModel = viewModel!!,
+                viewModel = viewModel,
                 onClick = {
                     sharedPref.edit { putLong("transaction_id", transaction.transactionId!!) }
                     goToTXDetailsScreen()
@@ -67,10 +70,11 @@ fun UnifiedTransactionCard(
                 typeTransaction = transaction.type,
                 address = currentAddress,
                 transactionEntity = transaction.toEntity(),
-                stackedSnackbarHostState = stackedSnackbarHostState!!,
+                stackedSnackbarHostState = stackedSnackbarHostState,
                 goToSystemTRX = { goToSystemTRX() },
-                addressWithTokens = addressWithTokens!!,
+                addressWithTokens = addressWithTokens,
             )
+        }
 
         TransactionCardType.CA ->
             CACardHistoryTransactionsFeature(

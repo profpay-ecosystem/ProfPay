@@ -90,12 +90,12 @@ android {
         applicationId = "com.profpay.wallet"
         minSdk = 29
         targetSdk = 35
-        versionCode = 5
+        versionCode = 6
 
 //        MAJOR: Внесение изменений, ломающих обратную совместимость.
 //        MINOR: Добавление новых функций без нарушения совместимости.
 //        PATCH: Исправление ошибок и незначительные улучшения без изменения функциональности.
-        versionName = "5.10.29" // MAJOR.MINOR.PATCH
+        versionName = "1.0.0" // MAJOR.MINOR.PATCH
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -114,11 +114,10 @@ android {
             .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
             .forEach { output ->
                 val versionName = variant.versionName
-                val versionCode = variant.versionCode
 
                 val tag = "beta"
 
-                val outputFileName = "profpay-$versionName-${tag}$versionCode.apk"
+                val outputFileName = "profpay-$versionName-${tag}.apk"
                 output.outputFileName = outputFileName
             }
     }

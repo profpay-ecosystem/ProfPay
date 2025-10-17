@@ -92,11 +92,11 @@ class AddressAndMnemonicRepoImpl
         }
 
         override suspend fun recoveryWallet(
-            gAddress: String,
+            address: String,
             mnemonic: String,
         ) {
             try {
-                val result = cryptoAddressGrpcClient.getWalletData(address = gAddress)
+                val result = cryptoAddressGrpcClient.getWalletData(address = address)
 
                 result.fold(
                     onSuccess = { walletData ->

@@ -51,6 +51,7 @@ import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.GreenColor
 import com.profpay.wallet.ui.app.theme.PubAddressDark
+import com.profpay.wallet.ui.extensions.protectFromTapjacking
 import com.profpay.wallet.ui.feature.wallet.send.bottomsheet.ContentBottomSheetTransferProcessing
 import kotlinx.coroutines.launch
 import org.example.protobuf.transfer.TransferProto
@@ -378,6 +379,7 @@ fun bottomSheetRejectReceipt(
                         },
                         modifier =
                             Modifier
+                                .protectFromTapjacking()
                                 .padding(vertical = 24.dp, horizontal = 16.dp)
                                 .fillMaxWidth()
                                 .height(50.dp),

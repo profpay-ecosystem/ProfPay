@@ -40,7 +40,7 @@ fun NumberBoard(
                 bottom = 16.dp,
             ),
         content = {
-            itemsIndexed(items = list) { index, item ->
+            itemsIndexed(items = list) { _, item ->
                 NumberButton(
                     modifier = Modifier,
                     number = item,

@@ -47,6 +47,7 @@ import com.profpay.wallet.data.utils.toSunAmount
 import com.profpay.wallet.data.utils.toTokenAmount
 import com.profpay.wallet.ui.app.theme.BackgroundContainerButtonLight
 import com.profpay.wallet.ui.app.theme.GreenColor
+import com.profpay.wallet.ui.extensions.protectFromTapjacking
 import com.profpay.wallet.ui.feature.wallet.send.bottomsheet.ContentBottomSheetTransferProcessing
 import org.example.protobuf.transfer.TransferProto
 import java.math.BigDecimal
@@ -62,8 +63,6 @@ fun bottomSheetTransOnGeneralReceipt(
     walletId: Long,
     balance: BigInteger? = null,
 ): Pair<Boolean, (Boolean) -> Unit> {
-    val context = LocalContext.current
-
     val sheetState =
         rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
@@ -273,10 +272,8 @@ fun bottomSheetTransOnGeneralReceipt(
                         },
                         modifier =
                             Modifier
-                                // Защищаемся от Tapjacking/Clickjacking
-                                .onGloballyPositioned {
-                                    (context as? Activity)?.window?.decorView?.filterTouchesWhenObscured = true
-                                }.padding(vertical = 24.dp, horizontal = 16.dp)
+                                .protectFromTapjacking()
+                                .padding(vertical = 24.dp, horizontal = 16.dp)
                                 .fillMaxWidth()
                                 .height(50.dp),
                         colors =

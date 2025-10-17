@@ -98,11 +98,11 @@ fun LockScreen(
                     goingBack = goingBack,
                     onNumberClick = { enterNumber ->
                         when (enterNumber) {
-                            "" -> {}
+                            "" -> Unit
                             "<" -> {
                                 goToBack()
                             }
-                            "-1" -> {}
+                            "-1" -> Unit
                             "X" -> {
                                 if (inputPinCode.isNotEmpty()) inputPinCode.removeAt(inputPinCode.lastIndex)
                             }
