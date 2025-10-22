@@ -20,6 +20,7 @@ import com.profpay.wallet.tron.http.Trc20TransactionsApi
 import com.profpay.wallet.tron.http.TrxTransactionsApi
 import com.profpay.wallet.tron.http.models.Trc20TransactionsDataResponse
 import com.profpay.wallet.tron.http.models.TrxTransactionDataResponse
+import com.profpay.wallet.utils.safeRun
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -45,67 +46,61 @@ class UsdtTransferScheduler(
     private var sharedPrefs: SharedPreferences,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
-    suspend fun scheduleAddresses() =
-        withContext(ioDispatcher) {
-            val addressList = addressRepo.getAddressesSotsWithTokensByBlockchain("Tron")
-            val centralAddress = centralAddressRepo.getCentralAddress()
-            for (address in addressList) {
-                // Запрос к API на получение TRC20 транзакций.
-                try {
-                    val trc20Data = Trc20TransactionsApi.trc20TransactionsService.makeRequest(address.addressEntity.address)
-                    for (transaction in trc20Data) {
-                        if (transaction.type == "Transfer") {
-                            transferUsdt(transaction, "USDT", address.addressEntity.address)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Sentry.captureException(e)
+    suspend fun scheduleAddresses() = withContext(ioDispatcher) {
+        val centralAddress = centralAddressRepo.getCentralAddress()
+        val addresses = addressRepo.getAddressesSotsWithTokensByBlockchain("Tron")
+        for (address in addresses) {
+            coroutineScope {
+                val trc20DataDeferred = async {
+                    safeRun { Trc20TransactionsApi.trc20TransactionsService.makeRequest(address.addressEntity.address) } ?: emptyList()
                 }
-
                 delay(1000)
 
-                try {
-                    val trxData = TrxTransactionsApi.trxTransactionsService.makeRequest(address.addressEntity.address)
-                    for (transaction in trxData) {
-                        val contract = transaction.raw_data.contract[0]
-                        if (contract.type == "TransferContract") {
-                            transferTrx(transaction, "TRX", address.addressEntity.address)
-                        } else if (contract.type == "TriggerSmartContract") {
-                            triggerSmartContract(transaction, "TRX", address.addressEntity.address)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Sentry.captureException(e)
+                val trxDataDeferred = async {
+                    safeRun { TrxTransactionsApi.trxTransactionsService.makeRequest(address.addressEntity.address) } ?: emptyList()
                 }
-
                 delay(1000)
 
-                if (centralAddress != null) {
-                    // Запрос к API на получение TRX транзакций.
-                    try {
-                        val trxData = TrxTransactionsApi.trxTransactionsService.makeRequest(centralAddress.address)
-                        for (transaction in trxData) {
-                            val contract = transaction.raw_data.contract[0]
-                            if (contract.type == "TransferContract") {
-                                transferCentralTrx(centralAddress.address, transaction, "TRX")
+                val centralAddressDataDeferred = async {
+                    safeRun { TrxTransactionsApi.trxTransactionsService.makeRequest(centralAddress!!.address) } ?: emptyList()
+                }
+                delay(1000)
+
+                val trc20Data = trc20DataDeferred.await()
+                val trxData = trxDataDeferred.await()
+                val centralAddressData = centralAddressDataDeferred.await()
+
+                trc20Data.filter { it.type == "Transfer" }
+                    .forEach { transferUsdt(it, "USDT", address.addressEntity.address) }
+
+                trxData.forEach { trx ->
+                    val contract = trx.raw_data.contract.firstOrNull() ?: return@forEach
+                    when (trx.raw_data.contract[0].type) {
+                        "TransferContract" -> {
+                            val value = contract.parameter.value
+                            if (value.to_address == null || value.amount == null) {
+                                return@forEach
                             }
+
+                            transferTrx(trx, "TRX", address.addressEntity.address)
                         }
-                    } catch (e: Exception) {
-                        Sentry.captureException(e)
+                        "TriggerSmartContract" -> triggerSmartContract(trx, "TRX", address.addressEntity.address)
                     }
                 }
 
+                centralAddressData.forEach { trx ->
+                    transferCentralTrx(centralAddress!!.address, trx, "TRX")
+                }
                 delay(1000)
             }
         }
+    }
 
     suspend fun transferUsdt(
         transaction: Trc20TransactionsDataResponse,
         tokenName: String,
         address: String,
     ) = coroutineScope {
-        if (transaction.type != "Transfer") return@coroutineScope
-
         val blockTime = Instant.ofEpochMilli(transaction.block_timestamp)
         val now = Instant.now()
         val withinOneDay = Duration.between(blockTime, now).abs().toHours() <= 24
@@ -207,9 +202,6 @@ class UsdtTransferScheduler(
         address: String,
     ) = coroutineScope {
         val contract = transaction.raw_data.contract[0]
-        if (contract.parameter.value.to_address == null || contract.parameter.value.amount == null) {
-            return@coroutineScope
-        }
 
         val blockTime = Instant.ofEpochMilli(transaction.block_timestamp)
         val now = Instant.now()
@@ -223,7 +215,7 @@ class UsdtTransferScheduler(
         val toAddress =
             tron
                 .addressUtilities
-                .hexToBase58CheckAddress(contract.parameter.value.to_address)
+                .hexToBase58CheckAddress(contract.parameter.value.to_address!!)
 
         val autoCheckAml = sharedPrefs.getBoolean(PrefKeys.AUTO_CHECK_AML, true)
 
@@ -267,7 +259,7 @@ class UsdtTransferScheduler(
                         receiverAddress = toAddress,
                         walletId = addressEntity.walletId,
                         tokenName = tokenName,
-                        amount = BigInteger.valueOf(contract.parameter.value.amount),
+                        amount = BigInteger.valueOf(contract.parameter.value.amount!!),
                         timestamp = transaction.block_timestamp,
                         status = "Success",
                         type = typeValue,
@@ -285,7 +277,7 @@ class UsdtTransferScheduler(
         }
 
         if (receiverAddressEntity != null) {
-            if (withinOneDay && contract.parameter.value.amount > 1000000 && senderAddressEntity == null && autoCheckAml) {
+            if (withinOneDay && contract.parameter.value.amount!! > 1000000 && senderAddressEntity == null && autoCheckAml) {
                 runCatching {
                     val (isSuccessful, message) =
                         amlProcessorService.processAmlReport(
@@ -312,12 +304,12 @@ class UsdtTransferScheduler(
         if (typeValue != TransactionType.TRIGGER_SMART_CONTRACT.index && withinOneDay) {
             if (isSender) {
                 notificationFunction(
-                    "\uD83D\uDCB8 Отправлено: ${contract.parameter.value.amount.toBigInteger().toTokenAmount()} TRX",
+                    "\uD83D\uDCB8 Отправлено: ${contract.parameter.value.amount!!.toBigInteger().toTokenAmount()} TRX",
                     "На ${toAddress.take(6)}...${toAddress.takeLast(4)}",
                 )
             } else {
                 notificationFunction(
-                    "\uD83D\uDCB0 Получено: ${contract.parameter.value.amount.toBigInteger().toTokenAmount()} TRX",
+                    "\uD83D\uDCB0 Получено: ${contract.parameter.value.amount!!.toBigInteger().toTokenAmount()} TRX",
                     "От ${ownerAddress.take(6)}...${ownerAddress.takeLast(4)}",
                 )
             }

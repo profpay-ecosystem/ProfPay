@@ -21,10 +21,6 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavController) {
     ) {
         composable(route = "SETTINGS") {
             SettingsScreen(
-                goToLockGraph = {
-                },
-                goToTheme = {
-                },
                 goToSettingsNotifications = {
                     navController.navigate(route = SettingsS.SettingsNotifications.route)
                 },
