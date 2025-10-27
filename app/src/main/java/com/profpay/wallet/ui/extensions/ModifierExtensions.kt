@@ -2,10 +2,10 @@ package com.profpay.wallet.ui.extensions
 
 import android.app.Activity
 import android.content.Context
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.runtime.Composable
 
 @Composable
 fun Modifier.protectFromTapjacking(): Modifier {
