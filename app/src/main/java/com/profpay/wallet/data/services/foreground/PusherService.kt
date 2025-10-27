@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ServiceInfo
 import android.os.IBinder
+import android.util.Log
 import com.profpay.wallet.MainActivity
 import com.profpay.wallet.R
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
@@ -74,7 +75,6 @@ class PusherService :
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        isRunning = true
     }
 
     override fun onStartCommand(
@@ -82,10 +82,15 @@ class PusherService :
         flags: Int,
         startId: Int,
     ): Int {
-        startForeground()
-        launch {
-            scheduleAll()
+        if (!isRunning) {
+            startForeground()
+            isRunning = true
+
+            launch {
+                scheduleAll()
+            }
         }
+
         return START_STICKY
     }
 
@@ -110,7 +115,7 @@ class PusherService :
                 .setContentIntent(pendingIntent)
                 .build()
 
-        startForeground(uniqueNotificationID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        startForeground(uniqueNotificationID, notification)
     }
 
     private fun showNotification(
@@ -204,7 +209,7 @@ class PusherService :
     }
 
     companion object {
-        @JvmStatic
+        @Volatile
         var isRunning = false
         private const val CHANNEL_ID = "PUSHER_SERVICE_CHANNEL"
     }

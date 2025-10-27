@@ -10,6 +10,8 @@ import com.profpay.wallet.data.repository.WalletSotRepo
 import com.profpay.wallet.data.repository.WalletSotRepoImpl
 import com.profpay.wallet.data.repository.flow.AddressAndMnemonicRepo
 import com.profpay.wallet.data.repository.flow.AddressAndMnemonicRepoImpl
+import com.profpay.wallet.data.repository.flow.AppAccessRepo
+import com.profpay.wallet.data.repository.flow.AppAccessRepoImpl
 import com.profpay.wallet.data.repository.flow.BlockingAppRepo
 import com.profpay.wallet.data.repository.flow.BlockingAppRepoImpl
 import com.profpay.wallet.data.repository.flow.SendFromWalletRepo
@@ -74,4 +76,8 @@ abstract class RepoModule {
     @Binds
     @Singleton
     abstract fun bindWalletAddedRepo(walletAddedRepoImpl: WalletAddedRepoImpl): WalletAddedRepo
+
+    @Binds
+    @Singleton
+    abstract fun bindAppAccessRepo(appAccessRepoImpl: AppAccessRepoImpl): AppAccessRepo
 }

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.profpay.wallet.bridge.viewmodel.RootViewModel
 import com.profpay.wallet.bridge.viewmodel.wallet.WalletInfoViewModel
 import com.profpay.wallet.ui.components.custom.CustomBottomCard
 import com.profpay.wallet.ui.components.custom.CustomScaffoldWallet
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun WalletInfoScreen(
     viewModel: WalletInfoViewModel = hiltViewModel(),
+    rootViewModel: RootViewModel = hiltViewModel(),
     goToSendWalletInfo: (addressId: Long, tokenName: String) -> Unit,
     goToWalletSystem: () -> Unit,
     goToWalletSystemTRX: () -> Unit,
@@ -58,6 +60,7 @@ fun WalletInfoScreen(
         ).observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
+        rootViewModel.isAppRestricted()
         snapshotFlow { addressesSotsWithTokens }
             .distinctUntilChanged()
             .collectLatest { addresses ->

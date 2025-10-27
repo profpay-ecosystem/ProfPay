@@ -13,8 +13,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.profpay.wallet.PrefKeys
+import com.profpay.wallet.bridge.viewmodel.RootViewModel
 import com.profpay.wallet.bridge.viewmodel.pinlock.LockState
 import com.profpay.wallet.bridge.viewmodel.pinlock.PinLockViewModel
+import com.profpay.wallet.data.repository.flow.AppAccessState
 import com.profpay.wallet.data.services.NetworkMonitor
 import com.profpay.wallet.ui.app.navigation.HomeScreen
 import com.profpay.wallet.ui.app.navigation.graphs.navGraph.coRAddressNavGraph
@@ -34,8 +36,10 @@ fun RootNavigationGraph(
     navController: NavHostController,
     networkMonitor: NetworkMonitor,
     pinLockViewModel: PinLockViewModel = hiltViewModel(),
+    rootViewModel: RootViewModel = hiltViewModel(),
 ) {
     val isConnected by networkMonitor.networkAvailable.collectAsState()
+    val accessState by rootViewModel.accessState.collectAsState()
 
     val sharedPref = sharedPref()
 
@@ -73,6 +77,19 @@ fun RootNavigationGraph(
             }
         }
     }
+    LaunchedEffect(accessState) {
+        targetRoute = when (accessState) {
+            AppAccessState.Restricted -> Graph.BlockedAppScreen.route
+            AppAccessState.NoInternet -> return@LaunchedEffect
+            AppAccessState.Blocked -> return@LaunchedEffect
+            AppAccessState.Allowed -> return@LaunchedEffect
+        }
+        navController.navigate(targetRoute) {
+            popUpTo(0) { inclusive = true }
+            launchSingleTop = true
+        }
+    }
+
     NavHost(
         navController = navController,
         route = Graph.Root.route,

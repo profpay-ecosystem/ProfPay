@@ -95,7 +95,7 @@ android {
 //        MAJOR: Внесение изменений, ломающих обратную совместимость.
 //        MINOR: Добавление новых функций без нарушения совместимости.
 //        PATCH: Исправление ошибок и незначительные улучшения без изменения функциональности.
-        versionName = "1.0.0" // MAJOR.MINOR.PATCH
+        versionName = "1.0.1" // MAJOR.MINOR.PATCH
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

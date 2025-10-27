@@ -15,6 +15,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
+import com.profpay.wallet.bridge.viewmodel.RootViewModel
 import com.profpay.wallet.bridge.viewmodel.pinlock.PinLockViewModel
 import com.profpay.wallet.bridge.viewmodel.settings.ThemeState
 import com.profpay.wallet.bridge.viewmodel.settings.ThemeViewModel
@@ -35,10 +36,12 @@ import javax.inject.Inject
 class MainActivity : FragmentActivity() {
     @Inject lateinit var appInitializer: AppInitializer
     private val pinLockViewModel: PinLockViewModel by viewModels()
+    private val rootViewModel: RootViewModel by viewModels()
     private lateinit var networkMonitor: NetworkMonitor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        rootViewModel.isAppRestricted()
 
         window.setFlags(
             WindowManager.LayoutParams.FLAG_SECURE,
