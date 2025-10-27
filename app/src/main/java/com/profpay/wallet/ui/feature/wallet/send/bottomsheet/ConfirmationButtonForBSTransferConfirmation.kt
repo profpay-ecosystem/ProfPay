@@ -6,17 +6,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.profpay.wallet.R
 import com.profpay.wallet.ui.app.theme.backgroundLight
 import com.profpay.wallet.ui.app.theme.greenColor
 import com.profpay.wallet.ui.widgets.dialog.AlertDialogWidget
@@ -94,6 +93,6 @@ private fun AlertDialogTransferConfirmationIfIsContractAddress(
                 """.trimIndent(),
         textConfirmButton = "Продолжить",
         textDismissButton = "Закрыть",
-        icon = ImageVector.vectorResource(R.drawable.icon_warning)
+        icon = Icons.Default.Warning
     )
 }
