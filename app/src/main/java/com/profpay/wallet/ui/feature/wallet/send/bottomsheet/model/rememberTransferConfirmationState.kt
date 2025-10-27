@@ -37,7 +37,13 @@ internal fun rememberTransferConfirmationState(
     }
 
     LaunchedEffect(Unit) {
+        viewModel.loadTrxToUsdtRate()
         viewModel.checkActivation(modelTransferFromBS.addressReceiver)
+        viewModel.verifyContractAddress(modelTransferFromBS.addressReceiver)
+    }
+
+    LaunchedEffect(isContractAddress) {
+        setShowContractWarning(isContractAddress)
     }
 
     val amountUSD = calculateAmountUSD(

@@ -43,7 +43,6 @@ fun ConfirmationButtonForBSTransferConfirmation(
             onConfirmation = onConfirm,
             onDismissRequest = {
                 onShowContractWarning(false)
-                onClose()
             }
         )
     }
