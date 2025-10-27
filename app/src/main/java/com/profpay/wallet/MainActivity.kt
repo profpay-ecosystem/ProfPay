@@ -35,9 +35,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
     @Inject lateinit var appInitializer: AppInitializer
+    private lateinit var networkMonitor: NetworkMonitor
     private val pinLockViewModel: PinLockViewModel by viewModels()
     private val rootViewModel: RootViewModel by viewModels()
-    private lateinit var networkMonitor: NetworkMonitor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

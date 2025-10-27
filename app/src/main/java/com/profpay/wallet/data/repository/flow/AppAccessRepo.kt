@@ -1,6 +1,5 @@
 package com.profpay.wallet.data.repository.flow
 
-import android.util.Log
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.backend.grpc.UserGrpcClient
@@ -41,7 +40,6 @@ class AppAccessRepoImpl @Inject constructor(
 
     override suspend fun isAppRestricted() {
         val telegramID = profileRepo.getProfileTelegramId()
-        Log.e("Telegram ID", telegramID.toString())
         if (telegramID == null || telegramID == 0L) return
 
         val appId = profileRepo.getProfileAppId()
