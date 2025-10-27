@@ -74,6 +74,7 @@ fun bottomSheetTransferConfirmation(
                     setIsOpenSheet(false)
                 }
             }
+
             null -> {
                 Log.d("TAG", "bottomSheetTransferConfirmation: null")
             }
@@ -131,11 +132,16 @@ fun bottomSheetTransferConfirmation(
 
                 if (!isConfirmTransaction) {
                     ContentBottomSheetTransferConfirmation(
+                        viewModel = viewModel,
                         isDetails = isDetailsTransaction,
                         modelTransferFromBS = modelTransferFromBS,
-                        confirmTransaction = {
-                            viewModel.onConfirmTransaction(modelTransferFromBS)
-                        },
+                        closeBS = {
+                            coroutineScope.launch {
+                                sheetState.hide()
+                                delay(400)
+                                setIsOpenSheet(false)
+                            }
+                        }
                     )
                 } else {
                     ContentBottomSheetTransferProcessing(onClick = {

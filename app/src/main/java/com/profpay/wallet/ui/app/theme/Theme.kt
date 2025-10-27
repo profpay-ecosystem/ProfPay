@@ -32,6 +32,10 @@ val ColorScheme.backgroundContainerButtonLight: Color
     @Composable
     get() = BackgroundContainerButtonLight
 
+val ColorScheme.backgroundLight: Color
+    @Composable
+    get() = BackgroundLight
+
 private val DarkColorPalette =
     darkColorScheme(
         primary = BackgroundDark,
