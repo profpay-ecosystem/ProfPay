@@ -1,0 +1,23 @@
+*.jks
+*.keystore
+*.pem
+*.key
+*.crt
+*.env
+*.log
+
+# Исключаем IDE и системные папки
+.idea/
+.vscode/
+.git/
+.gitignore
+
+# Исключаем кеши и сборочные артефакты
+build/
+.gradle/
+app/build/
+local.properties
+
+# Исключаем временные файлы
+*.tmp
+*.bak

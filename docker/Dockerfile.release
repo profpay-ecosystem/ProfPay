@@ -2,12 +2,12 @@ FROM gradle:8.11.1-jdk17 AS builder
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y wget unzip curl git
+RUN apt-get update && apt-get install -y --no-install-recommends curl git unzip wget
 
 ENV ANDROID_SDK_ROOT=/sdk
-RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools \
-    && cd $ANDROID_SDK_ROOT/cmdline-tools \
-    && wget https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip -O commandlinetools.zip \
+RUN mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools" \
+    && cd "$ANDROID_SDK_ROOT/cmdline-tools" \
+    && wget --https-only --max-redirect=0 "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip" -O commandlinetools.zip \
     && unzip commandlinetools.zip \
     && rm commandlinetools.zip \
     && mv cmdline-tools latest
