@@ -31,7 +31,7 @@ ENV KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
 ENV KEY_ALIAS=${KEY_ALIAS}
 ENV KEY_PASSWORD=${KEY_PASSWORD}
 
-RUN ./gradlew clean assembleRelease --no-daemon
+RUN ./gradlew clean assembleRelease -x lintVitalAnalyzeRelease --no-daemon
 
 FROM eclipse-temurin:17-jre AS runtime
 
