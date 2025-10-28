@@ -6,20 +6,20 @@
 
 ## ⚠️ Disclaimer
 
-**This project is currently in active development.**  
-While it is open for public testing, many features and components are still being worked on, and updates will be made regularly.  
+**This project is currently in active development.**
+While it is open for public testing, many features and components are still being worked on, and updates will be made regularly.
 We encourage contributions and responsible bug reporting to help improve the project.
 
 ## 📜 License
 
 This code is proprietary and not intended for public use.
 
-It is shared **only for auditing and contribution purposes**.  
+It is shared **only for auditing and contribution purposes**.
 Please see [LICENSE](./LICENSE) for full terms.
 
 ## 💼 About the Project
 
-**ProfPay** is a cryptocurrency wallet designed for secure transactions using **USDT (TRC20)** and **TRX**.  
+**ProfPay** is a cryptocurrency wallet designed for secure transactions using **USDT (TRC20)** and **TRX**.
 The wallet is equipped with a smart contract system for handling USDT TRC20 transactions, providing advanced security features to protect users' funds.
 
 Key features:
@@ -30,26 +30,26 @@ Key features:
 
 ### 🧩 1. Generate the Keystore (JKS file)
 
-To build a **release APK**, you must have a **Java Keystore (JKS)** file used for signing your Android app.  
+To build a **release APK**, you must have a **Java Keystore (JKS)** file used for signing your Android app.
 If you don’t already have one, generate it using:
 
 ```bash
 keytool -genkeypair -v \
-  -keystore my-release-key.jks \
+  -keystore profpay-release-key.jks \
   -keyalg RSA \
   -keysize 2048 \
   -validity 10000 \
-  -alias my-key-alias
+  -alias profpay
 ```
 
 ### 🧩 2. Export Required Environment Variables
 Before building, export the following variables that will be used during the Docker build process:
 
 ```bash
-export KEYSTORE_FILE=my-release-key.jks
-export KEYSTORE_PASSWORD=пароль_от_keystore
-export KEY_ALIAS=my-key-alias
-export KEY_PASSWORD=пароль_от_ключа
+export KEYSTORE_FILE=profpay-release-key.jks
+export KEYSTORE_PASSWORD=password_from_keystore
+export KEY_ALIAS=profpay
+export KEY_PASSWORD=password_key
 ```
 
 ### 🧩 3. Build the Project via Docker
