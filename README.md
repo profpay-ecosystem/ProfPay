@@ -42,8 +42,8 @@ keytool -genkeypair -v \
   -alias profpay
 ```
 
-### 🧩 2. Export Required Environment Variables
-Before building, export the following variables that will be used during the Docker build process:
+### 🧩 2. Create a Configuration File
+Before building, create a `.env` file in the root directory of the project:
 
 ```bash
 KEYSTORE_FILE=profpay-release-key.jks
@@ -52,8 +52,8 @@ KEY_ALIAS=profpay
 KEY_PASSWORD=password_key
 ```
 
-### 🧩 3. Create a Configuration File
-Before building, create a `.env` file in the root directory of the project:
+### 🧩 3. Build the Project via Docker
+Run the following command from the root directory of your project:
 
 ```bash
 sudo docker build -f docker/Dockerfile.release -t wallet-builder .
