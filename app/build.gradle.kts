@@ -73,16 +73,35 @@ ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 }
 
+val envFile = rootProject.file(".env")
+if (envFile.exists()) {
+    envFile.readLines().forEach { line ->
+        if (line.isNotBlank() && !line.startsWith("#")) {
+            val parts = line.split("=", limit = 2)
+            if (parts.size == 2) {
+                val key = parts[0].trim()
+                val value = parts[1].trim()
+                System.setProperty(key, value)
+            }
+        }
+    }
+}
+
 android {
     namespace = "com.profpay.wallet"
     compileSdk = 36
 
     signingConfigs {
         create("release") {
-            storeFile = file(System.getenv("KEYSTORE_FILE") ?: "keystore.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-            keyAlias = System.getenv("KEY_ALIAS") ?: ""
-            keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+            storeFile = file(System.getProperty("KEYSTORE_FILE")
+                ?: throw RuntimeException("❌ KEYSTORE_FILE is not set. Check your .env file."))
+            storePassword = System.getProperty("KEYSTORE_PASSWORD")
+                ?: throw RuntimeException("❌ KEYSTORE_PASSWORD is not set. Check your .env file.")
+            keyAlias = System.getProperty("KEY_ALIAS")
+                ?: throw RuntimeException("❌ KEY_ALIAS is not set. Check your .env file.")
+            keyPassword = System.getProperty("KEY_PASSWORD")
+                ?: throw RuntimeException("❌ KEY_PASSWORD is not set. Check your .env file.")
+
         }
     }
 

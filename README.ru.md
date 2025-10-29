@@ -38,26 +38,21 @@ keytool -genkeypair -v \
   -alias profpay
 ```
 
-### 🧩 2. Экспорт необходимых переменных окружения
-Перед сборкой экспортируйте следующие переменные, которые будут использованы во время процесса сборки Docker:
+### 🧩 2. Создание конфигурационного файла
+Перед сборкой создайте `.env` файл в корне проекта:
 
 ```bash
-export KEYSTORE_FILE=profpay-release-key.jks
-export KEYSTORE_PASSWORD=password_from_keystore
-export KEY_ALIAS=profpay
-export KEY_PASSWORD=password_key
+KEYSTORE_FILE=profpay-release-key.jks
+KEYSTORE_PASSWORD=password_from_keystore
+KEY_ALIAS=profpay
+KEY_PASSWORD=password_key
 ```
 
 ### 🧩 3. Сборка проекта через Docker
 Выполните следующую команду из корневого каталога проекта:
 
 ```bash
-sudo docker build -f docker/Dockerfile.release \
-  --build-arg KEYSTORE_FILE=$KEYSTORE_FILE \
-  --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD \
-  --build-arg KEY_ALIAS=$KEY_ALIAS \
-  --build-arg KEY_PASSWORD=$KEY_PASSWORD \
-  -t wallet-builder .
+sudo docker build -f docker/Dockerfile.release -t wallet-builder .
 ```
 
 ### 🧩 4. Извлечение итогового APK

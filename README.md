@@ -46,22 +46,17 @@ keytool -genkeypair -v \
 Before building, export the following variables that will be used during the Docker build process:
 
 ```bash
-export KEYSTORE_FILE=profpay-release-key.jks
-export KEYSTORE_PASSWORD=password_from_keystore
-export KEY_ALIAS=profpay
-export KEY_PASSWORD=password_key
+KEYSTORE_FILE=profpay-release-key.jks
+KEYSTORE_PASSWORD=password_from_keystore
+KEY_ALIAS=profpay
+KEY_PASSWORD=password_key
 ```
 
-### 🧩 3. Build the Project via Docker
-Run the following command from the root directory of your project:
+### 🧩 3. Create a Configuration File
+Before building, create a `.env` file in the root directory of the project:
 
 ```bash
-sudo docker build -f docker/Dockerfile.release \
-  --build-arg KEYSTORE_FILE=$KEYSTORE_FILE \
-  --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD \
-  --build-arg KEY_ALIAS=$KEY_ALIAS \
-  --build-arg KEY_PASSWORD=$KEY_PASSWORD \
-  -t wallet-builder .
+sudo docker build -f docker/Dockerfile.release -t wallet-builder .
 ```
 
 ### 🧩 4. Extract the Final APK
