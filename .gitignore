@@ -19,3 +19,4 @@ gradle.properties
 /.gradle/*/
 /.gradle/config.properties
 /.gradle/file-system.probe
+.env
