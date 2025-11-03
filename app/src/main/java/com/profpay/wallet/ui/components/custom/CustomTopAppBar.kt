@@ -26,7 +26,6 @@ import com.profpay.wallet.ui.app.theme.white
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTopAppBar(
-    modifier: Modifier = Modifier,
     title: String,
     goToBack: () -> Unit,
 ) {
@@ -53,6 +52,24 @@ fun CustomTopAppBar(
                 }
             }
         },
+    )
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomTopAppBar(
+    title: String,
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.white),
+            )
+        },
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.transparent,
+            ),
     )
 }
 

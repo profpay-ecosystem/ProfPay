@@ -6,9 +6,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,16 +21,8 @@ fun CustomBottomCard(
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     bottomPadding: Float,
-    verticalScroll: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val columnModifier =
-        if (verticalScroll) {
-            modifierColumn.verticalScroll(rememberScrollState())
-        } else {
-            modifierColumn
-        }
-
     Card(
         modifier =
             modifier
@@ -41,7 +31,7 @@ fun CustomBottomCard(
     ) {
         Column(
             modifier =
-                columnModifier
+                modifierColumn
                     .fillMaxSize()
                     .padding(bottom = bottomPadding.dp),
             verticalArrangement = verticalArrangement,
