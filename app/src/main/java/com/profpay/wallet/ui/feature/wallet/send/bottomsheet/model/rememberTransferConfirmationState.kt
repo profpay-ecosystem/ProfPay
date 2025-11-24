@@ -31,6 +31,7 @@ internal fun rememberTransferConfirmationState(
 
     // Эффекты вынесены в отдельные блоки
     LaunchedEffect(isActivated) {
+        if (isActivated) return@LaunchedEffect
         setCreateNewAccountFee(
             viewModel.tron.addressUtilities.getCreateNewAccountFeeInSystemContract()
         )

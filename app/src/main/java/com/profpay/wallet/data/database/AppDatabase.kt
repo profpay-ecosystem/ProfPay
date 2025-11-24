@@ -81,7 +81,7 @@ abstract class AppDatabase : RoomDatabase() {
     open suspend fun insertWalletWithAddressesAndTokens(
         walletProfile: WalletProfileEntity,
         addresses: List<AddressEntity>,
-    ) {
+    ): Long {
         val number = getWalletProfileDao().getCountRecords() + 1
         val entityWithName = walletProfile.copy(name = "Wallet $number")
 
@@ -97,5 +97,6 @@ abstract class AppDatabase : RoomDatabase() {
             val tokenEntities = defaultTokens.map { TokenEntity(addressId = addressId, tokenName = it, balance = BigInteger.ZERO) }
             getTokenDao().insertAll(tokenEntities)
         }
+        return walletId
     }
 }

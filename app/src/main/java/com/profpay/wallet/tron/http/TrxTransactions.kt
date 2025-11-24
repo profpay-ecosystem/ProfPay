@@ -1,5 +1,6 @@
 package com.profpay.wallet.tron.http
 
+import android.util.Log
 import com.profpay.wallet.tron.http.models.TrxTransactionDataResponse
 import com.profpay.wallet.tron.http.models.TrxTransactionResponse
 import kotlinx.serialization.json.Json
@@ -50,6 +51,8 @@ class TrxTransactionsService {
                     ) {
                         response.use {
                             if (!response.isSuccessful) {
+                                Log.e("Error", response.message)
+                                Log.e("Error", response.body.string())
                                 throw IOException("Error receiving TRX transactions")
                             }
 

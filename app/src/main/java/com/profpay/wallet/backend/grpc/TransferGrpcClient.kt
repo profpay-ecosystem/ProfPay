@@ -1,5 +1,7 @@
 package com.profpay.wallet.backend.grpc
 
+import android.util.Log
+import androidx.paging.LOG_TAG
 import com.profpay.wallet.data.di.token.SharedPrefsTokenProvider
 import com.profpay.wallet.utils.safeGrpcCall
 import io.grpc.ManagedChannel

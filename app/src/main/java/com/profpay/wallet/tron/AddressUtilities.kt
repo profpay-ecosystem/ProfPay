@@ -1,6 +1,7 @@
 package com.profpay.wallet.tron
 
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import cash.z.ecc.android.bip39.Mnemonics
 import cash.z.ecc.android.bip39.toEntropy
 import cash.z.ecc.android.bip39.toSeed
@@ -349,7 +350,7 @@ class AddressUtilities {
      *         и связанную с ними информацию.
      * @throws Exception если мнемоническая фраза некорректна или не удалось создать адрес.
      */
-    fun generateKeysAndAddressBySeedPhrase(seed: String): AddressGenerateFromSeedPhr {
+    fun generateKeysAndAddressBySeedPhrase1(seed: String): AddressGenerateFromSeedPhr {
         val charArray = seed.toCharArray()
         val mnemonicCode = Mnemonics.MnemonicCode(chars = charArray)
         val addressGenerateFromSeedPhrList = mutableListOf<AddressDataWithoutPrivKey>()
@@ -366,6 +367,99 @@ class AddressUtilities {
                 entropy = mnemonicCode.toEntropy(),
                 derivedIndices = (1..6),
             )
+
+        return AddressGenerateFromSeedPhr(addressesWithKeysForM)
+    }
+
+    /**
+     * Генерирует следующую группу ("соту") из 6 адресов, начиная с первого неиспользуемого.
+     *
+     * Эта функция сканирует блокчейн, чтобы найти первую последовательность из 6 подряд идущих
+     * неактивированных адресов, сгенерированных из предоставленной seed-фразы. Этот механизм
+     * позволяет расширять кошелек, добавляя новые адреса, только когда предыдущие были использованы.
+     *
+     * Логика работы:
+     * 1.  Начинает проверку с адреса с индексом деривации `1`.
+     * 2.  Для каждого индекса `i` проверяет, активирован ли соответствующий адрес.
+     * 3.  Если адрес с индексом `i` активирован, переходит к следующему индексу `i+1`.
+     * 4.  Если адрес `i` неактивирован, проверяет следующие 5 адресов (с `i+1` по `i+5`).
+     * 5.  Если все 6 адресов (с `i` по `i+5`) неактивированы, считается, что найдена
+     *     начальная точка для новой "соты". Функция останавливается на этом индексе `i`.
+     * 6.  Генерирует адреса для найденного диапазона (от `i` до `i+5`), а также всегда
+     *     включает адрес с индексом `0` и любые "архивные" (пропущенные) адреса.
+     *
+     * @param seed Мнемоническая (seed) фраза для генерации адресов.
+     * @return [AddressGenerateFromSeedPhr], содержащий:
+     *   - Адрес с индексом `0` (основной).
+     *   - Новую "соту" из 6 адресов.
+     *   - Любые "архивные" адреса, которые были пропущены между `0` и началом новой соты.
+     */
+    suspend fun generateKeysAndAddressBySeedPhrase(seed: String): AddressGenerateFromSeedPhr {
+        val mnemonic = Mnemonics.MnemonicCode(seed.toCharArray())
+
+        val resultList = mutableListOf<AddressDataWithoutPrivKey>()
+
+        // 0-й индекс всегда генерим и НЕ проверяем
+        val zeroIndexAddress = generateAddressData(mnemonic, 0, 0)
+        resultList.add(zeroIndexAddress)
+
+        var index = 1
+        var foundIndex: Int
+
+        while (true) {
+            // 1) Проверяем текущий адрес index
+            val currentAddr = generateAddressData(mnemonic, index, index.toByte())
+            val currentActivated = isAddressActivated(currentAddr.address)
+
+            // Если активирован — пропускаем
+            if (currentActivated) {
+                index++
+                continue
+            }
+
+            // 2) Проверяем следующие 5 адресов (всего индекс + 5 = 6 адресов)
+            var allSixInactive = true
+
+            for (offset in 1..5) {
+                val nextAddr = generateAddressData(
+                    mnemonic,
+                    index + offset,
+                    (index + offset).toByte(),
+                )
+
+                if (isAddressActivated(nextAddr.address)) {
+                    allSixInactive = false
+                    break
+                }
+            }
+
+            // 3) Если все 6 адресов НЕ активированы → нашли точку начала соты
+            if (allSixInactive) {
+                foundIndex = index
+                break
+            }
+
+            index++
+        }
+
+        val derivedIndices = (listOf(0) + (foundIndex until foundIndex + 6))
+        val archiveIndices = getArchiveSots(derivedIndices)
+
+        // Финальный список = 0-й адрес + найденные 6
+        val hiveIndices = (foundIndex until foundIndex + 6).toList()
+        hiveIndices.forEach { idx ->
+            resultList.add(generateAddressData(mnemonic, idx, idx.toByte()))
+        }
+
+        archiveIndices.forEach { idx ->
+            resultList.add(generateAddressData(mnemonic, idx, -1))
+        }
+
+        val addressesWithKeysForM = AddressesWithKeysForM(
+            addresses = resultList,
+            entropy = mnemonic.toEntropy(),
+            derivedIndices = derivedIndices
+        )
 
         return AddressGenerateFromSeedPhr(addressesWithKeysForM)
     }
@@ -879,7 +973,8 @@ class AddressUtilities {
      * @throws Exception если не удалось создать публичный адрес из ключа, что может
      *                   указывать на проблему в процессе генерации.
      */
-    private fun generateAddressData(
+    @VisibleForTesting
+    internal fun generateAddressData(
         mnemonicCode: Mnemonics.MnemonicCode,
         index: Int,
         indexSot: Byte,

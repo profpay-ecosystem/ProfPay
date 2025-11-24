@@ -1,11 +1,10 @@
 package com.profpay.wallet
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import com.profpay.wallet.backend.grpc.GrpcClientFactory
 import com.profpay.wallet.backend.http.binance.BinancePriceConverterApi.binancePriceConverterService
 import com.profpay.wallet.backend.http.binance.BinancePriceConverterRequestCallback
 import com.profpay.wallet.backend.http.coingecko.Tron24hChangeApi.tron24hChangeService
@@ -21,7 +20,6 @@ import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.ExchangeRatesRepo
 import com.profpay.wallet.data.database.repositories.wallet.TradingInsightsRepo
 import com.profpay.wallet.data.di.module.IoDispatcher
-import com.profpay.wallet.data.services.foreground.PusherService
 import com.profpay.wallet.tron.Tron
 import io.sentry.Sentry
 import kotlinx.coroutines.CoroutineDispatcher
@@ -40,14 +38,15 @@ class AppInitializer @Inject constructor(
     private val tradingInsightsRepo: TradingInsightsRepo,
     private val tron: Tron,
     private val centralAddressRepo: CentralAddressRepo,
+
     @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    val grpcClientFactory: GrpcClientFactory,
 ) {
     suspend fun initialize(
         sharedPrefs: SharedPreferences,
         context: Context,
     ) {
         val firstStarted = sharedPrefs.getBoolean(PrefKeys.FIRST_STARTED, true)
-        if (PusherService.isRunning) return
 
         if (firstStarted) {
             val deviceToken =
@@ -73,7 +72,6 @@ class AppInitializer @Inject constructor(
         }
 
         syncExchangeRatesAndTrends()
-        startPusherService(context)
     }
 
     private suspend fun syncExchangeRatesAndTrends() {
@@ -146,11 +144,5 @@ class AppInitializer @Inject constructor(
                 )
             }
         }
-    }
-
-    private fun startPusherService(context: Context) {
-        if (PusherService.isRunning) return
-        val intent = Intent(context, PusherService::class.java)
-        ContextCompat.startForegroundService(context, intent)
     }
 }

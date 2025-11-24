@@ -16,43 +16,31 @@ class CryptoAddressGrpcClient(
 ) {
     private val stub: CryptoAddressServiceGrpc.CryptoAddressServiceBlockingStub = CryptoAddressServiceGrpc.newBlockingStub(channel)
 
-    suspend fun addCryptoAddress(
-        appId: String,
-        address: String,
-        pubKey: String,
-        derivedIndices: Iterable<Int>,
-    ): Result<CryptoAddressProto.AddCryptoAddressResponse> =
+    suspend fun addWallet(
+        request: CryptoAddressProto.AddWalletRequest
+    ): Result<CryptoAddressProto.AddWalletResponse> =
         token.safeGrpcCall {
             withContext(ioDispatcher) {
-                val request =
-                    CryptoAddressProto.AddCryptoAddressRequest
-                        .newBuilder()
-                        .setAppId(appId)
-                        .setAddress(address)
-                        .setPubKey(pubKey)
-                        .addAllDerivedIndices(derivedIndices)
-                        .build()
-                val response = stub.addCryptoAddress(request)
+                val response = stub.addWallet(request)
+                Result.success(response)
+            }
+        }
+
+    suspend fun addCentralAddress(
+        request: CryptoAddressProto.AddCentralAddressRequest
+    ): Result<CryptoAddressProto.AddCentralAddressResponse> =
+        token.safeGrpcCall {
+            withContext(ioDispatcher) {
+                val response = stub.addCentralAddress(request)
                 Result.success(response)
             }
         }
 
     suspend fun updateDerivedIndex(
-        appId: String,
-        oldIndex: Long,
-        newIndex: Long,
-        generalAddress: String,
+        request: CryptoAddressProto.UpdateDerivedIndexRequest
     ): Result<CryptoAddressProto.UpdateDerivedIndexResponse> =
         token.safeGrpcCall {
             withContext(ioDispatcher) {
-                val request =
-                    CryptoAddressProto.UpdateDerivedIndexRequest
-                        .newBuilder()
-                        .setAppId(appId)
-                        .setGeneralAddress(generalAddress)
-                        .setOldIndex(oldIndex)
-                        .setNewIndex(newIndex)
-                        .build()
                 val response = stub.updateDerivedIndex(request)
                 Result.success(response)
             }
@@ -86,6 +74,16 @@ class CryptoAddressGrpcClient(
                         .setAddress(address)
                         .build()
                 val response = stub.getWalletData(request)
+                Result.success(response)
+            }
+        }
+
+    suspend fun recoveryAddressMap(
+        request: CryptoAddressProto.RecoveryAddressMapRequest
+    ): Result<CryptoAddressProto.RecoveryAddressMapResponse> =
+        token.safeGrpcCall {
+            withContext(ioDispatcher) {
+                val response = stub.recoveryAddressMap(request)
                 Result.success(response)
             }
         }

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.profpay.wallet.PrefKeys
 import com.profpay.wallet.data.repository.WalletAddedRepo
+import com.profpay.wallet.data.services.TransactionsRecoveryService
 import com.profpay.wallet.tron.AddressesWithKeysForM
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
@@ -19,6 +20,7 @@ class WalletAddedViewModel
     @Inject
     constructor(
         private val walletAddedRepo: WalletAddedRepo,
+        private val transactionsRecoveryService: TransactionsRecoveryService
     ) : ViewModel() {
         private val _uiEvent = MutableSharedFlow<WalletUiEvent>()
         val uiEvent = _uiEvent.asSharedFlow()
@@ -91,26 +93,30 @@ class WalletAddedViewModel
             val isFirstStarted = sharedPref.getBoolean(PrefKeys.FIRST_STARTED, true)
 
             try {
+                val walletId: Long
                 if (isFirstStarted) {
                     // Первый запуск
                     if (accountWasFound && userId != null) {
                         // Аккаунт найден, просто регистрируем устройство
                         walletAddedRepo.registerUserDevice(userId, deviceToken, sharedPref)
-                        walletAddedRepo.insertNewCryptoAddresses(addressesWithKeysForM)
+                        walletId = walletAddedRepo.insertNewCryptoAddresses(addressesWithKeysForM)
                     } else {
                         // Аккаунт не найден — создаём новый, затем адреса
                         walletAddedRepo.registerUserAccount(deviceToken, sharedPref)
                         walletAddedRepo.createCryptoAddresses(addressesWithKeysForM)
-                        walletAddedRepo.insertNewCryptoAddresses(addressesWithKeysForM)
+                        walletId = walletAddedRepo.insertNewCryptoAddresses(addressesWithKeysForM)
                     }
-
                     // Помечаем, что первый запуск завершён
                     sharedPref.edit { putBoolean(PrefKeys.FIRST_STARTED, false) }
                 } else {
                     // Повторный запуск — просто пересоздаём и вставляем адреса
                     walletAddedRepo.createCryptoAddresses(addressesWithKeysForM)
-                    walletAddedRepo.insertNewCryptoAddresses(addressesWithKeysForM)
+                    walletId = walletAddedRepo.insertNewCryptoAddresses(addressesWithKeysForM)
                 }
+
+                // Восстанавливаем все транзакции пользователя
+                // TODO: Сейчас у сервиса лимиты в 200 транзакций на адрес, нужно будет расширить.
+                transactionsRecoveryService.createTask(walletId)
 
                 // Навигация на главный экран после успешной операции
                 _uiEvent.emit(WalletUiEvent.NavigateToHome)

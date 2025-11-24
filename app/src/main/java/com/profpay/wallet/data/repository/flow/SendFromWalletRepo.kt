@@ -104,6 +104,7 @@ class SendFromWalletRepoImpl
                 val result = transferClient.estimateCommission(userId, address, bandwidth = bandwidth, energy = energy)
                 result.fold(
                     onSuccess = {
+                        Log.e("DWEEWEWE", it.categoriesList.toString())
                         _estimateCommission.emit(EstimateCommissionResult.Success(it))
                     },
                     onFailure = {

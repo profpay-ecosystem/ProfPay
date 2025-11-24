@@ -108,6 +108,14 @@ interface AddressDao {
     @Transaction
     @Query(
         "SELECT * FROM addresses " +
+            "WHERE addresses.blockchain_name = :blockchainName " +
+            "AND addresses.wallet_id = :walletId ORDER BY addresses.sot_index ASC",
+    )
+    suspend fun getAddressesSotsWithTokensByBlockchain(blockchainName: String, walletId: Long): List<AddressWithTokens>
+
+    @Transaction
+    @Query(
+        "SELECT * FROM addresses " +
             "WHERE addresses.wallet_id = :walletId " +
             "AND addresses.sot_index >= 0 ",
     )

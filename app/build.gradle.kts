@@ -114,7 +114,7 @@ android {
 //        MAJOR: Внесение изменений, ломающих обратную совместимость.
 //        MINOR: Добавление новых функций без нарушения совместимости.
 //        PATCH: Исправление ошибок и незначительные улучшения без изменения функциональности.
-        versionName = "1.0.0" // MAJOR.MINOR.PATCH
+        versionName = "1.1.5" // MAJOR.MINOR.PATCH
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -204,6 +204,12 @@ android {
         getByName("androidTest") {
             java.srcDir("src/androidTest/java")
             resources.srcDir("src/androidTest/resources")
+        }
+    }
+    testOptions {
+        unitTests.all {
+            // Kotlin DSL, нужно использовать it.useJUnitPlatform()
+            it.useJUnitPlatform()
         }
     }
 }
@@ -364,6 +370,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.kotlin.test)
     androidTestImplementation(libs.mockito.android)
 
     // -------------------------------------------------

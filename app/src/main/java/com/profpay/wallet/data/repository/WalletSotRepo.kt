@@ -3,15 +3,11 @@ package com.profpay.wallet.data.repository
 import com.profpay.wallet.AppConstants
 import com.profpay.wallet.backend.grpc.CryptoAddressGrpcClient
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
+import org.example.protobuf.address.CryptoAddressProto
 import javax.inject.Inject
 
 interface WalletSotRepo {
-    suspend fun updateDerivedIndex(
-        appId: String,
-        oldIndex: Long,
-        newIndex: Long,
-        generalAddress: String,
-    )
+    suspend fun updateDerivedIndex(request: CryptoAddressProto.UpdateDerivedIndexRequest)
 }
 
 class WalletSotRepoImpl
@@ -27,18 +23,12 @@ class WalletSotRepoImpl
             )
 
         override suspend fun updateDerivedIndex(
-            appId: String,
-            oldIndex: Long,
-            newIndex: Long,
-            generalAddress: String,
+            request: CryptoAddressProto.UpdateDerivedIndexRequest
         ) {
             try {
                 val result =
                     cryptoAddressGrpcClient.updateDerivedIndex(
-                        appId = appId,
-                        oldIndex = oldIndex,
-                        newIndex = newIndex,
-                        generalAddress = generalAddress,
+                        request = request
                     )
                 result.fold(
                     onSuccess = {

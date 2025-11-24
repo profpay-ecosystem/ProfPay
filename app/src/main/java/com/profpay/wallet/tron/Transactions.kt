@@ -11,6 +11,7 @@ import org.tron.trident.abi.datatypes.Bool
 import org.tron.trident.abi.datatypes.Function
 import org.tron.trident.abi.datatypes.Type
 import org.tron.trident.abi.datatypes.generated.Uint256
+import org.tron.trident.api.WalletGrpc
 import org.tron.trident.core.ApiWrapper
 import org.tron.trident.core.contract.Contract
 import org.tron.trident.core.contract.Trc20Contract
@@ -21,6 +22,7 @@ import org.tron.trident.proto.Response
 import org.tron.trident.proto.Response.TransactionExtention
 import java.math.BigInteger
 import java.security.MessageDigest
+
 
 data class SignedTransactionData(
     val txid: String,

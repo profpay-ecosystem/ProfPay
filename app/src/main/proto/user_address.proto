@@ -8,54 +8,100 @@ option java_package = "org.example.protobuf.address";
 option java_outer_classname = "CryptoAddressProto";
 
 service CryptoAddressService {
-  rpc AddCryptoAddress(AddCryptoAddressRequest) returns (AddCryptoAddressResponse);
-  rpc SetDerivedIndices(SetDerivedIndicesRequest) returns (SetDerivedIndicesResponse);
-  rpc UpdateDerivedIndex(UpdateDerivedIndexRequest) returns (UpdateDerivedIndexResponse);
-  rpc GetWalletData(GetWalletDataRequest) returns (GetWalletDataResponse);
+    rpc AddWallet(AddWalletRequest) returns (AddWalletResponse);
+    rpc AddCentralAddress(AddCentralAddressRequest) returns (AddCentralAddressResponse);
+    rpc SetDerivedIndices(SetDerivedIndicesRequest) returns (SetDerivedIndicesResponse);
+    rpc UpdateDerivedIndex(UpdateDerivedIndexRequest) returns (UpdateDerivedIndexResponse);
+    rpc GetWalletData(GetWalletDataRequest) returns (GetWalletDataResponse);
+    rpc RecoveryAddressMap(RecoveryAddressMapRequest) returns (RecoveryAddressMapResponse);
 }
 
-message AddCryptoAddressRequest {
-  string app_id = 1;
-  string address = 2;
-  string pub_key = 3;
-  repeated int32 derived_indices = 4;
+message RecoveryAddressMapRequest {
+    string app_id = 1;
+    GeneralAddressData general_address = 2;
+    repeated SotAddressData sot_addresses = 3;
+    CentralAddressData central_address = 4;
 }
 
-message AddCryptoAddressResponse {
-  google.protobuf.Timestamp timestamp = 1;
-  int64 user_id = 2;
-  int64 address_id = 3;
-  string address = 4;
+message RecoveryAddressMapResponse {
+    google.protobuf.Timestamp timestamp = 1;
+}
+
+message CentralAddressData {
+    string address = 2;
+    string pub_key = 3;
+}
+
+message AddCentralAddressRequest {
+    string app_id = 1;
+    string address = 2;
+    string pub_key = 3;
+}
+
+message AddCentralAddressResponse {
+    google.protobuf.Timestamp timestamp = 1;
+}
+
+message AddWalletRequest {
+    string app_id = 1;
+    GeneralAddressData general_address = 2;
+    repeated SotAddressData sot_addresses = 3;
+}
+
+message GeneralAddressData {
+    string address = 1;
+    string pub_key = 2;
+    repeated int32 derived_indices = 3;
+}
+
+message SotAddressData {
+    string address = 1;
+    string pub_key = 2;
+    int32 index = 3;
+    int32 derivation_index = 4;
+}
+
+message AddWalletResponse {
+    google.protobuf.Timestamp timestamp = 1;
+    int64 user_id = 2;
+    int64 address_id = 3;
+    string address = 4;
 }
 
 message UpdateDerivedIndexRequest {
-  string app_id = 1;
-  string general_address = 2;
-  uint64 old_index = 3;
-  uint64 new_index = 4;
+    string app_id = 1;
+    string old_sot_address = 2;
+    GeneralAddressIndexUpdate general_address = 3;
+    SotAddressData new_sot_address = 4;
+}
+
+message GeneralAddressIndexUpdate {
+    string address = 2;
+    uint64 old_sot_derivation_index = 3;
+    uint64 new_sot_derivation_index = 4;
 }
 
 message UpdateDerivedIndexResponse {
-  google.protobuf.Timestamp timestamp = 1;
-  uint64 new_index = 2;
+    google.protobuf.Timestamp timestamp = 1;
+    uint64 new_index = 2;
 }
 
 message SetDerivedIndicesRequest {
-  uint64 user_id = 1;
-  string general_address = 2;
-  repeated int32 derived_indices = 3;
+    uint64 user_id = 1;
+    string general_address = 2;
+    repeated int32 derived_indices = 3;
 }
 
 message SetDerivedIndicesResponse {
-  google.protobuf.Timestamp timestamp = 1;
+    google.protobuf.Timestamp timestamp = 1;
 }
 
 message GetWalletDataRequest {
-  string address = 1;
+    string address = 1;
 }
 
 message GetWalletDataResponse {
-  google.protobuf.Timestamp timestamp = 1;
-  uint64 user_id = 2;
-  repeated int32 derived_indices = 3;
+    google.protobuf.Timestamp timestamp = 1;
+    uint64 user_id = 2;
+    repeated int32 derived_indices = 3;
 }

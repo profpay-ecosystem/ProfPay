@@ -21,13 +21,14 @@ import com.profpay.wallet.security.KeystoreCryptoManager
 import com.profpay.wallet.security.KeystoreEncryptionUtils
 import com.profpay.wallet.tron.AddressesWithKeysForM
 import io.sentry.Sentry
+import org.example.protobuf.address.CryptoAddressProto
 import java.util.UUID
 import javax.inject.Inject
 
 interface WalletAddedRepo {
     fun getWalletAlias(addressesWithKeys: AddressesWithKeysForM): String?
 
-    suspend fun insertNewCryptoAddresses(addressesWithKeysForM: AddressesWithKeysForM)
+    suspend fun insertNewCryptoAddresses(addressesWithKeysForM: AddressesWithKeysForM): Long
 
     suspend fun createCryptoAddresses(addressesWithKeysForM: AddressesWithKeysForM)
 
@@ -75,7 +76,7 @@ class WalletAddedRepoImpl
             return mainAddress?.address // используем адрес главного кошелька как alias
         }
 
-        override suspend fun insertNewCryptoAddresses(addressesWithKeysForM: AddressesWithKeysForM) {
+        override suspend fun insertNewCryptoAddresses(addressesWithKeysForM: AddressesWithKeysForM): Long {
             val walletAlias = getWalletAlias(addressesWithKeysForM) ?: throw IllegalStateException("Главный адрес кошелька не найден")
 
             keystoreCryptoManager.createAesKey(walletAlias)
@@ -99,7 +100,7 @@ class WalletAddedRepoImpl
                 }
             }
 
-            database.insertWalletWithAddressesAndTokens(
+            val walletId = database.insertWalletWithAddressesAndTokens(
                 walletProfile =
                     WalletProfileEntity(
                         name = "",
@@ -108,21 +109,39 @@ class WalletAddedRepoImpl
                     ),
                 addresses = addressList,
             )
+            return walletId
         }
 
         override suspend fun createCryptoAddresses(addressesWithKeysForM: AddressesWithKeysForM) {
-            val addressData = addressesWithKeysForM.addresses.firstOrNull()
-            if (addressData == null) {
+            val generalAddressData = addressesWithKeysForM.addresses.firstOrNull()
+            if (generalAddressData == null) {
                 Log.e("createCryptoAddresses", "No addresses found in AddressesWithKeysForM")
                 return
             }
 
             runCatching {
-                cryptoAddressGrpcClient.addCryptoAddress(
-                    appId = profileRepo.getProfileAppId(),
-                    address = addressData.address,
-                    pubKey = addressData.publicKey,
-                    derivedIndices = addressesWithKeysForM.derivedIndices,
+                val result = addressesWithKeysForM.addresses
+                    .drop(1)
+                    .map {
+                        CryptoAddressProto.SotAddressData.newBuilder()
+                            .setAddress(it.address)
+                            .setPubKey(it.publicKey)
+                            .setIndex(it.indexSot.toInt())
+                            .setDerivationIndex(it.indexDerivationSot)
+                            .build()
+                    }
+
+                cryptoAddressGrpcClient.addWallet(
+                    CryptoAddressProto.AddWalletRequest.newBuilder()
+                        .setAppId(profileRepo.getProfileAppId())
+                        .setGeneralAddress(
+                            CryptoAddressProto.GeneralAddressData.newBuilder()
+                                .setAddress(generalAddressData.address)
+                                .setPubKey(generalAddressData.publicKey)
+                                .addAllDerivedIndices(addressesWithKeysForM.derivedIndices)
+                        )
+                        .addAllSotAddresses(result)
+                        .build()
                 )
             }.onSuccess { result ->
                 result.fold(

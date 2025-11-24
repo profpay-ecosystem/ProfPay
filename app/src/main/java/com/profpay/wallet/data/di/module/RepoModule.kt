@@ -1,5 +1,7 @@
 package com.profpay.wallet.data.di.module
 
+import com.profpay.wallet.data.repository.ReissueCentralAddressRepo
+import com.profpay.wallet.data.repository.ReissueCentralAddressRepoImpl
 import com.profpay.wallet.data.repository.SettingsAccountRepo
 import com.profpay.wallet.data.repository.SettingsAccountRepoImpl
 import com.profpay.wallet.data.repository.WalletAddedRepo
@@ -80,4 +82,8 @@ abstract class RepoModule {
     @Binds
     @Singleton
     abstract fun bindAppAccessRepo(appAccessRepoImpl: AppAccessRepoImpl): AppAccessRepo
+
+    @Binds
+    @Singleton
+    abstract fun bindReissueCentralAddressRepo(reissueCentralAddressRepoImpl: ReissueCentralAddressRepoImpl): ReissueCentralAddressRepo
 }

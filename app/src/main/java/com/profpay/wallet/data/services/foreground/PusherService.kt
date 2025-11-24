@@ -7,10 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.content.SharedPreferences
-import android.content.pm.ServiceInfo
 import android.os.IBinder
-import android.util.Log
 import com.profpay.wallet.MainActivity
 import com.profpay.wallet.R
 import com.profpay.wallet.backend.grpc.GrpcClientFactory
@@ -20,7 +17,6 @@ import com.profpay.wallet.data.database.repositories.wallet.AddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
 import com.profpay.wallet.data.database.repositories.wallet.PendingTransactionRepo
 import com.profpay.wallet.data.database.repositories.wallet.TokenRepo
-import com.profpay.wallet.data.scheduler.transfer.tron.UsdtTransferScheduler
 import com.profpay.wallet.data.scheduler.transfer.tron.rollbackFrozenTransactions
 import com.profpay.wallet.data.services.AmlProcessorService
 import com.profpay.wallet.tron.Tron
@@ -58,13 +54,6 @@ class PusherService :
     @Inject lateinit var grpcClientFactory: GrpcClientFactory
 
     @Inject lateinit var amlProcessorService: AmlProcessorService
-
-    private val sharedPrefs: SharedPreferences by lazy {
-        getSharedPreferences(
-            this.getString(R.string.preference_file_key),
-            MODE_PRIVATE,
-        )
-    }
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -118,34 +107,6 @@ class PusherService :
         startForeground(uniqueNotificationID, notification)
     }
 
-    private fun showNotification(
-        contentTitle: String,
-        contentText: String,
-    ) {
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent =
-            PendingIntent.getActivity(
-                this,
-                0,
-                notificationIntent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-            )
-
-        val notification =
-            Notification
-                .Builder(this, CHANNEL_ID)
-                .setContentTitle(contentTitle)
-                .setContentText(contentText)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentIntent(pendingIntent)
-                .setOngoing(false)
-                .setStyle(Notification.BigTextStyle().bigText(contentText))
-                .build()
-
-        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
-    }
-
     // Необходимая для сервиса функций уведомлений, Android по умолчанию выключает уведомления.
     private fun createNotificationChannel() {
         val serviceChannel =
@@ -169,36 +130,10 @@ class PusherService :
                         0 every 45
                     }
                 }
-            val kronTransferScheduler =
-                buildSchedule {
-                    seconds {
-                        0 every 45
-                    }
-                }
-
-            val transferScheduler =
-                UsdtTransferScheduler(
-                    addressRepo = addressRepo,
-                    transactionsRepo = transactionsRepo,
-                    profileRepo = profileRepo,
-                    tokenRepo = tokenRepo,
-                    centralAddressRepo = centralAddressRepo,
-                    notificationFunction = ::showNotification,
-                    tron = tron,
-                    pendingTransactionRepo = pendingTransactionRepo,
-                    amlProcessorService = amlProcessorService,
-                    sharedPrefs = sharedPrefs,
-                )
 
             launch {
                 kronFastScheduler.doInfinity {
                     rollbackFrozenTransactions(pendingTransactionRepo = pendingTransactionRepo, transactionsRepo = transactionsRepo)
-                }
-            }
-
-            launch {
-                kronTransferScheduler.doInfinity {
-                    transferScheduler.scheduleAddresses()
                 }
             }
         }

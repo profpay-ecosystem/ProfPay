@@ -98,6 +98,7 @@ class WalletInfoViewModel
 
         fun updateTokenBalances(listAddressWithTokens: List<AddressWithTokens>) =
             viewModelScope.launch(ioDispatcher) {
+                Log.e("EEEEEEEEEE", "RECURS")
                 if (listAddressWithTokens.isEmpty()) return@launch
 
                 TokenName.entries

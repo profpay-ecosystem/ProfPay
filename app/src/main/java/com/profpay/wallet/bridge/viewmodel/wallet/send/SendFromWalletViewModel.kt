@@ -86,7 +86,7 @@ class SendFromWalletViewModel @Inject constructor(
     private val _trxToUsdtRate = MutableStateFlow<BigDecimal>(BigDecimal.ZERO)
     val trxToUsdtRate: StateFlow<BigDecimal> = _trxToUsdtRate
 
-    private val _isActivated = MutableStateFlow(false)
+    private val _isActivated = MutableStateFlow(true)
     val isActivated: StateFlow<Boolean> = _isActivated
 
     private val _isContractAddress = MutableStateFlow(false)

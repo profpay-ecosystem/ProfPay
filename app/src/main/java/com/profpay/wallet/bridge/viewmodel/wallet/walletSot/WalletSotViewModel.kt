@@ -23,6 +23,7 @@ import com.profpay.wallet.tron.Tron
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import org.example.protobuf.address.CryptoAddressProto
 import java.math.BigInteger
 import javax.inject.Inject
 
@@ -77,12 +78,26 @@ class WalletSotViewModel
                     ?: throw Exception("The public address has not been created!")
 
             try {
-                walletSotRepo.updateDerivedIndex(
-                    appId = userAppId,
-                    oldIndex = addressEntity.sotDerivationIndex.toLong(),
-                    newIndex = newSotDerivationIndex.toLong(),
-                    generalAddress = generalAddress,
-                )
+                val request = CryptoAddressProto.UpdateDerivedIndexRequest.newBuilder()
+                    .setAppId(userAppId)
+                    .setOldSotAddress(addressEntity.address)
+                    .setGeneralAddress(
+                        CryptoAddressProto.GeneralAddressIndexUpdate.newBuilder()
+                            .setAddress(generalAddress)
+                            .setOldSotDerivationIndex(addressEntity.sotDerivationIndex.toLong())
+                            .setNewSotDerivationIndex(newSotDerivationIndex.toLong())
+                            .build(),
+                    )
+                    .setNewSotAddress(
+                        CryptoAddressProto.SotAddressData.newBuilder()
+                            .setAddress(address)
+                            .setPubKey(result.publicKeyAsHex)
+                            .setIndex(addressEntity.sotIndex.toInt())
+                            .setDerivationIndex(newSotDerivationIndex)
+                    )
+                    .build()
+
+                walletSotRepo.updateDerivedIndex(request = request)
             } catch (e: Exception) {
                 Log.e("ERROR", e.message!!)
                 return@launch
