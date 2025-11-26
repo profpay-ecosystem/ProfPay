@@ -9,6 +9,7 @@ import com.profpay.wallet.AppConstants
 import io.sentry.Sentry
 import kotlinx.coroutines.withTimeout
 import org.bitcoinj.base.Base58
+import org.bitcoinj.base.internal.ByteUtils
 import org.bitcoinj.crypto.ChildNumber
 import org.bitcoinj.crypto.DeterministicHierarchy
 import org.bitcoinj.crypto.DeterministicKey
@@ -509,23 +510,26 @@ class AddressUtilities {
      *         или `BigInteger.ZERO` в случае ошибки.
      */
     fun getUsdtBalance(accountAddr: String): BigInteger {
-        try {
-            val wrapper =
-                ApiWrapper(
-                    AppConstants.Network.TRON_GRPC_ENDPOINT,
-                    AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-                    KeyPair.generate().toPrivateKey(),
-                )
+        return TronNodeManager.executeWithFailover { node ->
+            val wrapper = ApiWrapper(
+                node.grpc,
+                node.solidityGrpc,
+                KeyPair.generate().toPrivateKey()
+            )
 
-            val contract: Contract = wrapper.getContract("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t")
-            val token = Trc20Contract(contract, "TJJaVcRremausriMLkZeRedM95v7HW4j4D", wrapper)
-            val balance = token.balanceOf(accountAddr)
-            wrapper.close()
+            try {
+                val contract: Contract = wrapper.getContract("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t")
+                val token = Trc20Contract(contract, "TJJaVcRremausriMLkZeRedM95v7HW4j4D", wrapper)
+                val balance = token.balanceOf(accountAddr)
 
-            return balance
-        } catch (e: Exception) {
-            Log.e("USDT_BALANCE", "Unexpected error: ${e.message}")
-            return BigInteger.ZERO
+                balance
+            } finally {
+                try {
+                    wrapper.close()
+                } catch (e: Exception) {
+                    Log.e("wrapper.close()", "Warning: failed to close wrapper: $e")
+                }
+            }
         }
     }
 
@@ -541,20 +545,23 @@ class AddressUtilities {
      * @return [BigInteger], представляющий баланс TRX аккаунта в SUN. Возвращает `BigInteger.ZERO` в случае ошибки.
      */
     fun getTrxBalance(accountAddr: String): BigInteger {
-        try {
-            val wrapper =
-                ApiWrapper(
-                    AppConstants.Network.TRON_GRPC_ENDPOINT,
-                    AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-                    KeyPair.generate().toPrivateKey(),
-                )
+        return TronNodeManager.executeWithFailover { node ->
+            val wrapper = ApiWrapper(
+                node.grpc,
+                node.solidityGrpc,
+                KeyPair.generate().toPrivateKey()
+            )
 
-            val balanceInSun: BigInteger = BigInteger.valueOf(wrapper.getAccountBalance(accountAddr))
-            wrapper.close()
-            return balanceInSun
-        } catch (e: Exception) {
-            Log.e("TRX_BALANCE", "Unexpected error: ${e.message}")
-            return BigInteger.ZERO
+            try {
+                val balanceInSun: BigInteger = BigInteger.valueOf(wrapper.getAccountBalance(accountAddr))
+                balanceInSun
+            } finally {
+                try {
+                    wrapper.close()
+                } catch (e: Exception) {
+                    Log.e("wrapper.close()", "Warning: failed to close wrapper: $e")
+                }
+            }
         }
     }
 
@@ -846,21 +853,23 @@ class AddressUtilities {
      * @return `true`, если адрес является адресом смарт-контракта, в противном случае — `false`.
      */
     fun isContractAddress(address: String): Boolean {
-        var wrapper: ApiWrapper? = null
-        return try {
-            wrapper = ApiWrapper(
-                AppConstants.Network.TRON_GRPC_ENDPOINT,
-                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-                KeyPair.generate().toPrivateKey(),
+        return TronNodeManager.executeWithFailover { node ->
+            val wrapper = ApiWrapper(
+                node.grpc,
+                node.solidityGrpc,
+                KeyPair.generate().toPrivateKey()
             )
 
-            val contract = wrapper.getContract(address)
-
-            contract.bytecode != null && !contract.bytecode.isEmpty
-        } catch (e: Exception) {
-            false
-        } finally {
-            wrapper?.close()
+            try {
+                val contract = wrapper.getContract(address)
+                contract.bytecode != null && !contract.bytecode.isEmpty
+            } finally {
+                try {
+                    wrapper.close()
+                } catch (e: Exception) {
+                    Log.e("wrapper.close()", "Warning: failed to close wrapper: $e")
+                }
+            }
         }
     }
 
@@ -884,23 +893,25 @@ class AddressUtilities {
      * @return `true`, если адрес активирован, в противном случае или в случае ошибки — `false`.
      */
     suspend fun isAddressActivated(address: String): Boolean {
-        val wrapper =
-            ApiWrapper(
-                AppConstants.Network.TRON_GRPC_ENDPOINT,
-                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-                KeyPair.generate().toPrivateKey(),
+        return TronNodeManager.executeWithFailoverSuspend { node ->
+            val wrapper = ApiWrapper(
+                node.grpc,
+                node.solidityGrpc,
+                KeyPair.generate().toPrivateKey()
             )
 
-        return try {
-            withTimeout(5000) {
-                val res = wrapper.getAccount(address)
-                res.activePermissionList.isNotEmpty()
+            try {
+                withTimeout(5000) {
+                    val res = wrapper.getAccount(address)
+                    res.activePermissionList.isNotEmpty()
+                }
+            } finally {
+                try {
+                    wrapper.close()
+                } catch (e: Exception) {
+                    Log.e("wrapper.close()", "Warning: failed to close wrapper: $e")
+                }
             }
-        } catch (e: Exception) {
-            Sentry.captureException(e)
-            false
-        } finally {
-            wrapper.close()
         }
     }
 
@@ -916,20 +927,28 @@ class AddressUtilities {
      *         Если параметр не найден, возвращает `BigInteger.ZERO`.
      */
     fun getCreateNewAccountFeeInSystemContract(): BigInteger {
-        val wrapper =
-            ApiWrapper(
-                AppConstants.Network.TRON_GRPC_ENDPOINT,
-                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-                KeyPair.generate().toPrivateKey(),
+        return TronNodeManager.executeWithFailover { node ->
+            val wrapper = ApiWrapper(
+                node.grpc,
+                node.solidityGrpc,
+                KeyPair.generate().toPrivateKey()
             )
 
-        for (chainParameter in wrapper.chainParameters.chainParameterList) {
-            if (chainParameter.key == "getCreateNewAccountFeeInSystemContract") {
-                return BigInteger.valueOf(chainParameter.value)
+            try {
+                for (chainParameter in wrapper.chainParameters.chainParameterList) {
+                    if (chainParameter.key == "getCreateNewAccountFeeInSystemContract") {
+                        return@executeWithFailover BigInteger.valueOf(chainParameter.value)
+                    }
+                }
+                BigInteger.ZERO
+            } finally {
+                try {
+                    wrapper.close()
+                } catch (e: Exception) {
+                    Log.e("wrapper.close()", "Warning: failed to close wrapper: $e")
+                }
             }
         }
-        wrapper.close()
-        return BigInteger.ZERO
     }
 
     /**

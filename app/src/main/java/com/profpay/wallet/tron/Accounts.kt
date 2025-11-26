@@ -1,5 +1,6 @@
 package com.profpay.wallet.tron
 
+import android.util.Log
 import com.profpay.wallet.AppConstants
 import org.tron.trident.core.ApiWrapper
 import org.tron.trident.core.contract.Contract
@@ -65,20 +66,24 @@ class Accounts {
         address: String?,
         requiredBandwidth: Long,
     ): Boolean {
-        val wrapper =
-            ApiWrapper(
-                AppConstants.Network.TRON_GRPC_ENDPOINT,
-                AppConstants.Network.TRON_GRPC_ENDPOINT_SOLIDITY,
-                KeyPair.generate().toPrivateKey(),
-            )
-        val resources = wrapper.getAccountResource(address)
+        return TronNodeManager.executeWithFailover { node ->
+            val wrapper = ApiWrapper(node.grpc, node.solidityGrpc, KeyPair.generate().toPrivateKey())
+            val resources = wrapper.getAccountResource(address)
 
-        val freeNetRemaining: Long = resources.freeNetLimit - resources.freeNetUsed
-        val paidNetRemaining: Long = resources.netLimit - resources.netUsed
+            try {
+                val freeNetRemaining: Long = resources.freeNetLimit - resources.freeNetUsed
+                val paidNetRemaining: Long = resources.netLimit - resources.netUsed
 
-        val totalAvailableBandwidth = freeNetRemaining + paidNetRemaining
+                val totalAvailableBandwidth = freeNetRemaining + paidNetRemaining
 
-        wrapper.close()
-        return totalAvailableBandwidth >= requiredBandwidth
+                totalAvailableBandwidth >= requiredBandwidth
+            } finally {
+                try {
+                    wrapper.close()
+                } catch (e: Exception) {
+                    Log.e("wrapper.close()", "Warning: failed to close wrapper: $e")
+                }
+            }
+        }
     }
 }

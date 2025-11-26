@@ -101,7 +101,6 @@ android {
                 ?: throw RuntimeException("❌ KEY_ALIAS is not set. Check your .env file.")
             keyPassword = System.getProperty("KEY_PASSWORD")
                 ?: throw RuntimeException("❌ KEY_PASSWORD is not set. Check your .env file.")
-
         }
     }
 
@@ -109,12 +108,12 @@ android {
         applicationId = "com.profpay.wallet"
         minSdk = 29
         targetSdk = 35
-        versionCode = 8
+        versionCode = 9
 
 //        MAJOR: Внесение изменений, ломающих обратную совместимость.
 //        MINOR: Добавление новых функций без нарушения совместимости.
 //        PATCH: Исправление ошибок и незначительные улучшения без изменения функциональности.
-        versionName = "1.1.5" // MAJOR.MINOR.PATCH
+        versionName = "1.0.0" // MAJOR.MINOR.PATCH
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

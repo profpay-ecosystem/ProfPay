@@ -15,6 +15,7 @@ import com.profpay.wallet.data.database.entities.ProfileEntity
 import com.profpay.wallet.data.database.entities.wallet.AddressEntity
 import com.profpay.wallet.data.database.entities.wallet.WalletProfileEntity
 import com.profpay.wallet.data.database.repositories.ProfileRepo
+import com.profpay.wallet.data.database.repositories.wallet.CentralAddressRepo
 import com.profpay.wallet.exceptions.grpc.GrpcRequestException
 import com.profpay.wallet.exceptions.grpc.GrpcResponseException
 import com.profpay.wallet.security.KeystoreCryptoManager
@@ -48,6 +49,7 @@ class WalletAddedRepoImpl
     @Inject
     constructor(
         private val profileRepo: ProfileRepo,
+        private val centralAddressRepo: CentralAddressRepo,
         private val keystoreCryptoManager: KeystoreCryptoManager,
         private val database: AppDatabase,
         grpcClientFactory: GrpcClientFactory,
@@ -114,6 +116,7 @@ class WalletAddedRepoImpl
 
         override suspend fun createCryptoAddresses(addressesWithKeysForM: AddressesWithKeysForM) {
             val generalAddressData = addressesWithKeysForM.addresses.firstOrNull()
+            val centralAddress = centralAddressRepo.getCentralAddress()
             if (generalAddressData == null) {
                 Log.e("createCryptoAddresses", "No addresses found in AddressesWithKeysForM")
                 return
@@ -130,6 +133,19 @@ class WalletAddedRepoImpl
                             .setDerivationIndex(it.indexDerivationSot)
                             .build()
                     }
+
+                try {
+                    cryptoAddressGrpcClient.addCentralAddress(
+                        CryptoAddressProto.AddCentralAddressRequest.newBuilder()
+                            .setAppId(profileRepo.getProfileAppId())
+                            .setAddress(centralAddress!!.address)
+                            .setPubKey(centralAddress.publicKey)
+                            .build()
+                    )
+                } catch (e: Exception) {
+                    Sentry.captureException(e)
+                    Log.e("createCryptoAddresses", "Failed to add central address", e)
+                }
 
                 cryptoAddressGrpcClient.addWallet(
                     CryptoAddressProto.AddWalletRequest.newBuilder()
